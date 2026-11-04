@@ -159,13 +159,13 @@
                 </div>
             </div>
 
-            <!-- TABS (1. New Job, 2. Debts, 3. History, 4. Agent Report, 5. Admin) -->
+            <!-- TABS (New Job, Debts, History, Report, Admin) -->
             <div class="flex flex-wrap gap-1 bg-white p-1.5 rounded-2xl shadow-md text-xs font-bold">
-                <button onclick="switchTab('newJob')" id="tabNewJob" class="flex-1 py-2 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer">1. New Job</button>
-                <button onclick="switchTab('debtList')" id="tabDebtList" class="flex-1 py-2 px-2 rounded-xl text-gray-600 transition cursor-pointer">2. Debts</button>
-                <button onclick="switchTab('history')" id="tabHistory" class="flex-1 py-2 px-2 rounded-xl text-gray-600 transition cursor-pointer">3. History</button>
-                <button onclick="switchTab('agentReport')" id="tabAgentReport" class="flex-1 py-2 px-2 rounded-xl text-gray-600 transition cursor-pointer">4. Report</button>
-                <button onclick="switchTab('admin')" id="tabAdmin" class="flex-1 py-2 px-2 rounded-xl text-gray-600 transition hidden cursor-pointer"><i class="fas fa-user-shield"></i> 5. Admin</button>
+                <button onclick="switchTab('newJob')" id="tabNewJob" class="flex-1 py-2 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer">New Job</button>
+                <button onclick="switchTab('debtList')" id="tabDebtList" class="flex-1 py-2 px-2 rounded-xl text-gray-600 transition cursor-pointer">Debts</button>
+                <button onclick="switchTab('history')" id="tabHistory" class="flex-1 py-2 px-2 rounded-xl text-gray-600 transition cursor-pointer">History</button>
+                <button onclick="switchTab('agentReport')" id="tabAgentReport" class="flex-1 py-2 px-2 rounded-xl text-gray-600 transition cursor-pointer">Report</button>
+                <button onclick="switchTab('admin')" id="tabAdmin" class="flex-1 py-2 px-2 rounded-xl text-gray-600 transition hidden cursor-pointer"><i class="fas fa-user-shield"></i> Admin</button>
             </div>
 
             <!-- TAB 1: NEW JOB -->
@@ -312,8 +312,18 @@
         ];
 
         window.addEventListener('DOMContentLoaded', () => {
-            sessionStorage.removeItem('amci_active_session');
-            logout();
+            const savedSession = localStorage.getItem('amci_active_session');
+            if (savedSession) {
+                try {
+                    currentAgent = JSON.parse(savedSession);
+                    launchApp();
+                } catch(e) {
+                    logout();
+                }
+            } else {
+                logout();
+            }
+
             const bioSetting = localStorage.getItem('amci_bio_enabled') !== 'false';
             const toggleEl = document.getElementById('biometricToggle');
             if (toggleEl) toggleEl.checked = bioSetting;
@@ -426,7 +436,7 @@
             const found = agents.find(a => a.code === code && a.pass === pass);
             if (found) {
                 currentAgent = { ...found, role: 'agent' };
-                sessionStorage.setItem('amci_active_session', JSON.stringify(currentAgent));
+                localStorage.setItem('amci_active_session', JSON.stringify(currentAgent));
                 showToast('Welcome back, ' + found.name + '!', 'success');
                 launchApp();
             } else {
@@ -440,7 +450,7 @@
             const pass = document.getElementById('loginAdminPassword').value.trim();
             if (pass === getAdminPassword()) {
                 currentAgent = { code: 'ADMIN', name: 'System Owner', role: 'admin' };
-                sessionStorage.setItem('amci_active_session', JSON.stringify(currentAgent));
+                localStorage.setItem('amci_active_session', JSON.stringify(currentAgent));
                 showToast('Welcome Admin!', 'success');
                 launchApp();
             } else {
@@ -455,17 +465,46 @@
         }
 
         async function loginWithBiometrics(type) {
-            if (type === 'admin') {
-                currentAgent = { code: 'ADMIN', name: 'System Owner', role: 'admin' };
-            } else {
-                const codeInput = document.getElementById('loginAgentCode').value.trim().toUpperCase();
-                const agents = getAgents();
-                let found = agents.find(a => a.code === codeInput) || agents[0];
-                currentAgent = { ...found, role: 'agent' };
+            const bioEnabled = localStorage.getItem('amci_bio_enabled') !== 'false';
+            if (!bioEnabled) { 
+                showToast('Thumbprint login is disabled by Admin.', 'error'); 
+                return; 
             }
-            sessionStorage.setItem('amci_active_session', JSON.stringify(currentAgent));
-            showToast('Thumbprint verified successfully!', 'success');
-            launchApp();
+
+            try {
+                if (window.PublicKeyCredential && PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
+                    const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+                    if (available) {
+                        const challenge = new Uint8Array(32);
+                        window.crypto.getRandomValues(challenge);
+                        await navigator.credentials.get({
+                            publicKey: {
+                                challenge: challenge,
+                                timeout: 60000,
+                                userVerification: "required"
+                            }
+                        });
+                    }
+                }
+
+                if (type === 'admin') {
+                    currentAgent = { code: 'ADMIN', name: 'System Owner', role: 'admin' };
+                } else {
+                    const codeInput = document.getElementById('loginAgentCode').value.trim().toUpperCase();
+                    const agents = getAgents();
+                    let found = agents.find(a => a.code === codeInput);
+                    if (!found) {
+                        showToast('Please enter a valid Agent Code first!', 'error');
+                        return;
+                    }
+                    currentAgent = { ...found, role: 'agent' };
+                }
+                localStorage.setItem('amci_active_session', JSON.stringify(currentAgent));
+                showToast('Thumbprint verified successfully!', 'success');
+                launchApp();
+            } catch (err) {
+                showToast('Thumbprint verification cancelled or failed.', 'error');
+            }
         }
 
         function launchApp() {
@@ -482,7 +521,7 @@
 
         function logout() {
             currentAgent = null;
-            sessionStorage.removeItem('amci_active_session');
+            localStorage.removeItem('amci_active_session');
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('appInterface').classList.add('hidden');
             document.getElementById('loginAgentPassword').value = '';
