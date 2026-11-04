@@ -30,24 +30,16 @@
             transform: translateY(0);
             opacity: 1;
         }
-        
-        /* PRINT STYLING FIX */
         @media print {
-            body * {
-                visibility: hidden !important;
-            }
+            body * { visibility: hidden !important; }
             #printableReportContent, #printableReportContent *, 
-            .print-receipt-container, .print-receipt-container * {
-                visibility: visible !important;
-            }
+            .print-receipt-container, .print-receipt-container * { visibility: visible !important; }
             #printableReportContent, .print-receipt-container {
                 position: absolute !important;
                 left: 0 !important;
                 top: 0 !important;
                 width: 100% !important;
                 background: white !important;
-                box-shadow: none !important;
-                border: none !important;
             }
         }
     </style>
@@ -348,8 +340,23 @@
             window.addEventListener('offline', updateOnlineStatus);
 
             await initSupabaseData();
-            sessionStorage.removeItem('amci_active_session');
-            logout();
+            
+            // Check existing session safely without forcing logout on load
+            const savedSession = sessionStorage.getItem('amci_active_session');
+            if (savedSession) {
+                try {
+                    currentAgent = JSON.parse(savedSession);
+                    if (currentAgent && currentAgent.code) {
+                        launchApp();
+                    } else {
+                        logout();
+                    }
+                } catch(e) {
+                    logout();
+                }
+            } else {
+                logout();
+            }
             populateAgentDropdowns();
         });
 
@@ -959,7 +966,7 @@
             });
         }
 
-        changeAdminPassword = function(e) {
+        function changeAdminPassword(e) {
             e.preventDefault();
             const oldEl = document.getElementById('oldAdminPass');
             const newEl = document.getElementById('newAdminPass');
