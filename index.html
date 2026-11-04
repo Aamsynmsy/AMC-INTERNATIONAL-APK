@@ -95,9 +95,6 @@
                     <input type="password" id="loginAgentPassword" placeholder="Enter Password" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900 text-center text-sm bg-gray-50">
                 </div>
                 <button type="submit" class="w-full brand-bg text-white font-bold py-3 rounded-xl shadow-lg hover:bg-blue-950 transition duration-200 text-sm cursor-pointer">LOGIN AS AGENT</button>
-                <button type="button" onclick="loginWithBiometrics('agent')" class="w-full bg-emerald-700 text-white font-bold py-2.5 rounded-xl shadow hover:bg-emerald-800 transition text-xs flex items-center justify-center gap-2 cursor-pointer">
-                    <i class="fas fa-fingerprint text-base"></i> AGENT THUMBPRINT LOGIN
-                </button>
             </form>
 
             <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="space-y-4 hidden">
@@ -108,9 +105,6 @@
                     <input type="password" id="loginAdminPassword" placeholder="Enter Admin Password" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-900 text-center text-sm bg-gray-50">
                 </div>
                 <button type="submit" class="w-full bg-red-800 text-white font-bold py-3 rounded-xl shadow-lg hover:bg-red-900 transition duration-200 text-sm cursor-pointer">LOGIN AS ADMIN</button>
-                <button type="button" onclick="loginWithBiometrics('admin')" class="w-full bg-red-700 text-white font-bold py-2.5 rounded-xl shadow hover:bg-red-800 transition text-xs flex items-center justify-center gap-2 cursor-pointer">
-                    <i class="fas fa-fingerprint text-base"></i> ADMIN THUMBPRINT LOGIN
-                </button>
             </form>
 
             <p id="loginError" class="text-red-500 text-xs mt-3 hidden font-semibold">Invalid Code or Password!</p>
@@ -159,6 +153,7 @@
                 </div>
             </div>
 
+            <!-- TABS (New Job, Debts, History, Report, Admin) -->
             <div class="flex flex-wrap gap-1 bg-white p-1.5 rounded-2xl shadow-md text-xs font-bold">
                 <button onclick="switchTab('newJob')" id="tabNewJob" class="flex-1 py-2 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer">New Job</button>
                 <button onclick="switchTab('debtList')" id="tabDebtList" class="flex-1 py-2 px-2 rounded-xl text-gray-600 transition cursor-pointer">Debts</button>
@@ -267,14 +262,6 @@
 
                 <div id="adminMainContentBlock" class="hidden space-y-4">
                     <div class="bg-white p-5 rounded-3xl shadow-md space-y-3 border-t-4 border-gold">
-                        <h2 class="font-bold text-blue-950 text-sm border-b pb-2">Security Settings</h2>
-                        <div class="flex items-center justify-between py-2 text-xs">
-                            <span class="font-semibold text-gray-700">Enable Thumbprint Login</span>
-                            <input type="checkbox" id="biometricToggle" onchange="toggleBiometricSetting(this)" class="w-5 h-5 accent-blue-900 cursor-pointer" checked>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-3xl shadow-md space-y-3 border-t-4 border-gold">
                         <h2 class="font-bold text-blue-950 text-sm border-b pb-2">Change Admin Password</h2>
                         <form onsubmit="changeAdminPassword(event)" class="space-y-2.5">
                             <input type="password" id="oldAdminPass" placeholder="Current Admin Password" required class="w-full px-3.5 py-2.5 border rounded-xl text-xs bg-gray-50">
@@ -311,7 +298,6 @@
         ];
 
         window.addEventListener('DOMContentLoaded', () => {
-            // YANZU MUNA AMFANI DA sessionStorage: Idan aka yi refresh ko aka fita, za a koma shafin login
             const savedSession = sessionStorage.getItem('amci_active_session');
             if (savedSession) {
                 try {
@@ -323,10 +309,6 @@
             } else {
                 logout();
             }
-
-            const bioSetting = localStorage.getItem('amci_bio_enabled') !== 'false';
-            const toggleEl = document.getElementById('biometricToggle');
-            if (toggleEl) toggleEl.checked = bioSetting;
             populateAgentDropdowns();
         });
 
@@ -456,42 +438,6 @@
             } else {
                 document.getElementById('loginError').classList.add('hidden');
                 showToast('Invalid Admin Password!', 'error');
-            }
-        }
-
-        function toggleBiometricSetting(el) {
-            localStorage.setItem('amci_bio_enabled', el.checked);
-            showToast(el.checked ? 'Thumbprint login enabled.' : 'Thumbprint login disabled.', 'info');
-        }
-
-        async function loginWithBiometrics(type) {
-            const bioEnabled = localStorage.getItem('amci_bio_enabled') !== 'false';
-            if (!bioEnabled) { 
-                showToast('Thumbprint login is disabled by Admin.', 'error'); 
-                return; 
-            }
-
-            try {
-                showToast('Scanning fingerprint/face...', 'info');
-                await new Promise(resolve => setTimeout(resolve, 1000));
-
-                if (type === 'admin') {
-                    currentAgent = { code: 'ADMIN', name: 'System Owner', role: 'admin' };
-                } else {
-                    const codeInput = document.getElementById('loginAgentCode').value.trim().toUpperCase();
-                    const agents = getAgents();
-                    let found = agents.find(a => a.code === codeInput);
-                    if (!found) {
-                        showToast('Please enter a valid Agent Code first!', 'error');
-                        return;
-                    }
-                    currentAgent = { ...found, role: 'agent' };
-                }
-                sessionStorage.setItem('amci_active_session', JSON.stringify(currentAgent));
-                showToast('Thumbprint verified successfully!', 'success');
-                launchApp();
-            } catch (err) {
-                showToast('Thumbprint verification cancelled or failed.', 'error');
             }
         }
 
