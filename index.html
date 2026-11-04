@@ -9,6 +9,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -29,18 +30,6 @@
         #toastBox.show {
             transform: translateY(0);
             opacity: 1;
-        }
-        @media print {
-            body * { visibility: hidden !important; }
-            #printableReportContent, #printableReportContent *, 
-            .print-receipt-container, .print-receipt-container * { visibility: visible !important; }
-            #printableReportContent, .print-receipt-container {
-                position: absolute !important;
-                left: 0 !important;
-                top: 0 !important;
-                width: 100% !important;
-                background: white !important;
-            }
         }
     </style>
 </head>
@@ -101,8 +90,8 @@
             <p class="text-[10px] text-gray-600 mb-6 font-bold tracking-tight">AA MASOYIN MASOYA COMM CENTER INT.</p>
             
             <div class="grid grid-cols-2 gap-1 border rounded-xl mb-6 overflow-hidden text-xs font-bold bg-gray-100 p-1 shadow-inner">
-                <button type="button" id="tabBtnAgent" onclick="switchLoginMode('agent')" class="py-2.5 rounded-lg brand-bg text-white transition cursor-pointer shadow-sm font-extrabold">AGENT LOGIN</button>
-                <button type="button" id="tabBtnAdmin" onclick="switchLoginMode('admin')" class="py-2.5 rounded-lg text-gray-700 transition cursor-pointer font-extrabold">ADMIN LOGIN</button>
+                <button type="button" id="tabBtnAgent" onclick="switchLoginMode('agent')" class="py-2.5 rounded-lg brand-bg text-white transition cursor-pointer shadow-sm">AGENT LOGIN</button>
+                <button type="button" id="tabBtnAdmin" onclick="switchLoginMode('admin')" class="py-2.5 rounded-lg text-gray-700 transition cursor-pointer">ADMIN LOGIN</button>
             </div>
 
             <form id="agentLoginForm" onsubmit="handleAgentLogin(event)" class="space-y-4">
@@ -265,7 +254,7 @@
                     </div>
                     <div class="flex gap-2.5 pt-2">
                         <button onclick="generateAgentReport()" class="flex-1 brand-bg text-white py-3 rounded-xl text-xs font-extrabold hover:bg-blue-950 transition cursor-pointer shadow">SEARCH REPORT</button>
-                        <button onclick="printAgentReport()" class="bg-emerald-700 text-white px-5 py-3 rounded-xl text-xs font-extrabold hover:bg-emerald-800 transition cursor-pointer shadow"><i class="fas fa-print"></i> Print Report</button>
+                        <button onclick="printAgentReport()" class="bg-emerald-700 text-white px-5 py-3 rounded-xl text-xs font-extrabold hover:bg-emerald-800 transition cursor-pointer shadow"><i class="fas fa-print"></i> Print</button>
                     </div>
                 </div>
                 <div id="agentReportResults" class="space-y-3"></div>
@@ -340,17 +329,11 @@
             window.addEventListener('offline', updateOnlineStatus);
 
             await initSupabaseData();
-            
-            // Check existing session safely without forcing logout on load
             const savedSession = sessionStorage.getItem('amci_active_session');
             if (savedSession) {
                 try {
                     currentAgent = JSON.parse(savedSession);
-                    if (currentAgent && currentAgent.code) {
-                        launchApp();
-                    } else {
-                        logout();
-                    }
+                    launchApp();
                 } catch(e) {
                     logout();
                 }
@@ -365,17 +348,18 @@
             const text = document.getElementById('networkText');
             if (navigator.onLine) {
                 banner.className = "fixed top-0 left-0 right-0 z-50 text-center py-1.5 text-xs font-black shadow-md bg-emerald-600 text-white transition-all";
-                text.innerText = "ONLINE - Connected";
+                text.innerText = "ONLINE - Connected to Cloud Database";
                 setTimeout(() => { banner.classList.add('hidden'); }, 3000);
             } else {
                 banner.classList.remove('hidden');
                 banner.className = "fixed top-0 left-0 right-0 z-50 text-center py-1.5 text-xs font-black shadow-md bg-red-600 text-white transition-all animate-pulse";
-                text.innerText = "OFFLINE - Working in offline mode";
+                text.innerText = "OFFLINE - No internet connection detected!";
             }
         }
 
         async function initSupabaseData() {
             if (!navigator.onLine) {
+                showToast('You are offline. Showing cached records if available.', 'error');
                 let cached = localStorage.getItem('amci_offline_records');
                 if (cached) globalRecords = JSON.parse(cached);
                 let cachedAg = localStorage.getItem('amci_offline_agents');
@@ -397,6 +381,7 @@
                 localStorage.setItem('amci_offline_agents', JSON.stringify(globalAgents));
                 await fetchRecordsFromCloud();
             } catch (err) {
+                console.error(err);
                 let cached = localStorage.getItem('amci_offline_records');
                 if (cached) globalRecords = JSON.parse(cached);
             }
@@ -469,7 +454,7 @@
 
         function getAdminPassword() { return localStorage.getItem('amci_admin_pass') || '4753'; }
         
-        function getAgents() { return globalAgents.length > 0 ? globalAgents : defaultAgents; }
+        function getAgents() { return globalAgents; }
         function getRecords() { return globalRecords; }
 
         async function saveRecordsToCloud(record) {
@@ -485,7 +470,7 @@
 
             const { error } = await supabaseClient.from('records').insert([record]);
             if (error) {
-                showCustomConfirm('Error Saving Record', 'Failed to upload transaction. Would you like to Try Again?', () => {
+                showCustomConfirm('Error Saving Record', 'Failed to upload transaction to cloud database. Would you like to Try Again?', () => {
                     saveRecordsToCloud(record);
                 });
                 return false;
@@ -526,7 +511,7 @@
 
             const { error } = await supabaseClient.from('records').delete().eq('id', id);
             if (error) {
-                showToast('Error deleting record!', 'error');
+                showToast('Error deleting from cloud!', 'error');
             } else {
                 await fetchRecordsFromCloud();
             }
@@ -551,13 +536,13 @@
             if (mode === 'agent') {
                 agentForm.classList.remove('hidden');
                 adminForm.classList.add('hidden');
-                btnAgent.className = 'py-2.5 rounded-lg brand-bg text-white transition cursor-pointer shadow-sm font-extrabold';
-                btnAdmin.className = 'py-2.5 rounded-lg text-gray-700 transition cursor-pointer font-extrabold';
+                btnAgent.className = 'py-2.5 rounded-lg brand-bg text-white transition cursor-pointer shadow-sm';
+                btnAdmin.className = 'py-2.5 rounded-lg text-gray-700 transition cursor-pointer';
             } else {
                 agentForm.classList.add('hidden');
                 adminForm.classList.remove('hidden');
-                btnAgent.className = 'py-2.5 rounded-lg text-gray-700 transition cursor-pointer font-extrabold';
-                btnAdmin.className = 'py-2.5 rounded-lg bg-red-800 text-white transition cursor-pointer shadow-sm font-extrabold';
+                btnAgent.className = 'py-2.5 rounded-lg text-gray-700 transition cursor-pointer';
+                btnAdmin.className = 'py-2.5 rounded-lg bg-red-800 text-white transition cursor-pointer shadow-sm';
             }
         }
 
@@ -587,27 +572,16 @@
                 showToast('Welcome Admin!', 'success');
                 launchApp();
             } else {
-                document.getElementById('loginError').classList.remove('hidden');
+                document.getElementById('loginError').classList.add('hidden');
                 showToast('Invalid Admin Password!', 'error');
             }
         }
 
         function launchApp() {
-            const loginScreen = document.getElementById('loginScreen');
-            const appInterface = document.getElementById('appInterface');
-            if (loginScreen) loginScreen.classList.add('hidden');
-            if (appInterface) appInterface.classList.remove('hidden');
-            
-            const badge = document.getElementById('activeAgentBadge');
-            if (badge && currentAgent) {
-                badge.innerText = currentAgent.code + " (" + currentAgent.name + ")";
-            }
-            
-            const tabAdmin = document.getElementById('tabAdmin');
-            if (tabAdmin && currentAgent) {
-                tabAdmin.classList.toggle('hidden', currentAgent.role !== 'admin');
-            }
-            
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('appInterface').classList.remove('hidden');
+            document.getElementById('activeAgentBadge').innerText = currentAgent.code + " (" + currentAgent.name + ")";
+            document.getElementById('tabAdmin').classList.toggle('hidden', currentAgent.role !== 'admin');
             switchTab('newJob');
             updateDashboard();
             renderHistory();
@@ -618,81 +592,55 @@
         function logout() {
             currentAgent = null;
             sessionStorage.removeItem('amci_active_session');
-            const loginScreen = document.getElementById('loginScreen');
-            const appInterface = document.getElementById('appInterface');
-            if (loginScreen) loginScreen.classList.remove('hidden');
-            if (appInterface) appInterface.classList.add('hidden');
-            
-            const agentPass = document.getElementById('loginAgentPassword');
-            const adminPass = document.getElementById('loginAdminPassword');
-            const agentCode = document.getElementById('loginAgentCode');
-            if (agentPass) agentPass.value = '';
-            if (adminPass) adminPass.value = '';
-            if (agentCode) agentCode.value = '';
-            
-            const lockBlock = document.getElementById('adminAuthLockBlock');
-            const mainBlock = document.getElementById('adminMainContentBlock');
-            if (lockBlock) lockBlock.classList.remove('hidden');
-            if (mainBlock) mainBlock.classList.add('hidden');
-            
-            switchLoginMode('agent');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('appInterface').classList.add('hidden');
+            document.getElementById('loginAgentPassword').value = '';
+            document.getElementById('loginAdminPassword').value = '';
+            document.getElementById('loginAgentCode').value = '';
+            document.getElementById('adminAuthLockBlock').classList.remove('hidden');
+            document.getElementById('adminMainContentBlock').classList.add('hidden');
+            showToast('Logged out successfully.', 'info');
         }
 
         function switchTab(tabName) {
             ['secNewJob', 'secDebtList', 'secHistory', 'secAgentReport', 'secAdmin'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.add('hidden');
+                document.getElementById(id).classList.add('hidden');
             });
             ['tabNewJob', 'tabDebtList', 'tabHistory', 'tabAgentReport', 'tabAdmin'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el) el.className = "flex-1 py-2.5 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer text-center font-bold";
+                el.className = "flex-1 py-2.5 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer text-center font-bold";
             });
 
             if(tabName === 'newJob') {
-                const sec = document.getElementById('secNewJob');
-                const tab = document.getElementById('tabNewJob');
-                if (sec) sec.classList.remove('hidden');
-                if (tab) tab.className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
+                document.getElementById('secNewJob').classList.remove('hidden');
+                document.getElementById('tabNewJob').className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
             } else if(tabName === 'debtList') {
-                const sec = document.getElementById('secDebtList');
-                const tab = document.getElementById('tabDebtList');
-                if (sec) sec.classList.remove('hidden');
-                if (tab) tab.className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
+                document.getElementById('secDebtList').classList.remove('hidden');
+                document.getElementById('tabDebtList').className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
                 renderDebts();
             } else if(tabName === 'history') {
-                const sec = document.getElementById('secHistory');
-                const tab = document.getElementById('tabHistory');
-                if (sec) sec.classList.remove('hidden');
-                if (tab) tab.className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
+                document.getElementById('secHistory').classList.remove('hidden');
+                document.getElementById('tabHistory').className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
                 renderHistory();
             } else if(tabName === 'agentReport') {
-                const sec = document.getElementById('secAgentReport');
-                const tab = document.getElementById('tabAgentReport');
-                if (sec) sec.classList.remove('hidden');
-                if (tab) tab.className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
+                document.getElementById('secAgentReport').classList.remove('hidden');
+                document.getElementById('tabAgentReport').className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
                 generateAgentReport();
             } else if(tabName === 'admin') {
-                const sec = document.getElementById('secAdmin');
-                const tab = document.getElementById('tabAdmin');
-                if (sec) sec.classList.remove('hidden');
-                if (tab) tab.className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
+                document.getElementById('secAdmin').classList.remove('hidden');
+                document.getElementById('tabAdmin').className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
                 if(currentAgent && currentAgent.role === 'admin') {
-                    const lockBlock = document.getElementById('adminAuthLockBlock');
-                    const mainBlock = document.getElementById('adminMainContentBlock');
-                    if (lockBlock) lockBlock.classList.add('hidden');
-                    if (mainBlock) mainBlock.classList.remove('hidden');
+                    document.getElementById('adminAuthLockBlock').classList.add('hidden');
+                    document.getElementById('adminMainContentBlock').classList.remove('hidden');
                     renderAdminAgents();
                 }
             }
         }
 
         function verifyTabAdmin() {
-            const passInput = document.getElementById('tabAdminPassInput');
-            if (passInput && passInput.value === getAdminPassword()) {
-                const lockBlock = document.getElementById('adminAuthLockBlock');
-                const mainBlock = document.getElementById('adminMainContentBlock');
-                if (lockBlock) lockBlock.classList.add('hidden');
-                if (mainBlock) mainBlock.classList.remove('hidden');
+            if (document.getElementById('tabAdminPassInput').value === getAdminPassword()) {
+                document.getElementById('adminAuthLockBlock').classList.add('hidden');
+                document.getElementById('adminMainContentBlock').classList.remove('hidden');
                 renderAdminAgents();
                 showToast('Admin access granted.', 'success');
             } else {
@@ -701,18 +649,15 @@
         }
 
         function calcDebt() {
-            const billInput = document.getElementById('totalBill');
-            const paidInput = document.getElementById('amountPaid');
-            const bill = billInput ? parseFloat(billInput.value) || 0 : 0;
-            const paid = paidInput ? parseFloat(paidInput.value) || 0 : 0;
+            const bill = parseFloat(document.getElementById('totalBill').value) || 0;
+            const paid = parseFloat(document.getElementById('amountPaid').value) || 0;
             const diff = bill - paid;
             const notice = document.getElementById('debtNotice');
-            const calcSpan = document.getElementById('calculatedDebt');
             if (diff > 0) {
-                if (notice) notice.classList.remove('hidden');
-                if (calcSpan) calcSpan.innerText = diff.toLocaleString();
+                notice.classList.remove('hidden');
+                document.getElementById('calculatedDebt').innerText = diff.toLocaleString();
             } else {
-                if (notice) notice.classList.add('hidden');
+                notice.classList.add('hidden');
             }
         }
 
@@ -747,10 +692,8 @@
             let success = await saveRecordsToCloud(record);
             if (success) {
                 showToast('Record saved successfully!', 'success');
-                const form = document.getElementById('jobForm');
-                const notice = document.getElementById('debtNotice');
-                if (form) form.reset();
-                if (notice) notice.classList.add('hidden');
+                document.getElementById('jobForm').reset();
+                document.getElementById('debtNotice').classList.add('hidden');
             }
         }
 
@@ -763,21 +706,15 @@
                 totalCom += (r.agent_commission || 0);
                 totalD += r.debt_balance;
             });
-            const revEl = document.getElementById('totalRevenue');
-            const paidEl = document.getElementById('totalPaid');
-            const comEl = document.getElementById('totalCommissions');
-            const debtEl = document.getElementById('totalDebt');
-            if (revEl) revEl.innerText = '₦' + totalRev.toLocaleString();
-            if (paidEl) paidEl.innerText = '₦' + totalP.toLocaleString();
-            if (comEl) comEl.innerText = '₦' + totalCom.toLocaleString();
-            if (debtEl) debtEl.innerText = '₦' + totalD.toLocaleString();
+            document.getElementById('totalRevenue').innerText = '₦' + totalRev.toLocaleString();
+            document.getElementById('totalPaid').innerText = '₦' + totalP.toLocaleString();
+            document.getElementById('totalCommissions').innerText = '₦' + totalCom.toLocaleString();
+            document.getElementById('totalDebt').innerText = '₦' + totalD.toLocaleString();
         }
 
         function renderDebts() {
-            const searchInput = document.getElementById('searchDebt');
-            const query = searchInput ? searchInput.value.toLowerCase() : '';
+            const query = document.getElementById('searchDebt').value.toLowerCase();
             const container = document.getElementById('debtContainer');
-            if (!container) return;
             container.innerHTML = '';
             const debts = getRecords().filter(r => r.debt_balance > 0 && (r.full_name.toLowerCase().includes(query) || r.phone.toLowerCase().includes(query)));
 
@@ -808,10 +745,8 @@
         }
 
         function renderHistory() {
-            const searchInput = document.getElementById('searchHistory');
-            const query = searchInput ? searchInput.value.toLowerCase() : '';
+            const query = document.getElementById('searchHistory').value.toLowerCase();
             const container = document.getElementById('historyContainer');
-            if (!container) return;
             container.innerHTML = '';
             const filtered = getRecords().filter(r => r.full_name.toLowerCase().includes(query) || r.phone.toLowerCase().includes(query) || r.description.toLowerCase().includes(query));
 
@@ -821,7 +756,7 @@
             }
             filtered.forEach(r => {
                 let delBtn = currentAgent && currentAgent.role === 'admin' ? '<button onclick="deleteRecord(' + r.id + ')" class="bg-red-700 text-white text-[10px] px-3.5 py-1.5 rounded-xl font-extrabold cursor-pointer hover:bg-red-800 transition shadow"><i class="fas fa-trash"></i> Delete</button>' : '';
-                container.innerHTML += '<div class="bg-white p-4.5 rounded-2xl shadow-sm text-xs space-y-2.5 border border-gray-100"><div class="flex justify-between font-extrabold text-gray-900 border-b pb-1.5 text-sm"><span>' + r.full_name + ' (' + r.phone + ')</span><span class="text-blue-900 font-black">₦' + r.total_bill.toLocaleString() + '</span></div><div class="text-gray-700 space-y-1 bg-gray-50 p-3 rounded-xl border border-gray-100 font-semibold"><p><strong>Desc:</strong> ' + r.description + '</p><p><strong>Paid:</strong> <span class="text-green-700 font-black">₦' + r.amount_paid.toLocaleString() + '</span></p><p><strong>Debt:</strong> <span class="text-red-600 font-black">₦' + r.debt_balance.toLocaleString() + '</span></p></div><div class="flex justify-between items-center text-[10px] text-gray-500 font-bold pt-1 border-t"><span>Date: ' + r.date_str + ' | Agent: ' + r.agent_code + '</span><div class="flex gap-2"><button onclick=\'downloadPDF(' + JSON.stringify(r) + ')\' class="brand-bg text-gold px-3.5 py-1.5 rounded-xl font-bold cursor-pointer shadow hover:opacity-95 transition"><i class="fas fa-file-invoice"></i> Receipt</button>' + delBtn + '</div></div></div>';
+                container.innerHTML += '<div class="bg-white p-4.5 rounded-2xl shadow-sm text-xs space-y-2.5 border border-gray-100"><div class="flex justify-between font-extrabold text-gray-900 border-b pb-1.5 text-sm"><span>' + r.full_name + ' (' + r.phone + ')</span><span class="text-blue-900 font-black">₦' + r.total_bill.toLocaleString() + '</span></div><div class="text-gray-700 space-y-1 bg-gray-50 p-3 rounded-xl border border-gray-100 font-semibold"><p><strong>Desc:</strong> ' + r.description + '</p><p><strong>Paid:</strong> <span class="text-green-700 font-black">₦' + r.amount_paid.toLocaleString() + '</span></p><p><strong>Debt:</strong> <span class="text-red-600 font-black">₦' + r.debt_balance.toLocaleString() + '</span></p></div><div class="flex justify-between items-center text-[10px] text-gray-500 font-bold pt-1 border-t"><span>Date: ' + r.date_str + ' | Agent: ' + r.agent_code + '</span><div class="flex gap-2"><button onclick=\'downloadPDF(' + JSON.stringify(r) + ')\' class="brand-bg text-gold px-3.5 py-1.5 rounded-xl font-bold cursor-pointer shadow hover:opacity-95 transition"><i class="fas fa-file-pdf"></i> Receipt</button>' + delBtn + '</div></div></div>';
             });
         }
 
@@ -835,14 +770,10 @@
         }
 
         function generateAgentReport() {
-            const codeEl = document.getElementById('reportAgentCode');
-            const startEl = document.getElementById('reportStartDate');
-            const endEl = document.getElementById('reportEndDate');
-            const code = codeEl ? codeEl.value : '';
-            const startDate = startEl ? startEl.value : '';
-            const endDate = endEl ? endEl.value : '';
+            const code = document.getElementById('reportAgentCode').value;
+            const startDate = document.getElementById('reportStartDate').value;
+            const endDate = document.getElementById('reportEndDate').value;
             const container = document.getElementById('agentReportResults');
-            if (!container) return;
             container.innerHTML = '';
 
             const filtered = getRecords().filter(r => (!code || r.agent_code === code) && (!startDate || r.raw_date >= startDate) && (!endDate || r.raw_date <= endDate));
@@ -854,60 +785,20 @@
             let totalRev = 0, totalCom = 0, totalColl = 0, totalDebt = 0;
             filtered.forEach(r => { totalRev += r.total_bill; totalColl += r.amount_paid; totalCom += (r.agent_commission || 0); totalDebt += r.debt_balance; });
 
-            let listHTML = '<div id="printableReportContent" class="bg-white p-6 rounded-3xl shadow-md space-y-3.5 border-t-4 border-gold"><div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center border-b pb-3.5"><div class="bg-blue-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Total Work</p><p class="text-xs font-black text-blue-950 mt-0.5">₦' + totalRev.toLocaleString() + '</p></div><div class="bg-green-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Collected</p><p class="text-xs font-black text-green-700 mt-0.5">₦' + totalColl.toLocaleString() + '</p></div><div class="bg-amber-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Commission</p><p class="text-xs font-black text-amber-700 mt-0.5">₦' + totalCom.toLocaleString() + '</p></div><div class="bg-red-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Total Debt</p><p class="text-xs font-black text-red-600 mt-0.5">₦' + totalDebt.toLocaleString() + '</p></div></div><div class="space-y-2">';
+            let listHTML = '<div class="bg-white p-6 rounded-3xl shadow-md space-y-3.5 border-t-4 border-gold"><div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center border-b pb-3.5"><div class="bg-blue-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Total Work</p><p class="text-xs font-black text-blue-950 mt-0.5">₦' + totalRev.toLocaleString() + '</p></div><div class="bg-green-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Collected</p><p class="text-xs font-black text-green-700 mt-0.5">₦' + totalColl.toLocaleString() + '</p></div><div class="bg-amber-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Commission</p><p class="text-xs font-black text-amber-700 mt-0.5">₦' + totalCom.toLocaleString() + '</p></div><div class="bg-red-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Total Debt</p><p class="text-xs font-black text-red-600 mt-0.5">₦' + totalDebt.toLocaleString() + '</p></div></div><div class="space-y-2">';
             filtered.forEach(r => { listHTML += '<div class="bg-gray-50 p-3.5 rounded-xl border text-xs flex justify-between items-center font-semibold"><div><p class="font-extrabold text-gray-900">' + r.full_name + ' <span class="text-blue-900">[' + r.agent_code + ']</span></p><p class="text-[10px] text-gray-600">' + r.description + '</p></div><div class="text-right"><p class="font-black text-blue-950">₦' + r.total_bill.toLocaleString() + '</p></div></div>'; });
             container.innerHTML = listHTML + '</div></div>';
         }
 
         function printAgentReport() {
-            const reportEl = document.getElementById('printableReportContent');
-            if (!reportEl) {
-                showToast('Please search and generate a report first!', 'error');
-                return;
-            }
-            window.print();
+            const printWin = window.open('', '_blank');
+            printWin.document.write('<html><head><title>Report</title><style>body{font-family:Arial,sans-serif;padding:30px;text-align:center;color:#0d2040;} .logo{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg, #0d2040, #1e3a8a);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 10px;border:2px solid #d4af37;box-shadow:0 4px 10px rgba(0,0,0,0.1);} h2{margin:5px 0 0;font-size:18px;color:#0d2040;} p.sub{font-size:10px;color:#666;margin-bottom:25px;letter-spacing:1px;}</style></head><body><div class="logo"><span style="font-weight:900;font-size:15px;line-height:1;">AMC</span><span style="color:#d4af37;font-size:7px;margin-top:2px;font-weight:bold;">INT\'L</span></div><h2>AMC INTERNATIONAL</h2><p class="sub">AA MASOYIN MASOYA COMM CENTER INT.</p>' + document.getElementById('agentReportResults').innerHTML + '<script>window.onload=function(){window.print();}<\/script></body></html>');
+            printWin.document.close();
         }
 
         function downloadPDF(r) {
             const w = window.open('', '_blank');
-            w.document.write(`
-                <html>
-                <head>
-                    <title>Official Receipt - AMC International</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 25px; max-width: 400px; margin: auto; border: 2px solid #0d2040; border-radius: 20px; text-align: center; background: #fff; color: #0d2040; }
-                        .logo { width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, #0d2040, #1e3a8a); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 10px; border: 2px solid #d4af37; box-shadow: 0 4px 10px rgba(212,175,55,0.3); }
-                        h2 { margin: 5px 0 0; color: #0d2040; font-size: 18px; font-weight: 900; }
-                        p.sub { font-size: 9px; color: #555; margin-bottom: 15px; font-weight: 700; letter-spacing: 0.8px; }
-                        .details { text-align: left; margin-top: 10px; font-size: 11px; border-top: 2px dashed #0d2040; padding-top: 12px; line-height: 1.7; }
-                        .details p { display: flex; justify-content: space-between; margin: 6px 0; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; }
-                        .details strong { color: #1e293b; width: 110px; display: inline-block; font-weight: 800; }
-                        .footer { font-size: 9px; color: #64748b; margin-top: 20px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 10px; font-weight: bold; }
-                    </style>
-                </head>
-                <body>
-                    <div class="logo">
-                        <span style="font-weight:900; font-size:15px; line-height:1;">AMC</span>
-                        <span style="color:#d4af37; font-size:7px; margin-top:2px; font-weight:bold;">INT'L</span>
-                    </div>
-                    <h2>AMC INTERNATIONAL</h2>
-                    <p class="sub">AA MASOYIN MASOYA COMM CENTER INT.</p>
-                    <div class="details">
-                        <p><strong>Customer Name:</strong> <span>${r.full_name}</span></p>
-                        <p><strong>Phone Number:</strong> <span>${r.phone}</span></p>
-                        <p><strong>Description:</strong> <span>${r.description}</span></p>
-                        <p><strong>Total Bill:</strong> <span style="font-weight:900;color:#1e3a8a;">₦${r.total_bill.toLocaleString()}</span></p>
-                        <p><strong>Amount Paid:</strong> <span style="font-weight:900;color:#15803d;">₦${r.amount_paid.toLocaleString()}</span></p>
-                        <p><strong>Debt Balance:</strong> <span style="font-weight:900;color:#dc2626;">₦${r.debt_balance.toLocaleString()}</span></p>
-                    </div>
-                    <div class="footer">
-                        <span>Date: ${r.date_str} | Agent Code: ${r.agent_code}</span>
-                        <p style="margin-top: 4px; color: #0d2040; font-size: 9px;">Thank you for your patronage!</p>
-                    </div>
-                    <script>window.onload = function() { window.print(); window.close(); }</script>
-                </body>
-                </html>
-            `);
+            w.document.write('<html><head><title>Receipt</title><style>body{font-family:Arial,sans-serif;padding:30px;max-width:420px;margin:auto;border:1px solid #e5e7eb;border-radius:20px;text-align:center;box-shadow:0 10px 25px rgba(0,0,0,0.05);background:#fff;} .logo{width:75px;height:75px;border-radius:50%;background:linear-gradient(135deg, #0d2040, #1e3a8a);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 12px;border:2px solid #d4af37;box-shadow:0 4px 10px rgba(212,175,55,0.3);} h2{margin:5px 0 0;color:#0d2040;font-size:18px;font-weight:800;} p.sub{font-size:9px;color:#666;margin-bottom:20px;font-weight:600;letter-spacing:0.5px;} .details{text-align:left;margin-top:15px;font-size:12px;border-top:2px dashed #e5e7eb;padding-top:15px;line-height:1.8;} .details p{display:flex;justify-content:between;margin:6px 0;border-bottom:1px solid #f9fafb;padding-bottom:4px;} .details strong{color:#374151;width:110px;display:inline-block;}</style></head><body><div class="logo"><span style="font-weight:900;font-size:16px;line-height:1;">AMC</span><span style="color:#d4af37;font-size:7px;margin-top:2px;font-weight:bold;">INT\'L</span></div><h2>AMC INTERNATIONAL</h2><p class="sub">AA MASOYIN MASOYA COMM CENTER INT.</p><div class="details"><p><strong>Customer:</strong> <span>' + r.full_name + '</span></p><p><strong>Phone:</strong> <span>' + r.phone + '</span></p><p><strong>Desc:</strong> <span>' + r.description + '</span></p><p><strong>Total:</strong> <span style="font-weight:bold;color:#1e3a8a;">₦' + r.total_bill.toLocaleString() + '</span></p><p><strong>Paid:</strong> <span style="font-weight:bold;color:#15803d;">₦' + r.amount_paid.toLocaleString() + '</span></p><p><strong>Debt:</strong> <span style="font-weight:bold;color:#dc2626;">₦' + r.debt_balance.toLocaleString() + '</span></p><p style="font-size:10px;color:#9ca3af;margin-top:20px;text-align:center;border-top:1px solid #f3f4f6;padding-top:10px;display:block;">Date: ' + r.date_str + ' | Agent: ' + r.agent_code + '</p></div><script>window.onload=function(){window.print();}<\/script></body></html>');
             w.document.close();
         }
 
@@ -922,15 +813,12 @@
 
         async function addAgent(e) {
             e.preventDefault();
-            const codeEl = document.getElementById('newAgentCode');
-            const nameEl = document.getElementById('newAgentName');
-            const passEl = document.getElementById('newAgentPass');
-            const code = codeEl ? codeEl.value.trim().toUpperCase() : '';
-            const name = nameEl ? nameEl.value.trim().toUpperCase() : '';
-            const pass = passEl ? passEl.value.trim() : '';
+            const code = document.getElementById('newAgentCode').value.trim().toUpperCase();
+            const name = document.getElementById('newAgentName').value.trim().toUpperCase();
+            const pass = document.getElementById('newAgentPass').value.trim();
             
             if (!navigator.onLine) {
-                showToast('No internet! Cannot add agent right now.', 'error');
+                showToast('No internet! Cannot add agent to cloud right now.', 'error');
                 return;
             }
 
@@ -968,10 +856,8 @@
 
         function changeAdminPassword(e) {
             e.preventDefault();
-            const oldEl = document.getElementById('oldAdminPass');
-            const newEl = document.getElementById('newAdminPass');
-            const oldP = oldEl ? oldEl.value.trim() : '';
-            const newP = newEl ? newEl.value.trim() : '';
+            const oldP = document.getElementById('oldAdminPass').value.trim();
+            const newP = document.getElementById('newAdminPass').value.trim();
             if (oldP === getAdminPassword()) {
                 localStorage.setItem('amci_admin_pass', newP);
                 showToast('Admin password updated successfully!', 'success');
@@ -983,10 +869,8 @@
 
         async function adminChangeAgentPassword(e) {
             e.preventDefault();
-            const codeEl = document.getElementById('targetAgentCode');
-            const passEl = document.getElementById('newAgentPassInput');
-            const code = codeEl ? codeEl.value.trim().toUpperCase() : '';
-            const newPass = passEl ? passEl.value.trim() : '';
+            const code = document.getElementById('targetAgentCode').value.trim().toUpperCase();
+            const newPass = document.getElementById('newAgentPassInput').value.trim();
             
             if (!navigator.onLine) {
                 showToast('No internet connection!', 'error');
