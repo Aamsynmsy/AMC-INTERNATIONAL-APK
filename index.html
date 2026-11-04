@@ -166,7 +166,6 @@
                 <button onclick="switchTab('debtList')" id="tabDebtList" class="flex-1 py-2.5 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer text-center">Debts</button>
                 <button onclick="switchTab('history')" id="tabHistory" class="flex-1 py-2.5 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer text-center">History</button>
                 <button onclick="switchTab('agentReport')" id="tabAgentReport" class="flex-1 py-2.5 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer text-center">Report</button>
-                <!-- Admin Tab Button removed from agent view and dynamically managed if Admin logs in -->
                 <button onclick="switchTab('admin')" id="tabAdmin" class="flex-1 py-2.5 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition hidden cursor-pointer text-center"><i class="fas fa-user-shield"></i> Admin</button>
             </div>
 
@@ -610,7 +609,6 @@
             document.getElementById('appInterface').classList.remove('hidden');
             document.getElementById('activeAgentBadge').innerText = currentAgent.code + " (" + currentAgent.name + ")";
             
-            // Toggle Admin tab visibility based on role
             const tabAdmin = document.getElementById('tabAdmin');
             if (currentAgent.role === 'admin') {
                 tabAdmin.classList.remove('hidden');
@@ -639,7 +637,6 @@
         }
 
         function switchTab(tabName) {
-            // Prevent agent from accessing admin section even if triggered programmatically
             if (tabName === 'admin' && (!currentAgent || currentAgent.role !== 'admin')) {
                 return;
             }
@@ -648,7 +645,6 @@
                 document.getElementById(id).classList.add('hidden');
             });
             
-            // Rebuild tab buttons classes dynamically depending on role
             const tabs = ['tabNewJob', 'tabDebtList', 'tabHistory', 'tabAgentReport'];
             if (currentAgent && currentAgent.role === 'admin') {
                 tabs.push('tabAdmin');
@@ -851,13 +847,13 @@
 
         function printAgentReport() {
             const printWin = window.open('', '_blank');
-            printWin.document.write('<html><head><title>Report</title><style>body{font-family:Arial,sans-serif;padding:30px;text-align:center;color:#0d2040;} .logo{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg, #0d2040, #1e3a8a);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 10px;border:2px solid #d4af37;box-shadow:0 4px 10px rgba(0,0,0,0.1);} h2{margin:5px 0 0;font-size:18px;color:#0d2040;} p.sub{font-size:10px;color:#666;margin-bottom:25px;letter-spacing:1px;}</style></head><body><div class="logo"><span style="font-weight:900;font-size:15px;line-height:1;">AMC</span><span style="color:#d4af37;font-size:7px;margin-top:2px;font-weight:bold;">INT\'L</span></div><h2>AMC INTERNATIONAL</h2><p class="sub">AA MASOYIN MASOYA COMM CENTER INT.</p>' + document.getElementById('agentReportResults').innerHTML + '<script>window.onload=function(){window.print();}<\/script></body></html>');
+            printWin.document.write('<html><head><title>Report</title><style>body{font-family:Arial,sans-serif;padding:30px;text-align:center;color:#0d2040;} .logo{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg, #0d2040, #1e3a8a);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 10px;border:2px solid #d4af37;box-shadow:0 4px 10px rgba(0,0,0,0.1);} h2{margin:5px 0 0;font-size:18px;color:#0d2040;} p.sub{font-size:10px;color:#666;margin-bottom:5px;letter-spacing:1px;} p.addr{font-size:9px;color:#444;margin-bottom:20px;font-weight:600;}</style></head><body><div class="logo"><span style="font-weight:900;font-size:15px;line-height:1;">AMC</span><span style="color:#d4af37;font-size:7px;margin-top:2px;font-weight:bold;">INT\'L</span></div><h2>AMC INTERNATIONAL</h2><p class="sub">AA MASOYIN MASOYA COMM CENTER INT.</p><p class="addr">Address: Daza Area, Gusau International Airport Road<br>Phone: 07067685741, 09123856060</p>' + document.getElementById('agentReportResults').innerHTML + '<script>window.onload=function(){window.print();}<\/script></body></html>');
             printWin.document.close();
         }
 
         function downloadPDF(r) {
             const w = window.open('', '_blank');
-            w.document.write('<html><head><title>Receipt</title><style>body{font-family:Arial,sans-serif;padding:30px;max-width:420px;margin:auto;border:1px solid #e5e7eb;border-radius:20px;text-align:center;box-shadow:0 10px 25px rgba(0,0,0,0.05);background:#fff;} .logo{width:75px;height:75px;border-radius:50%;background:linear-gradient(135deg, #0d2040, #1e3a8a);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 12px;border:2px solid #d4af37;box-shadow:0 4px 10px rgba(212,175,55,0.3);} h2{margin:5px 0 0;color:#0d2040;font-size:18px;font-weight:800;} p.sub{font-size:9px;color:#666;margin-bottom:20px;font-weight:600;letter-spacing:0.5px;} .details{text-align:left;margin-top:15px;font-size:12px;border-top:2px dashed #e5e7eb;padding-top:15px;line-height:1.8;} .details p{display:flex;justify-content:between;margin:6px 0;border-bottom:1px solid #f9fafb;padding-bottom:4px;} .details strong{color:#374151;width:110px;display:inline-block;}</style></head><body><div class="logo"><span style="font-weight:900;font-size:16px;line-height:1;">AMC</span><span style="color:#d4af37;font-size:7px;margin-top:2px;font-weight:bold;">INT\'L</span></div><h2>AMC INTERNATIONAL</h2><p class="sub">AA MASOYIN MASOYA COMM CENTER INT.</p><div class="details"><p><strong>Customer:</strong> <span>' + r.full_name + '</span></p><p><strong>Phone:</strong> <span>' + r.phone + '</span></p><p><strong>Description:</strong> <span>' + r.description + '</span></p><p><strong>Total:</strong> <span style="font-weight:bold;color:#1e3a8a;">₦' + r.total_bill.toLocaleString() + '</span></p><p><strong>Paid:</strong> <span style="font-weight:bold;color:#15803d;">₦' + r.amount_paid.toLocaleString() + '</span></p><p><strong>Debt:</strong> <span style="font-weight:bold;color:#dc2626;">₦' + r.debt_balance.toLocaleString() + '</span></p><p style="font-size:10px;color:#9ca3af;margin-top:20px;text-align:center;border-top:1px solid #f3f4f6;padding-top:10px;display:block;">Date: ' + r.date_str + ' | Agent: ' + r.agent_code + '</p></div><script>window.onload=function(){window.print();}<\/script></body></html>');
+            w.document.write('<html><head><title>Receipt</title><style>body{font-family:Arial,sans-serif;padding:30px;max-width:420px;margin:auto;border:1px solid #e5e7eb;border-radius:20px;text-align:center;box-shadow:0 10px 25px rgba(0,0,0,0.05);background:#fff;} .logo{width:75px;height:75px;border-radius:50%;background:linear-gradient(135deg, #0d2040, #1e3a8a);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 12px;border:2px solid #d4af37;box-shadow:0 4px 10px rgba(212,175,55,0.3);} h2{margin:5px 0 0;color:#0d2040;font-size:18px;font-weight:800;} p.sub{font-size:9px;color:#666;margin-bottom:5px;font-weight:600;letter-spacing:0.5px;} p.addr{font-size:8px;color:#555;margin-bottom:15px;line-height:1.4;} .details{text-align:left;margin-top:15px;font-size:12px;border-top:2px dashed #e5e7eb;padding-top:15px;line-height:1.8;} .details p{display:flex;justify-content:between;margin:6px 0;border-bottom:1px solid #f9fafb;padding-bottom:4px;} .details strong{color:#374151;width:110px;display:inline-block;}</style></head><body><div class="logo"><span style="font-weight:900;font-size:16px;line-height:1;">AMC</span><span style="color:#d4af37;font-size:7px;margin-top:2px;font-weight:bold;">INT\'L</span></div><h2>AMC INTERNATIONAL</h2><p class="sub">AA MASOYIN MASOYA COMM CENTER INT.</p><p class="addr">Address: Daza Area, Gusau International Airport Road<br>Phone: 07067685741, 09123856060</p><div class="details"><p><strong>Customer:</strong> <span>' + r.full_name + '</span></p><p><strong>Phone:</strong> <span>' + r.phone + '</span></p><p><strong>Description:</strong> <span>' + r.description + '</span></p><p><strong>Total:</strong> <span style="font-weight:bold;color:#1e3a8a;">₦' + r.total_bill.toLocaleString() + '</span></p><p><strong>Paid:</strong> <span style="font-weight:bold;color:#15803d;">₦' + r.amount_paid.toLocaleString() + '</span></p><p><strong>Debt:</strong> <span style="font-weight:bold;color:#dc2626;">₦' + r.debt_balance.toLocaleString() + '</span></p><p style="font-size:10px;color:#9ca3af;margin-top:20px;text-align:center;border-top:1px solid #f3f4f6;padding-top:10px;display:block;">Date: ' + r.date_str + ' | Agent: ' + r.agent_code + '</p></div><script>window.onload=function(){window.print();}<\/script></body></html>');
             w.document.close();
         }
 
