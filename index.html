@@ -784,49 +784,52 @@
             let totalRev = 0, totalCom = 0, totalColl = 0, totalDebt = 0;
             filtered.forEach(r => { totalRev += r.total_bill; totalColl += r.amount_paid; totalCom += (r.agent_commission || 0); totalDebt += r.debt_balance; });
 
-            let listHTML = '<div class="bg-white p-6 rounded-3xl shadow-md space-y-3.5 border-t-4 border-gold"><div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center border-b pb-3.5"><div class="bg-blue-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Total Work</p><p class="text-xs font-black text-blue-950 mt-0.5">₦' + totalRev.toLocaleString() + '</p></div><div class="bg-green-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Collected</p><p class="text-xs font-black text-green-700 mt-0.5">₦' + totalColl.toLocaleString() + '</p></div><div class="bg-amber-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Commission</p><p class="text-xs font-black text-amber-700 mt-0.5">₦' + totalCom.toLocaleString() + '</p></div><div class="bg-red-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Total Debt</p><p class="text-xs font-black text-red-600 mt-0.5">₦' + totalDebt.toLocaleString() + '</p></div></div><div class="space-y-2">';
+            let listHTML = '<div id="printableReportContent" class="bg-white p-6 rounded-3xl shadow-md space-y-3.5 border-t-4 border-gold"><div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center border-b pb-3.5"><div class="bg-blue-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Total Work</p><p class="text-xs font-black text-blue-950 mt-0.5">₦' + totalRev.toLocaleString() + '</p></div><div class="bg-green-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Collected</p><p class="text-xs font-black text-green-700 mt-0.5">₦' + totalColl.toLocaleString() + '</p></div><div class="bg-amber-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Commission</p><p class="text-xs font-black text-amber-700 mt-0.5">₦' + totalCom.toLocaleString() + '</p></div><div class="bg-red-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Total Debt</p><p class="text-xs font-black text-red-600 mt-0.5">₦' + totalDebt.toLocaleString() + '</p></div></div><div class="space-y-2">';
             filtered.forEach(r => { listHTML += '<div class="bg-gray-50 p-3.5 rounded-xl border text-xs flex justify-between items-center font-semibold"><div><p class="font-extrabold text-gray-900">' + r.full_name + ' <span class="text-blue-900">[' + r.agent_code + ']</span></p><p class="text-[10px] text-gray-600">' + r.description + '</p></div><div class="text-right"><p class="font-black text-blue-950">₦' + r.total_bill.toLocaleString() + '</p></div></div>'; });
             container.innerHTML = listHTML + '</div></div>';
         }
 
         function printAgentReport() {
-            const reportContent = document.getElementById('agentReportResults').innerHTML;
+            const reportEl = document.getElementById('printableReportContent');
+            if (!reportEl) {
+                showToast('Please search and generate a report first!', 'error');
+                return;
+            }
             const printWin = window.open('', '_blank');
             printWin.document.write(`
                 <html>
                 <head>
                     <title>Agent Performance Report - AMC International</title>
                     <style>
-                        body { font-family: Arial, sans-serif; padding: 40px; color: #0d2040; max-width: 700px; margin: auto; }
-                        .report-header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #d4af37; padding-bottom: 15px; }
-                        .logo { width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, #0d2040, #1e3a8a); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 12px; border: 2px solid #d4af37; box-shadow: 0 4px 10px rgba(212,175,55,0.3); }
-                        h2 { margin: 5px 0 0; color: #0d2040; font-size: 20px; font-weight: 900; }
-                        p.sub { font-size: 10px; color: #555; margin-top: 4px; font-weight: bold; letter-spacing: 1px; }
-                        .content-box { margin-top: 20px; }
-                        .grid-cols-4 { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
-                        .grid-cols-4 div { flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; text-align: center; border-radius: 10px; }
-                        .grid-cols-4 p { margin: 2px 0; font-size: 11px; font-weight: bold; color: #475569; text-transform: uppercase; }
-                        .grid-cols-4 span { font-size: 13px; font-weight: 900; color: #0d2040; }
-                        .item-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 12px; }
-                        .footer { margin-top: 30px; text-align: center; font-size: 10px; color: #9ca3af; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
+                        body { font-family: Arial, sans-serif; padding: 30px; color: #0d2040; max-width: 650px; margin: auto; background: #fff; }
+                        .report-header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #d4af37; padding-bottom: 15px; }
+                        .logo { width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, #0d2040, #1e3a8a); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 10px; border: 2px solid #d4af37; box-shadow: 0 4px 10px rgba(212,175,55,0.3); }
+                        h2 { margin: 5px 0 0; color: #0d2040; font-size: 18px; font-weight: 900; }
+                        p.sub { font-size: 9px; color: #555; margin-top: 3px; font-weight: bold; letter-spacing: 1px; }
+                        .summary-grid { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 20px; }
+                        .summary-box { flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px; text-align: center; border-radius: 8px; }
+                        .summary-box p { margin: 0; font-size: 8px; font-weight: bold; color: #475569; text-transform: uppercase; }
+                        .summary-box span { font-size: 11px; font-weight: 900; color: #0d2040; }
+                        .item-row { display: flex; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid #e2e8f0; font-size: 11px; font-weight: 600; }
+                        .footer { margin-top: 25px; text-align: center; font-size: 9px; color: #9ca3af; border-top: 1px dashed #cbd5e1; padding-top: 10px; font-weight: bold; }
                     </style>
                 </head>
                 <body>
                     <div class="report-header">
                         <div class="logo">
-                            <span style="font-weight:900; font-size:16px; line-height:1;">AMC</span>
+                            <span style="font-weight:900; font-size:15px; line-height:1;">AMC</span>
                             <span style="color:#d4af37; font-size:7px; margin-top:2px; font-weight:bold;">INT'L</span>
                         </div>
                         <h2>AMC INTERNATIONAL</h2>
                         <p class="sub">AA MASOYIN MASOYA COMM CENTER INT. - OFFICIAL REPORT</p>
                     </div>
-                    <div class="content-box">
-                        ${reportContent}
+                    <div>
+                        ${reportEl.innerHTML}
                     </div>
                     <div class="footer">
                         <p>Generated on: ${new Date().toLocaleString()} | AMC International Management System</p>
                     </div>
-                    <script>window.onload = function() { window.print(); }</script>
+                    <script>window.onload = function() { window.print(); window.close(); }</script>
                 </body>
                 </html>
             `);
@@ -840,20 +843,20 @@
                 <head>
                     <title>Official Receipt - AMC International</title>
                     <style>
-                        body { font-family: Arial, sans-serif; padding: 30px; max-width: 440px; margin: auto; border: 2px solid #0d2040; border-radius: 20px; text-align: center; background: #fff; color: #0d2040; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-                        .logo { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #0d2040, #1e3a8a); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 12px; border: 2px solid #d4af37; box-shadow: 0 4px 12px rgba(212,175,55,0.4); }
-                        h2 { margin: 5px 0 0; color: #0d2040; font-size: 20px; font-weight: 900; }
-                        p.sub { font-size: 9px; color: #555; margin-bottom: 20px; font-weight: 700; letter-spacing: 0.8px; }
-                        .details { text-align: left; margin-top: 15px; font-size: 12px; border-top: 2px dashed #0d2040; padding-top: 15px; line-height: 1.8; }
-                        .details p { display: flex; justify-content: space-between; margin: 8px 0; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px; }
-                        .details strong { color: #1e293b; width: 120px; display: inline-block; font-weight: 800; }
-                        .footer { font-size: 10px; color: #64748b; margin-top: 25px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 12px; font-weight: bold; }
+                        body { font-family: Arial, sans-serif; padding: 25px; max-width: 400px; margin: auto; border: 2px solid #0d2040; border-radius: 20px; text-align: center; background: #fff; color: #0d2040; }
+                        .logo { width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, #0d2040, #1e3a8a); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 10px; border: 2px solid #d4af37; box-shadow: 0 4px 10px rgba(212,175,55,0.3); }
+                        h2 { margin: 5px 0 0; color: #0d2040; font-size: 18px; font-weight: 900; }
+                        p.sub { font-size: 9px; color: #555; margin-bottom: 15px; font-weight: 700; letter-spacing: 0.8px; }
+                        .details { text-align: left; margin-top: 10px; font-size: 11px; border-top: 2px dashed #0d2040; padding-top: 12px; line-height: 1.7; }
+                        .details p { display: flex; justify-content: space-between; margin: 6px 0; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; }
+                        .details strong { color: #1e293b; width: 110px; display: inline-block; font-weight: 800; }
+                        .footer { font-size: 9px; color: #64748b; margin-top: 20px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 10px; font-weight: bold; }
                     </style>
                 </head>
                 <body>
                     <div class="logo">
-                        <span style="font-weight:900; font-size:18px; line-height:1;">AMC</span>
-                        <span style="color:#d4af37; font-size:8px; margin-top:2px; font-weight:bold;">INT'L</span>
+                        <span style="font-weight:900; font-size:15px; line-height:1;">AMC</span>
+                        <span style="color:#d4af37; font-size:7px; margin-top:2px; font-weight:bold;">INT'L</span>
                     </div>
                     <h2>AMC INTERNATIONAL</h2>
                     <p class="sub">AA MASOYIN MASOYA COMM CENTER INT.</p>
@@ -867,13 +870,13 @@
                     </div>
                     <div class="footer">
                         <span>Date: ${r.date_str} | Agent Code: ${r.agent_code}</span>
-                        <p style="margin-top: 5px; color: #0d2040; font-size: 9px;">Thank you for your patronage!</p>
+                        <p style="margin-top: 4px; color: #0d2040; font-size: 9px;">Thank you for your patronage!</p>
                     </div>
-                    <script>window.onload = function() { window.print(); }</script>
+                    <script>window.onload = function() { window.print(); window.close(); }</script>
                 </body>
                 </html>
             `);
-            printWin.document.close();
+            w.document.close();
         }
 
         function renderAdminAgents() {
