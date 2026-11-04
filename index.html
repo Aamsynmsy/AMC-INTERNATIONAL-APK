@@ -4,332 +4,159 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AMC International PWA</title>
-    <!-- PWA Manifest Link -->
     <link rel="manifest" href="manifest.json">
-    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS Client Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        .border-gold { border-color: #d4af37; }
-        .bg-gold { background-color: #d4af37; }
-        .text-gold { color: #d4af37; }
-    </style>
 </head>
-<body class="bg-gray-100 font-sans antialiased pb-12">
-
-    <div id="app" class="max-w-md mx-auto min-h-screen bg-white shadow-xl flex flex-col">
-        <!-- Header -->
-        <header class="bg-[#0d2040] text-white p-4 text-center shadow-md border-b-4 border-gold">
-            <h1 class="font-black text-lg tracking-wide">AMC INTERNATIONAL</h1>
-            <p class="text-[10px] text-gold font-bold">AA MASOYIN MASOYA COMM CENTER INT.</p>
+<body class="bg-gray-100 font-sans p-4">
+    <div id="app" class="max-w-md mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
+        <header class="bg-blue-950 text-white p-4 text-center">
+            <h1 class="font-bold text-sm">AMC INTERNATIONAL</h1>
+            <p class="text-[9px] text-amber-400">COMM CENTER INT.</p>
         </header>
 
-        <!-- Main Content Container -->
-        <main class="p-4 flex-1 space-y-6">
-            
-            <!-- Agent Input Form Section -->
-            <section class="bg-gray-50 p-4 rounded-2xl border shadow-sm">
-                <h2 class="text-xs font-black uppercase text-blue-950 mb-3">Submit New Customer Job</h2>
-                <form id="job-form" class="space-y-3">
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-700 uppercase">Agent Code / Name</label>
-                        <select id="agent_code" required class="w-full mt-1 p-2 border rounded-xl text-xs bg-white">
-                            <option value="">Select Agent</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-700 uppercase">Customer Full Name</label>
-                        <input type="text" id="full_name" required class="w-full mt-1 p-2 border rounded-xl text-xs" placeholder="Customer Full Name">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-700 uppercase">Phone Number</label>
-                        <input type="tel" id="phone" required class="w-full mt-1 p-2 border rounded-xl text-xs" placeholder="080XXXXXXXX">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-700 uppercase">Job Description</label>
-                        <input type="text" id="desc" required class="w-full mt-1 p-2 border rounded-xl text-xs" placeholder="E.g., NIN Enrolment / Registration">
-                    </div>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-700 uppercase">Total Bill</label>
-                            <input type="number" id="total_bill" value="0" class="w-full mt-1 p-2 border rounded-xl text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-700 uppercase">Amount Paid</label>
-                            <input type="number" id="amount_paid" value="0" class="w-full mt-1 p-2 border rounded-xl text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-700 uppercase">Debt</label>
-                            <input type="number" id="debt_balance" value="0" readonly class="w-full mt-1 p-2 bg-gray-200 border rounded-xl text-xs font-bold text-red-600">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-700 uppercase">Commission (Optional)</label>
-                        <input type="number" id="agent_commission" value="0" class="w-full mt-1 p-2 border rounded-xl text-xs">
-                    </div>
-                    <button type="submit" class="w-full bg-[#0d2040] text-gold p-2.5 rounded-xl text-xs font-black uppercase hover:bg-blue-900 shadow-md">
-                        Submit Job
-                    </button>
-                </form>
-            </section>
+        <div id="login-section" class="p-6 space-y-4">
+            <h2 class="text-xs font-bold text-center text-blue-950 uppercase">Agent Login</h2>
+            <form id="login-form" class="space-y-3">
+                <select id="login_agent_code" required class="w-full p-2.5 border rounded-xl text-xs bg-white">
+                    <option value="">Select Agent</option>
+                    <option value="AMC001">AMC001 - Kabiru Abdullahi</option>
+                    <option value="AMC002">AMC002 - Admin Agent</option>
+                </select>
+                <input type="password" id="login_pass" placeholder="Password (1234)" required class="w-full p-2.5 border rounded-xl text-xs">
+                <button type="submit" class="w-full bg-blue-950 text-white p-2.5 rounded-xl text-xs font-bold">Login</button>
+            </form>
+        </div>
 
-            <!-- Admin / Reports & Live View Section -->
-            <section class="space-y-4">
-                <div class="flex justify-between items-center bg-blue-50 p-3 rounded-2xl border border-blue-200">
-                    <h3 class="text-xs font-black text-blue-950 uppercase">Jobs & Reports Live View</h3>
-                    <button onclick="loadLiveJobs()" class="text-[10px] bg-blue-600 text-white px-3 py-1.5 rounded-xl font-bold">Refresh</button>
+        <main id="main-app-section" class="p-4 space-y-4 hidden">
+            <div class="flex justify-between items-center bg-gray-50 p-2 rounded-lg text-xs">
+                <span id="user-display" class="font-bold text-blue-900"></span>
+                <button onclick="logout()" class="text-red-600 underline font-bold">Logout</button>
+            </div>
+
+            <form id="job-form" class="space-y-2 bg-gray-50 p-3 rounded-xl border text-xs">
+                <h3 class="font-bold text-blue-950">New Job Entry</h3>
+                <input type="text" id="full_name" placeholder="Customer Name" required class="w-full p-2 border rounded bg-white">
+                <input type="tel" id="phone" placeholder="Phone Number" required class="w-full p-2 border rounded bg-white">
+                <input type="text" id="desc" placeholder="Job Description" required class="w-full p-2 border rounded bg-white">
+                <div class="grid grid-cols-3 gap-1">
+                    <input type="number" id="total_bill" placeholder="Bill" value="0" class="p-2 border rounded bg-white">
+                    <input type="number" id="amount_paid" placeholder="Paid" value="0" class="p-2 border rounded bg-white">
+                    <input type="number" id="debt_balance" placeholder="Debt" value="0" readonly class="p-2 border bg-gray-200 rounded font-bold text-red-600">
                 </div>
+                <button type="submit" class="w-full bg-blue-950 text-white p-2 rounded font-bold">Submit Job</button>
+            </form>
 
-                <!-- Report Filters -->
-                <div class="bg-gray-50 p-3 rounded-2xl border space-y-2 text-xs">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-600 uppercase">Filter Agent</label>
-                            <select id="reportAgentCode" onchange="filterAndRenderJobs()" class="w-full mt-1 p-1.5 border rounded-xl bg-white text-xs">
-                                <option value="ALL">All Agents (ALL)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-600 uppercase">Start Date</label>
-                            <input type="date" id="reportStartDate" onchange="filterAndRenderJobs()" class="w-full mt-1 p-1.5 border rounded-xl bg-white text-xs">
-                        </div>
-                    </div>
-                    <div class="flex gap-2 pt-1">
-                        <button onclick="printAgentReport()" class="flex-1 bg-amber-600 text-white py-2 rounded-xl font-bold text-xs shadow">Print Report</button>
-                    </div>
+            <div class="space-y-2">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xs font-bold text-gray-800">Live Jobs Feed</h3>
+                    <button onclick="loadJobs()" class="text-[10px] bg-blue-600 text-white px-2 py-1 rounded">Refresh</button>
                 </div>
-
-                <!-- Jobs Display Results Container -->
-                <div id="agentReportResults">
-                    <p class="text-xs text-center text-gray-500 py-4">Loading data...</p>
+                <div id="jobs-list" class="space-y-2 text-xs">
+                    <p class="text-gray-500 text-center">Loading...</p>
                 </div>
-            </section>
-
+            </div>
         </main>
     </div>
 
-    <!-- Script Logic with Supabase & App Functions -->
     <script>
-        // Supabase Configuration
         const SUPABASE_URL = 'https://zaenyapuytutdrjjssul.supabase.co';
         const SUPABASE_ANON_KEY = 'Sb_publishable_rZw7m05XbbkwRtPfavRqqQ_Ab_TYkgN';
-
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const defaultAgents = [
-            { code: 'AMC001', name: 'Kabiru Abdullahi' },
-            { code: 'AMC002', name: 'Admin Agent' }
-        ];
-
-        function getAgents() {
-            const saved = localStorage.getItem('amci_agents');
-            return saved ? JSON.parse(saved) : defaultAgents;
-        }
-
-        function populateAgentDropdowns() {
-            const agents = getAgents();
-            const formSelect = document.getElementById('agent_code');
-            const reportSelect = document.getElementById('reportAgentCode');
-            
-            if(formSelect) {
-                formSelect.innerHTML = '<option value="">Select Agent</option>' + agents.map(a => `<option value="${a.code}">${a.code} - ${a.name}</option>`).join('');
-            }
-            if(reportSelect) {
-                reportSelect.innerHTML = '<option value="ALL">All Agents (ALL)</option>' + agents.map(a => `<option value="${a.code}">${a.code} - ${a.name}</option>`).join('');
-            }
-        }
-
-        // Auto calculate debt
-        const totalBillInput = document.getElementById('total_bill');
-        const amountPaidInput = document.getElementById('amount_paid');
-        const debtInput = document.getElementById('debt_balance');
-
-        function calculateDebt() {
-            const bill = parseFloat(totalBillInput.value) || 0;
-            const paid = parseFloat(amountPaidInput.value) || 0;
-            debtInput.value = Math.max(0, bill - paid);
-        }
-
-        totalBillInput.addEventListener('input', calculateDebt);
-        amountPaidInput.addEventListener('input', calculateDebt);
-
-        let globalJobsData = [];
-
-        async function loadLiveJobs() {
-            const { data, error } = await _supabase
-                .from('jobs')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) {
-                document.getElementById('agentReportResults').innerHTML = `<p class="text-xs text-red-500 text-center">Error fetching data: ${error.message}</p>`;
-                return;
-            }
-
-            globalJobsData = (data || []).map(item => ({
-                id: item.id,
-                fullName: item.full_name || item.customer_first_name || '',
-                agentCode: item.agent_code || item.agent_id || 'AMC001',
-                phone: item.phone || '',
-                desc: item.description || item.desc || '',
-                totalBill: item.total_bill !== undefined ? item.total_bill : (item.amount || 0),
-                amountPaid: item.amount_paid !== undefined ? item.amount_paid : 0,
-                agentCommission: item.agent_commission || 0,
-                debtBalance: item.debt_balance !== undefined ? item.debt_balance : (item.debt || 0),
-                dateStr: item.date_str || new Date(item.created_at || Date.now()).toLocaleDateString()
-            }));
-
-            filterAndRenderJobs();
-        }
-
-        function filterAndRenderJobs() {
-            const agentFilter = document.getElementById('reportAgentCode').value;
-            const startDateFilter = document.getElementById('reportStartDate').value;
-            const container = document.getElementById('agentReportResults');
-            if(!container) return;
-
-            let filtered = globalJobsData;
-            if(agentFilter && agentFilter !== 'ALL') {
-                filtered = filtered.filter(r => r.agentCode === agentFilter);
-            }
-            if(startDateFilter) {
-                filtered = filtered.filter(r => new Date(r.dateStr) >= new Date(startDateFilter));
-            }
-
-            if(filtered.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No jobs found for this selection.</p>`;
-                return;
-            }
-
-            let totalRev = 0, totalCom = 0, totalColl = 0, totalDebt = 0;
-            filtered.forEach(r => {
-                totalRev += r.totalBill;
-                totalColl += r.amountPaid;
-                totalCom += (r.agentCommission || 0);
-                totalDebt += r.debtBalance;
-            });
-
-            let listHTML = '<div class="bg-white p-4 rounded-2xl shadow-md space-y-3 border-t-4 border-gold"><div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center border-b pb-3"><div class="bg-blue-50 p-2 rounded-xl"><p class="text-[9px] text-gray-500 font-bold uppercase">Total Work</p><p class="text-xs font-black text-blue-950">₦' + totalRev.toLocaleString() + '</p></div><div class="bg-green-50 p-2 rounded-xl"><p class="text-[9px] text-gray-500 font-bold uppercase">Collected</p><p class="text-xs font-black text-green-700">₦' + totalColl.toLocaleString() + '</p></div><div class="bg-amber-50 p-2 rounded-xl"><p class="text-[9px] text-gray-500 font-bold uppercase">Commission</p><p class="text-xs font-black text-amber-700">₦' + totalCom.toLocaleString() + '</p></div><div class="bg-red-50 p-2 rounded-xl"><p class="text-[9px] text-gray-500 font-bold uppercase">Total Debt</p><p class="text-xs font-black text-red-600">₦' + totalDebt.toLocaleString() + '</p></div></div><div class="space-y-2">';
-
-            filtered.forEach((r, idx) => {
-                listHTML += '<div class="bg-gray-50 p-3 rounded-xl border text-xs flex justify-between items-center"><div><p class="font-bold text-gray-900">' + r.fullName + ' <span class="text-[10px] text-blue-900 font-black">[' + r.agentCode + ']</span></p><p class="text-[10px] text-gray-500">' + r.desc + ' | ' + r.phone + '</p></div><div class="text-right flex flex-col items-end gap-1"><p class="font-black text-blue-950">₦' + r.totalBill.toLocaleString() + '</p><button onclick=\'downloadPDF(globalJobsData[' + globalJobsData.indexOf(r) + '])\' class="text-[9px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold">Receipt</button></div></div>';
-            });
-
-            listHTML += '</div></div>';
-            container.innerHTML = listHTML;
-        }
-
-        function printAgentReport() {
-            const code = document.getElementById('reportAgentCode').value || 'ALL';
-            const startDate = document.getElementById('reportStartDate').value || 'Beginning';
-            const resultsHTML = document.getElementById('agentReportResults').innerHTML;
-
-            const printWin = window.open('', '_blank');
-            printWin.document.write(`
-                <html>
-                <head>
-                    <title>Agent Report - ${code}</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 650px; margin: auto; border: 2px solid #0d2040; border-radius: 10px; background: #fff; }
-                        .header { text-align: center; border-bottom: 2px solid #d4af37; padding-bottom: 10px; margin-bottom: 15px; }
-                        h2 { color: #0d2040; margin: 4px 0; font-size: 15px; } 
-                        p { font-size: 10px; color: #555; } 
-                        .grid { display: flex; gap: 10px; margin-bottom: 15px; } 
-                        .grid > div { flex: 1; text-align: center; border: 1px solid #ddd; padding: 6px; border-radius: 6px; } 
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h2>AMC INTERNATIONAL - AGENT PERFORMANCE REPORT</h2>
-                        <p>Agent Code: <strong>${code}</strong> | Period: <strong>${startDate}</strong></p>
-                    </div>
-                    ${resultsHTML}
-                    <script>window.onload = function() { window.print(); }<\/script>
-                </body>
-                </html>
-            `);
-            printWin.document.close();
-        }
-
-        function downloadPDF(r) {
-            const slipWindow = window.open('', '_blank');
-            slipWindow.document.write(`
-                <html>
-                <head>
-                    <title>Receipt - ${r.fullName}</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 400px; margin: auto; border: 2px solid #0d2040; border-radius: 10px; background: #fff; }
-                        .header { text-align: center; border-bottom: 2px solid #d4af37; padding-bottom: 10px; margin-bottom: 12px; }
-                        .details div { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dotted #ccc; padding-bottom: 4px; font-size: 11px; }
-                        .total { font-size: 12px; font-weight: bold; background: #0d2040; color: #d4af37; padding: 8px; text-align: center; border-radius: 6px; margin-top: 12px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h2 style="margin: 0; color: #0d2040; font-size: 14px;">AMC INTERNATIONAL</h2>
-                        <p style="font-size: 8px; color: #666; margin: 0;">AA MASOYIN MASOYA COMM CENTER INT.</p>
-                    </div>
-                    <div class="details">
-                        <div><span>Date:</span> <span>${r.dateStr}</span></div>
-                        <div><span>Customer:</span> <span>${r.fullName}</span></div>
-                        <div><span>Phone:</span> <span>${r.phone}</span></div>
-                        <div><span>Description:</span> <span>${r.desc}</span></div>
-                        <div><span>Total Bill:</span> <span>₦${r.totalBill.toLocaleString()}</span></div>
-                        <div><span>Amount Paid:</span> <span style="color: green; font-weight: bold;">₦${r.amountPaid.toLocaleString()}</span></div>
-                        <div><span>Commission:</span> <span style="color: #b45309; font-weight: bold;">₦${(r.agentCommission || 0).toLocaleString()}</span></div>
-                        <div><span>Debt Balance:</span> <span style="color: red; font-weight: bold;">₦${r.debtBalance.toLocaleString()}</span></div>
-                        <div><span>Agent:</span> <span>${r.agentCode}</span></div>
-                    </div>
-                    <div class="total">STATUS: ${r.debtBalance === 0 ? 'PAID FULL' : 'HAS DEBT'}</div>
-                    <script>window.onload = function() { window.print(); }<\/script>
-                </body>
-                </html>
-            `);
-            slipWindow.document.close();
-        }
-
-        // Handle Form Submission to Supabase
-        document.getElementById('job-form').addEventListener('submit', async (e) => {
+        document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
-
-            const newJobRecord = {
-                agent_code: document.getElementById('agent_code').value,
-                full_name: document.getElementById('full_name').value,
-                phone: document.getElementById('phone').value,
-                description: document.getElementById('desc').value,
-                total_bill: parseFloat(totalBillInput.value) || 0,
-                amount_paid: parseFloat(amountPaidInput.value) || 0,
-                agent_commission: parseFloat(document.getElementById('agent_commission').value) || 0,
-                debt_balance: parseFloat(debtInput.value) || 0,
-                date_str: new Date().toLocaleDateString()
-            };
-
-            const { error } = await _supabase.from('jobs').insert([newJobRecord]);
-
-            if (error) {
-                alert('Error submitting job: ' + error.message);
+            const code = document.getElementById('login_agent_code').value;
+            const pass = document.getElementById('login_pass').value;
+            if(pass === '1234') {
+                const agent = { code, name: code === 'AMC001' ? 'Kabiru Abdullahi' : 'Admin Agent' };
+                localStorage.setItem('amci_user', JSON.stringify(agent));
+                initApp(agent);
             } else {
-                document.getElementById('job-form').reset();
-                debtInput.value = '0';
-                alert('Job saved successfully!');
-                loadLiveJobs();
+                alert('Incorrect password! Use 1234');
             }
         });
 
-        // Real-time Subscription
+        function initApp(agent) {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('main-app-section').classList.remove('hidden');
+            document.getElementById('user-display').innerText = agent.code + ' - ' + agent.name;
+            loadJobs();
+        }
+
+        function logout() {
+            localStorage.removeItem('amci_user');
+            document.getElementById('main-app-section').classList.add('hidden');
+            document.getElementById('login-section').classList.remove('hidden');
+        }
+
+        window.onload = function() {
+            const saved = localStorage.getItem('amci_user');
+            if(saved) initApp(JSON.parse(saved));
+        }
+
+        const billInput = document.getElementById('total_bill');
+        const paidInput = document.getElementById('amount_paid');
+        const debtInput = document.getElementById('debt_balance');
+
+        function calc() {
+            debtInput.value = Math.max(0, (parseFloat(billInput.value) || 0) - (parseFloat(paidInput.value) || 0));
+        }
+        billInput.addEventListener('input', calc);
+        paidInput.addEventListener('input', calc);
+
+        async function loadJobs() {
+            const { data, error } = await _supabase.from('jobs').select('*').order('created_at', { ascending: false });
+            const container = document.getElementById('jobs-list');
+            if(error) {
+                container.innerHTML = `<p class="text-red-500">Error: ${error.message}</p>`;
+                return;
+            }
+            if(!data || data.length === 0) {
+                container.innerHTML = `<p class="text-gray-500 text-center">No jobs found.</p>`;
+                return;
+            }
+            container.innerHTML = data.map(j => `
+                <div class="p-2.5 bg-gray-50 border rounded-xl flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-gray-900">${j.full_name || j.customer_first_name || 'Customer'} <span class="text-blue-900">[${j.agent_code || j.agent_id}]</span></p>
+                        <p class="text-[10px] text-gray-500">${j.description || j.desc || 'Job'} | ₦${j.total_bill || j.amount || 0}</p>
+                    </div>
+                    <span class="text-[10px] font-bold text-red-600">Debt: ₦${j.debt_balance || j.debt || 0}</span>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('job-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = JSON.parse(localStorage.getItem('amci_user') || '{}');
+            const record = {
+                agent_code: user.code || 'AMC001',
+                full_name: document.getElementById('full_name').value,
+                phone: document.getElementById('phone').value,
+                description: document.getElementById('desc').value,
+                total_bill: parseFloat(billInput.value) || 0,
+                amount_paid: parseFloat(paidInput.value) || 0,
+                debt_balance: parseFloat(debtInput.value) || 0
+            };
+            const { error } = await _supabase.from('jobs').insert([record]);
+            if(error) {
+                alert('Error: ' + error.message);
+            } else {
+                document.getElementById('job-form').reset();
+                debtInput.value = '0';
+                alert('Saved successfully!');
+                loadJobs();
+            }
+        });
+
         _supabase
             .channel('public:jobs')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, payload => {
-                loadLiveJobs();
+                loadJobs();
             })
             .subscribe();
-
-        // Initial Load
-        populateAgentDropdowns();
-        loadLiveJobs();
     </script>
 </body>
-    </html>
-    
+</html>
