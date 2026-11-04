@@ -33,10 +33,15 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-100 via-blue-50 to-slate-200 font-sans text-gray-800 pb-12 select-none min-h-screen">
+<body class="bg-gradient-to-br from-slate-100 via-blue-50 to-slate-200 font-sans text-gray-900 pb-12 select-none min-h-screen">
+
+    <!-- NETWORK STATUS BANNER -->
+    <div id="networkBanner" class="hidden fixed top-0 left-0 right-0 z-50 text-center py-1.5 text-xs font-black shadow-md transition-all">
+        <span id="networkText"></span>
+    </div>
 
     <!-- TOAST NOTIFICATION -->
-    <div id="toastContainer" class="fixed top-5 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
+    <div id="toastContainer" class="fixed top-12 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
         <div id="toastBox" class="pointer-events-auto flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold max-w-sm w-full hidden border">
             <i id="toastIcon" class="text-base"></i>
             <span id="toastMessage" class="flex-1"></span>
@@ -49,8 +54,8 @@
             <div class="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center mx-auto text-amber-600 text-xl shadow-inner">
                 <i class="fas fa-exclamation-triangle"></i>
             </div>
-            <h3 id="confirmTitle" class="font-bold text-blue-950 text-sm">Are you sure?</h3>
-            <p id="confirmText" class="text-xs text-gray-500"></p>
+            <h3 id="confirmTitle" class="font-extrabold text-blue-950 text-sm">Are you sure?</h3>
+            <p id="confirmText" class="text-xs text-gray-600 font-medium"></p>
             <div class="grid grid-cols-2 gap-2 pt-2">
                 <button id="confirmBtnCancel" class="py-2.5 bg-gray-200 text-gray-700 rounded-xl text-xs font-bold hover:bg-gray-300 transition cursor-pointer">Cancel</button>
                 <button id="confirmBtnOk" class="py-2.5 bg-red-700 text-white rounded-xl text-xs font-bold hover:bg-red-800 transition shadow-md cursor-pointer">Confirm</button>
@@ -64,7 +69,7 @@
             <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto text-blue-900 text-xl shadow-inner">
                 <i class="fas fa-coins"></i>
             </div>
-            <h3 id="promptTitle" class="font-bold text-blue-950 text-sm">Enter Amount</h3>
+            <h3 id="promptTitle" class="font-extrabold text-blue-950 text-sm">Enter Amount</h3>
             <input type="number" id="customPromptInput" class="w-full px-4 py-3 border rounded-xl text-center text-sm font-bold bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-900">
             <div class="grid grid-cols-2 gap-2 pt-2">
                 <button id="promptBtnCancel" class="py-2.5 bg-gray-200 text-gray-700 rounded-xl text-xs font-bold hover:bg-gray-300 transition cursor-pointer">Cancel</button>
@@ -82,7 +87,7 @@
             </div>
             
             <h1 class="text-xl font-extrabold text-blue-950 tracking-wide">AMC INTERNATIONAL</h1>
-            <p class="text-[10px] text-gray-500 mb-6 font-semibold tracking-tight">AA MASOYIN MASOYA COMM CENTER INT.</p>
+            <p class="text-[10px] text-gray-600 mb-6 font-bold tracking-tight">AA MASOYIN MASOYA COMM CENTER INT.</p>
             
             <div class="grid grid-cols-2 gap-1 border rounded-xl mb-6 overflow-hidden text-xs font-bold bg-gray-100 p-1 shadow-inner">
                 <button type="button" id="tabBtnAgent" onclick="switchLoginMode('agent')" class="py-2.5 rounded-lg brand-bg text-white transition cursor-pointer shadow-sm">AGENT LOGIN</button>
@@ -91,31 +96,31 @@
 
             <form id="agentLoginForm" onsubmit="handleAgentLogin(event)" class="space-y-4">
                 <div>
-                    <input type="text" id="loginAgentCode" placeholder="Agent Code (e.g. AG01)" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900 text-center uppercase font-bold text-sm bg-gray-50 shadow-inner">
+                    <input type="text" id="loginAgentCode" placeholder="Agent Code (e.g. AG01)" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900 text-center uppercase font-black text-sm bg-gray-50 shadow-inner">
                 </div>
                 <div>
-                    <input type="password" id="loginAgentPassword" placeholder="Enter Password" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900 text-center text-sm bg-gray-50 shadow-inner">
+                    <input type="password" id="loginAgentPassword" placeholder="Enter Password" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900 text-center text-sm font-bold bg-gray-50 shadow-inner">
                 </div>
-                <button type="submit" class="w-full brand-bg text-white font-bold py-3 rounded-xl shadow-lg hover:bg-blue-950 transition duration-200 text-sm cursor-pointer">LOGIN AS AGENT</button>
+                <button type="submit" class="w-full brand-bg text-white font-extrabold py-3 rounded-xl shadow-lg hover:bg-blue-950 transition duration-200 text-sm cursor-pointer">LOGIN AS AGENT</button>
             </form>
 
             <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="space-y-4 hidden">
                 <div>
-                    <input type="text" id="loginAdminCode" value="ADMIN" readonly class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-100 text-center uppercase font-bold text-sm text-blue-900">
+                    <input type="text" id="loginAdminCode" value="ADMIN" readonly class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-100 text-center uppercase font-black text-sm text-blue-900">
                 </div>
                 <div>
-                    <input type="password" id="loginAdminPassword" placeholder="Enter Admin Password" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-900 text-center text-sm bg-gray-50 shadow-inner">
+                    <input type="password" id="loginAdminPassword" placeholder="Enter Admin Password" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-900 text-center text-sm font-bold bg-gray-50 shadow-inner">
                 </div>
-                <button type="submit" class="w-full bg-red-800 text-white font-bold py-3 rounded-xl shadow-lg hover:bg-red-900 transition duration-200 text-sm cursor-pointer">LOGIN AS ADMIN</button>
+                <button type="submit" class="w-full bg-red-800 text-white font-extrabold py-3 rounded-xl shadow-lg hover:bg-red-900 transition duration-200 text-sm cursor-pointer">LOGIN AS ADMIN</button>
             </form>
 
-            <p id="loginError" class="text-red-500 text-xs mt-3 hidden font-semibold bg-red-50 p-2 rounded-lg border border-red-200">Invalid Code or Password!</p>
+            <p id="loginError" class="text-red-600 text-xs mt-3 hidden font-bold bg-red-50 p-2.5 rounded-lg border border-red-200">Invalid Code or Password!</p>
         </div>
     </div>
 
     <!-- MAIN APP INTERFACE -->
     <div id="appInterface" class="hidden">
-        <header class="brand-bg text-white p-4 shadow-xl sticky top-0 z-40 border-b-2 border-gold backdrop-blur-md bg-opacity-95">
+        <header class="brand-bg text-white p-4 shadow-xl sticky top-0 z-40 border-b-2 border-gold backdrop-blur-md bg-opacity-95 mt-6">
             <div class="flex items-center justify-between max-w-2xl mx-auto">
                 <div class="flex items-center space-x-3">
                     <div class="logo-box w-10 h-10 rounded-full flex flex-col items-center justify-center text-center shadow">
@@ -124,12 +129,12 @@
                     </div>
                     <div>
                         <h1 class="text-base font-extrabold leading-tight brand-gold">AMC INTERNATIONAL</h1>
-                        <p class="text-[9px] text-gray-300 tracking-tight">AA MASOYIN MASOYA COMM CENTER INT.</p>
+                        <p class="text-[9px] text-gray-200 font-semibold tracking-tight">AA MASOYIN MASOYA COMM CENTER INT.</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-2">
                     <span id="activeAgentBadge" class="bg-blue-950 text-xs text-gold px-3 py-1.5 rounded-xl border border-gold font-bold shadow-inner"></span>
-                    <button onclick="logout()" class="text-red-300 hover:text-white text-sm p-2 rounded-xl bg-red-950/60 border border-red-800/50 cursor-pointer transition shadow" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+                    <button onclick="logout()" class="text-red-200 hover:text-white text-sm p-2 rounded-xl bg-red-950/80 border border-red-800/50 cursor-pointer transition shadow" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
                 </div>
             </div>
         </header>
@@ -137,117 +142,119 @@
         <main class="max-w-2xl mx-auto p-4 space-y-4">
             
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-                <div class="bg-white p-3 rounded-2xl shadow-md border-l-4 border-blue-900 hover:shadow-lg transition">
-                    <p class="text-[10px] text-gray-500 font-semibold uppercase">Total Work</p>
+                <div class="bg-white p-3.5 rounded-2xl shadow-md border-l-4 border-blue-900 hover:shadow-lg transition">
+                    <p class="text-[10px] text-gray-600 font-bold uppercase">Total Work</p>
                     <p id="totalRevenue" class="text-xs font-black text-blue-950 mt-1">₦0</p>
                 </div>
-                <div class="bg-white p-3 rounded-2xl shadow-md border-l-4 border-green-600 hover:shadow-lg transition">
-                    <p class="text-[10px] text-gray-500 font-semibold uppercase">Collected</p>
+                <div class="bg-white p-3.5 rounded-2xl shadow-md border-l-4 border-green-600 hover:shadow-lg transition">
+                    <p class="text-[10px] text-gray-600 font-bold uppercase">Collected</p>
                     <p id="totalPaid" class="text-xs font-black text-green-700 mt-1">₦0</p>
                 </div>
-                <div class="bg-white p-3 rounded-2xl shadow-md border-l-4 border-amber-600 hover:shadow-lg transition">
-                    <p class="text-[10px] text-gray-500 font-semibold uppercase">Agent Comm.</p>
+                <div class="bg-white p-3.5 rounded-2xl shadow-md border-l-4 border-amber-600 hover:shadow-lg transition">
+                    <p class="text-[10px] text-gray-600 font-bold uppercase">Agent Comm.</p>
                     <p id="totalCommissions" class="text-xs font-black text-amber-700 mt-1">₦0</p>
                 </div>
-                <div class="bg-white p-3 rounded-2xl shadow-md border-l-4 border-red-500 hover:shadow-lg transition">
-                    <p class="text-[10px] text-gray-500 font-semibold uppercase">Pending Debt</p>
+                <div class="bg-white p-3.5 rounded-2xl shadow-md border-l-4 border-red-500 hover:shadow-lg transition">
+                    <p class="text-[10px] text-gray-600 font-bold uppercase">Pending Debt</p>
                     <p id="totalDebt" class="text-xs font-black text-red-600 mt-1">₦0</p>
                 </div>
             </div>
 
             <!-- TABS (New Job, Debts, History, Report, Admin) -->
-            <div class="flex flex-wrap gap-1 bg-white p-1.5 rounded-2xl shadow-md text-xs font-bold border border-gray-100">
+            <div class="flex flex-wrap gap-1 bg-white p-1.5 rounded-2xl shadow-md text-xs font-extrabold border border-gray-100">
                 <button onclick="switchTab('newJob')" id="tabNewJob" class="flex-1 py-2 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer">New Job</button>
-                <button onclick="switchTab('debtList')" id="tabDebtList" class="flex-1 py-2 px-2 rounded-xl text-gray-600 hover:bg-gray-100 transition cursor-pointer">Debts</button>
-                <button onclick="switchTab('history')" id="tabHistory" class="flex-1 py-2 px-2 rounded-xl text-gray-600 hover:bg-gray-100 transition cursor-pointer">History</button>
-                <button onclick="switchTab('agentReport')" id="tabAgentReport" class="flex-1 py-2 px-2 rounded-xl text-gray-600 hover:bg-gray-100 transition cursor-pointer">Report</button>
-                <button onclick="switchTab('admin')" id="tabAdmin" class="flex-1 py-2 px-2 rounded-xl text-gray-600 hover:bg-gray-100 transition hidden cursor-pointer"><i class="fas fa-user-shield"></i> Admin</button>
+                <button onclick="switchTab('debtList')" id="tabDebtList" class="flex-1 py-2 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer">Debts</button>
+                <button onclick="switchTab('history')" id="tabHistory" class="flex-1 py-2 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer">History</button>
+                <button onclick="switchTab('agentReport')" id="tabAgentReport" class="flex-1 py-2 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer">Report</button>
+                <button onclick="switchTab('admin')" id="tabAdmin" class="flex-1 py-2 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition hidden cursor-pointer"><i class="fas fa-user-shield"></i> Admin</button>
             </div>
 
             <!-- TAB 1: NEW JOB -->
-            <section id="secNewJob" class="bg-white p-5 rounded-3xl shadow-md space-y-3 border border-gray-100">
-                <h2 class="font-bold text-blue-950 text-sm border-b pb-2 flex items-center gap-2"><i class="fas fa-file-invoice-dollar brand-gold"></i> Record Job / Sale</h2>
-                <form id="jobForm" onsubmit="saveTransaction(event)" class="space-y-3">
-                    <div class="grid grid-cols-2 gap-2">
+            <section id="secNewJob" class="bg-white p-6 rounded-3xl shadow-md space-y-4 border border-gray-100">
+                <h2 class="font-extrabold text-blue-950 text-sm border-b pb-2.5 flex items-center gap-2"><i class="fas fa-file-invoice-dollar brand-gold text-base"></i> Record Job / Sale</h2>
+                <form id="jobForm" onsubmit="saveTransaction(event)" class="space-y-3.5">
+                    <div class="grid grid-cols-2 gap-2.5">
                         <div>
-                            <label class="text-xs text-gray-600 font-semibold">First Name</label>
-                            <input type="text" id="custFirstName" required class="w-full mt-1 px-3 py-2.5 border rounded-xl text-sm uppercase bg-gray-50 focus:bg-white transition">
+                            <label class="text-xs text-gray-700 font-bold">First Name</label>
+                            <input type="text" id="custFirstName" required class="w-full mt-1 px-3.5 py-3 border rounded-xl text-sm font-bold uppercase bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-900 transition">
                         </div>
                         <div>
-                            <label class="text-xs text-gray-600 font-semibold">Surname</label>
-                            <input type="text" id="custSurname" required class="w-full mt-1 px-3 py-2.5 border rounded-xl text-sm uppercase bg-gray-50 focus:bg-white transition">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-600 font-semibold">Middle Name (Optional)</label>
-                        <input type="text" id="custMiddleName" placeholder="Optional" class="w-full mt-1 px-3 py-2.5 border rounded-xl text-sm uppercase bg-gray-50 focus:bg-white transition">
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-600 font-semibold">Phone Number (Optional)</label>
-                        <input type="tel" id="custPhone" placeholder="080..." class="w-full mt-1 px-3 py-2.5 border rounded-xl text-sm bg-gray-50 focus:bg-white transition">
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-600 font-semibold">Job / Product Description</label>
-                        <textarea id="jobDesc" required rows="2" class="w-full mt-1 px-3 py-2.5 border rounded-xl text-sm bg-gray-50 focus:bg-white transition"></textarea>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="text-xs text-gray-600 font-semibold">Total Amount (₦)</label>
-                            <input type="number" id="totalBill" required min="0" oninput="calcDebt()" class="w-full mt-1 px-3 py-2.5 border rounded-xl text-sm font-bold text-blue-900 bg-gray-50 focus:bg-white transition">
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-600 font-semibold">Amount Paid (₦)</label>
-                            <input type="number" id="amountPaid" required min="0" oninput="calcDebt()" class="w-full mt-1 px-3 py-2.5 border rounded-xl text-sm font-bold text-green-700 bg-gray-50 focus:bg-white transition">
+                            <label class="text-xs text-gray-700 font-bold">Surname</label>
+                            <input type="text" id="custSurname" required class="w-full mt-1 px-3.5 py-3 border rounded-xl text-sm font-bold uppercase bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-900 transition">
                         </div>
                     </div>
                     <div>
-                        <label class="text-xs text-gray-600 font-semibold">Agent Commission (₦)</label>
-                        <input type="number" id="agentCommission" min="0" value="0" class="w-full mt-1 px-3 py-2.5 border rounded-xl text-sm font-bold text-amber-700 bg-gray-50 focus:bg-white transition">
+                        <label class="text-xs text-gray-700 font-bold">Middle Name (Optional)</label>
+                        <input type="text" id="custMiddleName" placeholder="Optional" class="w-full mt-1 px-3.5 py-3 border rounded-xl text-sm font-bold uppercase bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-900 transition">
                     </div>
-                    <div id="debtNotice" class="hidden p-2.5 bg-red-50 text-red-700 text-xs rounded-xl font-bold text-center border border-red-200">
+                    <div>
+                        <label class="text-xs text-gray-700 font-bold">Phone Number (Optional)</label>
+                        <input type="tel" id="custPhone" placeholder="080..." class="w-full mt-1 px-3.5 py-3 border rounded-xl text-sm font-bold bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-900 transition">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-700 font-bold">Job / Product Description</label>
+                        <textarea id="jobDesc" required rows="2" class="w-full mt-1 px-3.5 py-3 border rounded-xl text-sm font-bold bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-900 transition"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="text-xs text-gray-700 font-bold">Total Amount (₦)</label>
+                            <input type="number" id="totalBill" required min="0" oninput="calcDebt()" class="w-full mt-1 px-3.5 py-3 border rounded-xl text-sm font-black text-blue-900 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-900 transition">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-700 font-bold">Amount Paid (₦)</label>
+                            <input type="number" id="amountPaid" required min="0" oninput="calcDebt()" class="w-full mt-1 px-3.5 py-3 border rounded-xl text-sm font-black text-green-700 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-900 transition">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-700 font-bold">Agent Commission (₦)</label>
+                        <input type="number" id="agentCommission" min="0" value="0" class="w-full mt-1 px-3.5 py-3 border rounded-xl text-sm font-black text-amber-700 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-900 transition">
+                    </div>
+                    <div id="debtNotice" class="hidden p-3 bg-red-50 text-red-700 text-xs rounded-xl font-black text-center border border-red-200">
                         Remaining Debt: ₦<span id="calculatedDebt">0</span>
                     </div>
-                    <button type="submit" id="saveBtn" class="w-full brand-bg text-white font-bold py-3.5 rounded-xl text-sm shadow-lg hover:bg-blue-950 transition cursor-pointer">SAVE RECORD</button>
+                    <button type="submit" id="saveBtn" class="w-full brand-bg text-white font-extrabold py-3.5 rounded-xl text-sm shadow-lg hover:bg-blue-950 transition cursor-pointer flex items-center justify-center gap-2">
+                        <i class="fas fa-save"></i> SAVE RECORD
+                    </button>
                 </form>
             </section>
 
             <!-- TAB 2: DEBTS -->
             <section id="secDebtList" class="hidden space-y-3">
-                <div class="bg-white p-3 rounded-2xl shadow-md border border-gray-100">
-                    <input type="text" id="searchDebt" onkeyup="renderDebts()" placeholder="Search debt..." class="w-full px-3.5 py-2.5 border rounded-xl text-xs bg-gray-50 focus:bg-white transition">
+                <div class="bg-white p-3.5 rounded-2xl shadow-md border border-gray-100">
+                    <input type="text" id="searchDebt" onkeyup="renderDebts()" placeholder="Search debt by name or phone..." class="w-full px-4 py-3 border rounded-xl text-xs font-bold bg-gray-50 focus:bg-white transition">
                 </div>
-                <div id="debtContainer" class="space-y-2"></div>
+                <div id="debtContainer" class="space-y-2.5"></div>
             </section>
 
             <!-- TAB 3: HISTORY -->
             <section id="secHistory" class="hidden space-y-3">
-                <div class="bg-white p-3 rounded-2xl shadow-md border border-gray-100">
-                    <input type="text" id="searchHistory" onkeyup="renderHistory()" placeholder="Search history..." class="w-full px-3.5 py-2.5 border rounded-xl text-xs bg-gray-50 focus:bg-white transition">
+                <div class="bg-white p-3.5 rounded-2xl shadow-md border border-gray-100">
+                    <input type="text" id="searchHistory" onkeyup="renderHistory()" placeholder="Search history by name, phone or desc..." class="w-full px-4 py-3 border rounded-xl text-xs font-bold bg-gray-50 focus:bg-white transition">
                 </div>
-                <div id="historyContainer" class="space-y-2"></div>
+                <div id="historyContainer" class="space-y-2.5"></div>
             </section>
 
             <!-- TAB 4: AGENT REPORT -->
             <section id="secAgentReport" class="hidden space-y-4">
-                <div class="bg-white p-5 rounded-3xl shadow-md space-y-3 border border-gray-100">
-                    <h2 class="font-bold text-blue-950 text-sm border-b pb-2">Agent Performance Record</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div class="bg-white p-6 rounded-3xl shadow-md space-y-3.5 border border-gray-100">
+                    <h2 class="font-extrabold text-blue-950 text-sm border-b pb-2">Agent Performance Record</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                         <div>
-                            <label class="text-[11px] text-gray-600 font-semibold">Agent Code</label>
-                            <select id="reportAgentCode" class="w-full mt-1 px-3 py-2 border rounded-xl text-xs bg-gray-50 font-bold uppercase"></select>
+                            <label class="text-xs text-gray-700 font-bold">Agent Code</label>
+                            <select id="reportAgentCode" class="w-full mt-1 px-3.5 py-3 border rounded-xl text-xs bg-gray-50 font-bold uppercase"></select>
                         </div>
                         <div>
-                            <label class="text-[11px] text-gray-600 font-semibold">From Date</label>
-                            <input type="date" id="reportStartDate" class="w-full mt-1 px-3 py-2 border rounded-xl text-xs bg-gray-50">
+                            <label class="text-xs text-gray-700 font-bold">From Date</label>
+                            <input type="date" id="reportStartDate" class="w-full mt-1 px-3.5 py-3 border rounded-xl text-xs bg-gray-50 font-bold">
                         </div>
                         <div>
-                            <label class="text-[11px] text-gray-600 font-semibold">To Date</label>
-                            <input type="date" id="reportEndDate" class="w-full mt-1 px-3 py-2 border rounded-xl text-xs bg-gray-50">
+                            <label class="text-xs text-gray-700 font-bold">To Date</label>
+                            <input type="date" id="reportEndDate" class="w-full mt-1 px-3.5 py-3 border rounded-xl text-xs bg-gray-50 font-bold">
                         </div>
                     </div>
-                    <div class="flex gap-2 pt-2">
-                        <button onclick="generateAgentReport()" class="flex-1 brand-bg text-white py-2.5 rounded-xl text-xs font-bold hover:bg-blue-950 transition cursor-pointer">SEARCH REPORT</button>
-                        <button onclick="printAgentReport()" class="bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-800 transition cursor-pointer shadow"><i class="fas fa-print"></i> Print</button>
+                    <div class="flex gap-2.5 pt-2">
+                        <button onclick="generateAgentReport()" class="flex-1 brand-bg text-white py-3 rounded-xl text-xs font-extrabold hover:bg-blue-950 transition cursor-pointer shadow">SEARCH REPORT</button>
+                        <button onclick="printAgentReport()" class="bg-emerald-700 text-white px-5 py-3 rounded-xl text-xs font-extrabold hover:bg-emerald-800 transition cursor-pointer shadow"><i class="fas fa-print"></i> Print</button>
                     </div>
                 </div>
                 <div id="agentReportResults" class="space-y-3"></div>
@@ -257,41 +264,41 @@
             <section id="secAdmin" class="hidden space-y-4">
                 <div id="adminAuthLockBlock" class="bg-white p-6 rounded-3xl shadow-md text-center space-y-4 border border-gray-100">
                     <i class="fas fa-lock text-4xl brand-gold"></i>
-                    <h2 class="font-bold text-gray-700 text-sm">Admin Verification Required</h2>
-                    <input type="password" id="tabAdminPassInput" placeholder="Enter Admin Password" class="w-full px-4 py-3 border rounded-xl text-sm text-center bg-gray-50 focus:bg-white transition">
-                    <button onclick="verifyTabAdmin()" class="w-full brand-bg text-white py-3 rounded-xl text-xs font-bold hover:bg-blue-950 transition cursor-pointer">VERIFY ADMIN</button>
+                    <h2 class="font-extrabold text-gray-800 text-sm">Admin Verification Required</h2>
+                    <input type="password" id="tabAdminPassInput" placeholder="Enter Admin Password" class="w-full px-4 py-3.5 border rounded-xl text-sm font-bold text-center bg-gray-50 focus:bg-white transition">
+                    <button onclick="verifyTabAdmin()" class="w-full brand-bg text-white py-3.5 rounded-xl text-xs font-extrabold hover:bg-blue-950 transition cursor-pointer shadow">VERIFY ADMIN</button>
                 </div>
 
                 <div id="adminMainContentBlock" class="hidden space-y-4">
-                    <div class="bg-white p-5 rounded-3xl shadow-md space-y-3 border-t-4 border-gold">
-                        <h2 class="font-bold text-blue-950 text-sm border-b pb-2">Change Admin Password</h2>
-                        <form onsubmit="changeAdminPassword(event)" class="space-y-2.5">
-                            <input type="password" id="oldAdminPass" placeholder="Current Admin Password" required class="w-full px-3.5 py-2.5 border rounded-xl text-xs bg-gray-50">
-                            <input type="password" id="newAdminPass" placeholder="New Admin Password" required class="w-full px-3.5 py-2.5 border rounded-xl text-xs bg-gray-50">
-                            <button type="submit" class="w-full brand-bg text-white py-2.5 rounded-xl text-xs font-bold hover:bg-blue-950 transition cursor-pointer">UPDATE PASSWORD</button>
+                    <div class="bg-white p-6 rounded-3xl shadow-md space-y-3.5 border-t-4 border-gold">
+                        <h2 class="font-extrabold text-blue-950 text-sm border-b pb-2">Change Admin Password</h2>
+                        <form onsubmit="changeAdminPassword(event)" class="space-y-3">
+                            <input type="password" id="oldAdminPass" placeholder="Current Admin Password" required class="w-full px-4 py-3 border rounded-xl text-xs font-bold bg-gray-50">
+                            <input type="password" id="newAdminPass" placeholder="New Admin Password" required class="w-full px-4 py-3 border rounded-xl text-xs font-bold bg-gray-50">
+                            <button type="submit" class="w-full brand-bg text-white py-3 rounded-xl text-xs font-extrabold cursor-pointer shadow">UPDATE PASSWORD</button>
                         </form>
                     </div>
 
-                    <div class="bg-white p-5 rounded-3xl shadow-md space-y-3 border-t-4 border-gold">
-                        <h2 class="font-bold text-blue-950 text-sm border-b pb-2">Change Agent Password</h2>
-                        <form onsubmit="adminChangeAgentPassword(event)" class="space-y-2.5">
-                            <input type="text" id="targetAgentCode" placeholder="Agent Code (e.g. AG01)" required class="w-full px-3.5 py-2.5 border rounded-xl text-xs uppercase font-bold bg-gray-50">
-                            <input type="password" id="newAgentPassInput" placeholder="New Password for Agent" required class="w-full px-3.5 py-2.5 border rounded-xl text-xs bg-gray-50">
-                            <button type="submit" class="w-full bg-blue-900 text-white py-2.5 rounded-xl text-xs font-bold hover:bg-blue-950 transition cursor-pointer">UPDATE AGENT PASSWORD</button>
+                    <div class="bg-white p-6 rounded-3xl shadow-md space-y-3.5 border-t-4 border-gold">
+                        <h2 class="font-extrabold text-blue-950 text-sm border-b pb-2">Change Agent Password</h2>
+                        <form onsubmit="adminChangeAgentPassword(event)" class="space-y-3">
+                            <input type="text" id="targetAgentCode" placeholder="Agent Code (e.g. AG01)" required class="w-full px-4 py-3 border rounded-xl text-xs font-extrabold uppercase bg-gray-50">
+                            <input type="password" id="newAgentPassInput" placeholder="New Password for Agent" required class="w-full px-4 py-3 border rounded-xl text-xs font-bold bg-gray-50">
+                            <button type="submit" class="w-full bg-blue-900 text-white py-3 rounded-xl text-xs font-extrabold cursor-pointer shadow">UPDATE AGENT PASSWORD</button>
                         </form>
                     </div>
 
-                    <div class="bg-white p-5 rounded-3xl shadow-md space-y-4 border-t-4 border-gold">
-                        <h2 class="font-bold text-blue-950 text-sm border-b pb-2">Agents Management</h2>
-                        <form onsubmit="addAgent(event)" class="space-y-2.5 border p-4 rounded-2xl bg-gray-50 shadow-inner">
-                            <p class="text-xs font-bold text-gray-700">Add New Agent</p>
-                            <input type="text" id="newAgentCode" placeholder="Code (e.g. AG04)" required class="w-full px-3 py-2 border rounded-xl text-xs uppercase font-bold bg-white">
-                            <input type="text" id="newAgentName" placeholder="Agent Name" required class="w-full px-3 py-2 border rounded-xl text-xs bg-white">
-                            <input type="password" id="newAgentPass" placeholder="Password (2580)" required class="w-full px-3 py-2 border rounded-xl text-xs bg-white">
-                            <button type="submit" class="w-full bg-green-700 text-white py-2.5 rounded-xl text-xs font-bold hover:bg-green-800 transition cursor-pointer">+ ADD AGENT</button>
+                    <div class="bg-white p-6 rounded-3xl shadow-md space-y-4 border-t-4 border-gold">
+                        <h2 class="font-extrabold text-blue-950 text-sm border-b pb-2">Agents Management</h2>
+                        <form onsubmit="addAgent(event)" class="space-y-3 border p-4.5 rounded-2xl bg-gray-50 shadow-inner">
+                            <p class="text-xs font-extrabold text-gray-800">Add New Agent</p>
+                            <input type="text" id="newAgentCode" placeholder="Code (e.g. AG04)" required class="w-full px-3.5 py-3 border rounded-xl text-xs font-extrabold uppercase bg-white">
+                            <input type="text" id="newAgentName" placeholder="Agent Name" required class="w-full px-3.5 py-3 border rounded-xl text-xs font-bold bg-white">
+                            <input type="password" id="newAgentPass" placeholder="Password (2580)" required class="w-full px-3.5 py-3 border rounded-xl text-xs font-bold bg-white">
+                            <button type="submit" class="w-full bg-green-700 text-white py-3 rounded-xl text-xs font-extrabold hover:bg-green-800 transition cursor-pointer shadow">+ ADD AGENT</button>
                         </form>
                         <div>
-                            <p class="text-xs font-bold text-gray-600 mb-2">Existing Agents:</p>
+                            <p class="text-xs font-extrabold text-gray-700 mb-2">Existing Agents:</p>
                             <div id="agentListContainer" class="space-y-2"></div>
                         </div>
                     </div>
@@ -317,6 +324,10 @@
         ];
 
         window.addEventListener('DOMContentLoaded', async () => {
+            updateOnlineStatus();
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+
             await initSupabaseData();
             const savedSession = sessionStorage.getItem('amci_active_session');
             if (savedSession) {
@@ -332,26 +343,56 @@
             populateAgentDropdowns();
         });
 
-        async function initSupabaseData() {
-            // Fetch Agents
-            let { data: agentsData, error: agError } = await supabaseClient.from('agents').select('*');
-            if (!agentsData || agentsData.length === 0) {
-                for (let ag of defaultAgents) {
-                    await supabaseClient.from('agents').upsert([ag]);
-                }
-                globalAgents = defaultAgents;
+        function updateOnlineStatus() {
+            const banner = document.getElementById('networkBanner');
+            const text = document.getElementById('networkText');
+            if (navigator.onLine) {
+                banner.className = "fixed top-0 left-0 right-0 z-50 text-center py-1.5 text-xs font-black shadow-md bg-emerald-600 text-white transition-all";
+                text.innerText = "ONLINE - Connected to Cloud Database";
+                setTimeout(() => { banner.classList.add('hidden'); }, 3000);
             } else {
-                globalAgents = agentsData;
+                banner.classList.remove('hidden');
+                banner.className = "fixed top-0 left-0 right-0 z-50 text-center py-1.5 text-xs font-black shadow-md bg-red-600 text-white transition-all animate-pulse";
+                text.innerText = "OFFLINE - No internet connection detected!";
+            }
+        }
+
+        async function initSupabaseData() {
+            if (!navigator.onLine) {
+                showToast('You are offline. Showing cached records if available.', 'error');
+                let cached = localStorage.getItem('amci_offline_records');
+                if (cached) globalRecords = JSON.parse(cached);
+                let cachedAg = localStorage.getItem('amci_offline_agents');
+                if (cachedAg) globalAgents = JSON.parse(cachedAg);
+                else globalAgents = defaultAgents;
+                return;
             }
 
-            // Fetch Records
-            await fetchRecordsFromCloud();
+            try {
+                let { data: agentsData, error: agError } = await supabaseClient.from('agents').select('*');
+                if (!agentsData || agentsData.length === 0) {
+                    for (let ag of defaultAgents) {
+                        await supabaseClient.from('agents').upsert([ag]);
+                    }
+                    globalAgents = defaultAgents;
+                } else {
+                    globalAgents = agentsData;
+                }
+                localStorage.setItem('amci_offline_agents', JSON.stringify(globalAgents));
+                await fetchRecordsFromCloud();
+            } catch (err) {
+                console.error(err);
+                let cached = localStorage.getItem('amci_offline_records');
+                if (cached) globalRecords = JSON.parse(cached);
+            }
         }
 
         async function fetchRecordsFromCloud() {
+            if (!navigator.onLine) return;
             let { data, error } = await supabaseClient.from('records').select('*').order('id', { ascending: false });
             if (!error && data) {
                 globalRecords = data;
+                localStorage.setItem('amci_offline_records', JSON.stringify(globalRecords));
                 updateDashboard();
                 renderHistory();
                 renderDebts();
@@ -376,7 +417,7 @@
             setTimeout(() => {
                 toastBox.classList.remove('show');
                 setTimeout(() => toastBox.classList.add('hidden'), 300);
-            }, 3000);
+            }, 3500);
         }
 
         function showCustomConfirm(title, text, onConfirm) {
@@ -417,27 +458,57 @@
         function getRecords() { return globalRecords; }
 
         async function saveRecordsToCloud(record) {
+            if (!navigator.onLine) {
+                showToast('Babu network! An adana shi a kan na’urar ka, zai tafi cloud idan network ya dawo.', 'error');
+                globalRecords.unshift(record);
+                localStorage.setItem('amci_offline_records', JSON.stringify(globalRecords));
+                updateDashboard();
+                renderHistory();
+                renderDebts();
+                return true;
+            }
+
             const { error } = await supabaseClient.from('records').insert([record]);
             if (error) {
-                showToast('Error saving to cloud!', 'error');
+                showCustomConfirm('Kuskure wajen Tura Aiki', 'An samu matsala wajen tura umarnin zuwa cloud database. Kana so mu sake gwadawa (Try Again)?', () => {
+                    saveRecordsToCloud(record);
+                });
+                return false;
             } else {
                 await fetchRecordsFromCloud();
+                return true;
             }
         }
 
         async function updateRecordInCloud(record) {
+            if (!navigator.onLine) {
+                showToast('Babu network! An yi updating a kan na’urar ka.', 'error');
+                localStorage.setItem('amci_offline_records', JSON.stringify(globalRecords));
+                updateDashboard();
+                renderHistory();
+                renderDebts();
+                return;
+            }
+
             const { error } = await supabaseClient.from('records').update({
                 amount_paid: record.amount_paid,
                 debt_balance: record.debt_balance
             }).eq('id', record.id);
             if (error) {
-                showToast('Error updating cloud!', 'error');
+                showCustomConfirm('Try Again?', 'An kasa yin updating saboda matsalar network. Kana so a sake gwadawa?', () => {
+                    updateRecordInCloud(record);
+                });
             } else {
                 await fetchRecordsFromCloud();
             }
         }
 
         async function deleteRecordFromCloud(id) {
+            if (!navigator.onLine) {
+                showToast('Babu network! Ba za a iya goge shi daga cloud ba yanzu.', 'error');
+                return;
+            }
+
             const { error } = await supabaseClient.from('records').delete().eq('id', id);
             if (error) {
                 showToast('Error deleting from cloud!', 'error');
@@ -538,7 +609,7 @@
             ['tabNewJob', 'tabDebtList', 'tabHistory', 'tabAgentReport', 'tabAdmin'].forEach(id => {
                 const el = document.getElementById(id);
                 el.classList.remove('brand-bg', 'text-white', 'shadow');
-                el.classList.add('text-gray-600');
+                el.classList.add('text-gray-700');
             });
 
             if(tabName === 'newJob') {
@@ -619,10 +690,12 @@
                 debt_balance: debt
             };
 
-            await saveRecordsToCloud(record);
-            showToast('Record saved successfully to cloud!', 'success');
-            document.getElementById('jobForm').reset();
-            document.getElementById('debtNotice').classList.add('hidden');
+            let success = await saveRecordsToCloud(record);
+            if (success) {
+                showToast('An yi nasarar adana aikin da aka tura!', 'success');
+                document.getElementById('jobForm').reset();
+                document.getElementById('debtNotice').classList.add('hidden');
+            }
         }
 
         function updateDashboard() {
@@ -647,11 +720,11 @@
             const debts = getRecords().filter(r => r.debt_balance > 0 && (r.full_name.toLowerCase().includes(query) || r.phone.toLowerCase().includes(query)));
 
             if(debts.length === 0) {
-                container.innerHTML = '<p class="text-center text-xs text-gray-400 py-6 bg-white rounded-2xl shadow-sm">No active debts found.</p>';
+                container.innerHTML = '<p class="text-center text-xs text-gray-500 py-6 bg-white rounded-2xl shadow-sm font-bold">No active debts found.</p>';
                 return;
             }
             debts.forEach(r => {
-                container.innerHTML += '<div class="bg-white p-4 rounded-2xl shadow-sm border border-red-100 flex justify-between items-center"><div><p class="font-bold text-xs text-gray-900">' + r.full_name + ' (' + r.phone + ')</p><p class="text-[10px] text-gray-500">' + r.description + ' • Agent: ' + r.agent_code + '</p><p class="text-[11px] font-black text-red-600 mt-1">Debt: ₦' + r.debt_balance.toLocaleString() + '</p></div><button onclick="payDebtPrompt(' + r.id + ')" class="bg-green-600 text-white text-xs px-3.5 py-2 rounded-xl font-bold cursor-pointer hover:bg-green-700 transition">Clear</button></div>';
+                container.innerHTML += '<div class="bg-white p-4 rounded-2xl shadow-sm border border-red-100 flex justify-between items-center"><div><p class="font-extrabold text-xs text-gray-900">' + r.full_name + ' (' + r.phone + ')</p><p class="text-[10px] text-gray-600 font-semibold">' + r.description + ' • Agent: ' + r.agent_code + '</p><p class="text-[11px] font-black text-red-600 mt-1">Debt: ₦' + r.debt_balance.toLocaleString() + '</p></div><button onclick="payDebtPrompt(' + r.id + ')" class="bg-green-600 text-white text-xs px-3.5 py-2 rounded-xl font-extrabold cursor-pointer hover:bg-green-700 transition shadow">Clear</button></div>';
             });
         }
 
@@ -679,12 +752,12 @@
             const filtered = getRecords().filter(r => r.full_name.toLowerCase().includes(query) || r.phone.toLowerCase().includes(query) || r.description.toLowerCase().includes(query));
 
             if (filtered.length === 0) {
-                container.innerHTML = '<p class="text-center text-xs text-gray-400 py-6 bg-white rounded-2xl shadow-sm">No transaction history found.</p>';
+                container.innerHTML = '<p class="text-center text-xs text-gray-500 py-6 bg-white rounded-2xl shadow-sm font-bold">No transaction history found.</p>';
                 return;
             }
             filtered.forEach(r => {
-                let delBtn = currentAgent && currentAgent.role === 'admin' ? '<button onclick="deleteRecord(' + r.id + ')" class="bg-red-700 text-white text-[10px] px-3 py-1.5 rounded-xl font-bold cursor-pointer hover:bg-red-800 transition"><i class="fas fa-trash"></i> Delete</button>' : '';
-                container.innerHTML += '<div class="bg-white p-4 rounded-2xl shadow-sm text-xs space-y-2 border border-gray-100"><div class="flex justify-between font-bold text-gray-900 border-b pb-1"><span>' + r.full_name + ' (' + r.phone + ')</span><span class="text-blue-900 font-black">₦' + r.total_bill.toLocaleString() + '</span></div><div class="text-gray-600 space-y-1 bg-gray-50 p-2.5 rounded-xl border border-gray-100"><p><strong>Desc:</strong> ' + r.description + '</p><p><strong>Paid:</strong> <span class="text-green-700 font-bold">₦' + r.amount_paid.toLocaleString() + '</span></p><p><strong>Debt:</strong> <span class="text-red-600 font-bold">₦' + r.debt_balance.toLocaleString() + '</span></p></div><div class="flex justify-between items-center text-[10px] text-gray-400 pt-1 border-t"><span>Date: ' + r.date_str + ' | Agent: ' + r.agent_code + '</span><div class="flex gap-2"><button onclick=\'downloadPDF(' + JSON.stringify(r) + ')\' class="brand-bg text-gold px-3.5 py-1.5 rounded-xl font-bold cursor-pointer shadow hover:opacity-95 transition"><i class="fas fa-file-pdf"></i> Receipt</button>' + delBtn + '</div></div></div>';
+                let delBtn = currentAgent && currentAgent.role === 'admin' ? '<button onclick="deleteRecord(' + r.id + ')" class="bg-red-700 text-white text-[10px] px-3.5 py-1.5 rounded-xl font-extrabold cursor-pointer hover:bg-red-800 transition shadow"><i class="fas fa-trash"></i> Delete</button>' : '';
+                container.innerHTML += '<div class="bg-white p-4.5 rounded-2xl shadow-sm text-xs space-y-2.5 border border-gray-100"><div class="flex justify-between font-extrabold text-gray-900 border-b pb-1.5 text-sm"><span>' + r.full_name + ' (' + r.phone + ')</span><span class="text-blue-900 font-black">₦' + r.total_bill.toLocaleString() + '</span></div><div class="text-gray-700 space-y-1 bg-gray-50 p-3 rounded-xl border border-gray-100 font-semibold"><p><strong>Desc:</strong> ' + r.description + '</p><p><strong>Paid:</strong> <span class="text-green-700 font-black">₦' + r.amount_paid.toLocaleString() + '</span></p><p><strong>Debt:</strong> <span class="text-red-600 font-black">₦' + r.debt_balance.toLocaleString() + '</span></p></div><div class="flex justify-between items-center text-[10px] text-gray-500 font-bold pt-1 border-t"><span>Date: ' + r.date_str + ' | Agent: ' + r.agent_code + '</span><div class="flex gap-2"><button onclick=\'downloadPDF(' + JSON.stringify(r) + ')\' class="brand-bg text-gold px-3.5 py-1.5 rounded-xl font-bold cursor-pointer shadow hover:opacity-95 transition"><i class="fas fa-file-pdf"></i> Receipt</button>' + delBtn + '</div></div></div>';
             });
         }
 
@@ -706,15 +779,15 @@
 
             const filtered = getRecords().filter(r => (!code || r.agent_code === code) && (!startDate || r.raw_date >= startDate) && (!endDate || r.raw_date <= endDate));
             if (filtered.length === 0) {
-                container.innerHTML = '<div class="bg-white p-6 rounded-3xl shadow-md text-center text-xs text-gray-400">No records found.</div>';
+                container.innerHTML = '<div class="bg-white p-6 rounded-3xl shadow-md text-center text-xs text-gray-500 font-bold">No records found for this criteria.</div>';
                 return;
             }
 
             let totalRev = 0, totalCom = 0, totalColl = 0, totalDebt = 0;
             filtered.forEach(r => { totalRev += r.total_bill; totalColl += r.amount_paid; totalCom += (r.agent_commission || 0); totalDebt += r.debt_balance; });
 
-            let listHTML = '<div class="bg-white p-5 rounded-3xl shadow-md space-y-3 border-t-4 border-gold"><div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center border-b pb-3"><div class="bg-blue-50 p-2 rounded-xl"><p class="text-[9px] text-gray-500 font-bold uppercase">Total Work</p><p class="text-xs font-black text-blue-950">₦' + totalRev.toLocaleString() + '</p></div><div class="bg-green-50 p-2 rounded-xl"><p class="text-[9px] text-gray-500 font-bold uppercase">Collected</p><p class="text-xs font-black text-green-700">₦' + totalColl.toLocaleString() + '</p></div><div class="bg-amber-50 p-2 rounded-xl"><p class="text-[9px] text-gray-500 font-bold uppercase">Commission</p><p class="text-xs font-black text-amber-700">₦' + totalCom.toLocaleString() + '</p></div><div class="bg-red-50 p-2 rounded-xl"><p class="text-[9px] text-gray-500 font-bold uppercase">Total Debt</p><p class="text-xs font-black text-red-600">₦' + totalDebt.toLocaleString() + '</p></div></div><div class="space-y-2">';
-            filtered.forEach(r => { listHTML += '<div class="bg-gray-50 p-3 rounded-xl border text-xs flex justify-between items-center"><div><p class="font-bold">' + r.full_name + ' [' + r.agent_code + ']</p><p class="text-[10px] text-gray-500">' + r.description + '</p></div><div class="text-right"><p class="font-bold">₦' + r.total_bill.toLocaleString() + '</p></div></div>'; });
+            let listHTML = '<div class="bg-white p-6 rounded-3xl shadow-md space-y-3.5 border-t-4 border-gold"><div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center border-b pb-3.5"><div class="bg-blue-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Total Work</p><p class="text-xs font-black text-blue-950 mt-0.5">₦' + totalRev.toLocaleString() + '</p></div><div class="bg-green-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Collected</p><p class="text-xs font-black text-green-700 mt-0.5">₦' + totalColl.toLocaleString() + '</p></div><div class="bg-amber-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Commission</p><p class="text-xs font-black text-amber-700 mt-0.5">₦' + totalCom.toLocaleString() + '</p></div><div class="bg-red-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Total Debt</p><p class="text-xs font-black text-red-600 mt-0.5">₦' + totalDebt.toLocaleString() + '</p></div></div><div class="space-y-2">';
+            filtered.forEach(r => { listHTML += '<div class="bg-gray-50 p-3.5 rounded-xl border text-xs flex justify-between items-center font-semibold"><div><p class="font-extrabold text-gray-900">' + r.full_name + ' <span class="text-blue-900">[' + r.agent_code + ']</span></p><p class="text-[10px] text-gray-600">' + r.description + '</p></div><div class="text-right"><p class="font-black text-blue-950">₦' + r.total_bill.toLocaleString() + '</p></div></div>'; });
             container.innerHTML = listHTML + '</div></div>';
         }
 
@@ -735,7 +808,7 @@
             if(!container) return;
             container.innerHTML = '';
             getAgents().forEach((a, index) => {
-                container.innerHTML += '<div class="flex justify-between items-center bg-gray-50 p-2.5 rounded-xl text-xs border"><div><span class="font-black">[' + a.code + ']</span> ' + a.name + '</div><button onclick="removeAgent(\'' + a.code + '\')" class="text-red-600 font-bold text-xs px-2 py-1 bg-red-50 rounded cursor-pointer hover:bg-red-100 transition">Remove</button></div>';
+                container.innerHTML += '<div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl text-xs border font-semibold"><div><span class="font-black text-blue-950">[' + a.code + ']</span> ' + a.name + '</div><button onclick="removeAgent(\'' + a.code + '\')" class="text-red-600 font-extrabold text-xs px-2.5 py-1.5 bg-red-50 rounded-lg cursor-pointer hover:bg-red-100 transition shadow-xs">Remove</button></div>';
             });
         }
 
@@ -745,6 +818,11 @@
             const name = document.getElementById('newAgentName').value.trim().toUpperCase();
             const pass = document.getElementById('newAgentPass').value.trim();
             
+            if (!navigator.onLine) {
+                showToast('Babu network! Ba za a iya ƙara agent a cloud ba yanzu.', 'error');
+                return;
+            }
+
             const { error } = await supabaseClient.from('agents').insert([{ code, name, pass }]);
             if (error) {
                 showToast('Error adding agent (Code might exist)!', 'error');
@@ -760,6 +838,10 @@
 
         function removeAgent(code) {
             showCustomConfirm('Remove Agent', 'Are you sure?', async () => {
+                if (!navigator.onLine) {
+                    showToast('Babu network!', 'error');
+                    return;
+                }
                 const { error } = await supabaseClient.from('agents').delete().eq('code', code);
                 if (error) {
                     showToast('Error removing agent!', 'error');
@@ -791,6 +873,11 @@
             const code = document.getElementById('targetAgentCode').value.trim().toUpperCase();
             const newPass = document.getElementById('newAgentPassInput').value.trim();
             
+            if (!navigator.onLine) {
+                showToast('Babu network!', 'error');
+                return;
+            }
+
             const { error } = await supabaseClient.from('agents').update({ pass: newPass }).eq('code', code);
             if (error) {
                 showToast('Agent code not found or error updating!', 'error');
