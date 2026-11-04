@@ -3,1164 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AMC INTERNATIONAL - Store & Debt Management System</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0d2040">
-    
+    <title>AMC International PWA</title>
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        .brand-bg { background-color: #0d2040; }
-        .brand-gold { color: #d4af37; }
-        .bg-gold { background-color: #d4af37; }
-        .border-gold { border-color: #d4af37; }
-        .logo-box {
-            background: linear-gradient(135deg, #0d2040, #1e3a8a);
-            border: 2px solid #d4af37;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        #toastBox {
-            transition: all 0.3s ease-in-out;
-            transform: translateY(-20px);
-            opacity: 0;
-        }
-        #toastBox.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    </style>
+    <!-- Supabase JS Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gradient-to-br from-gray-100 to-gray-200 font-sans text-gray-800 pb-12 select-none min-h-screen">
+<body class="bg-gray-100 font-sans antialiased">
 
-    <!-- CUSTOM TOAST NOTIFICATION BOX -->
-    <div id="toastContainer" class="fixed top-5 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
-        <div id="toastBox" class="pointer-events-auto flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold max-w-sm w-full hidden border">
-            <i id="toastIcon" class="text-base"></i>
-            <span id="toastMessage" class="flex-1"></span>
-        </div>
-    </div>
-
-    <!-- CUSTOM CONFIRM MODAL -->
-    <div id="customConfirmModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl border-t-4 border-gold">
-            <div class="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center mx-auto text-amber-600 text-xl">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <h3 id="confirmTitle" class="font-bold text-blue-950 text-sm">Are you sure?</h3>
-            <p id="confirmText" class="text-xs text-gray-500"></p>
-            <div class="grid grid-cols-2 gap-2 pt-2">
-                <button id="confirmBtnCancel" class="py-2.5 bg-gray-200 text-gray-700 rounded-xl text-xs font-bold hover:bg-gray-300 transition cursor-pointer">Cancel</button>
-                <button id="confirmBtnOk" class="py-2.5 bg-red-700 text-white rounded-xl text-xs font-bold hover:bg-red-800 transition cursor-pointer">Confirm</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- CUSTOM PROMPT MODAL -->
-    <div id="customPromptModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl border-t-4 border-gold">
-            <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto text-blue-900 text-xl">
-                <i class="fas fa-coins"></i>
-            </div>
-            <h3 id="promptTitle" class="font-bold text-blue-950 text-sm">Enter Amount</h3>
-            <input type="number" id="customPromptInput" class="w-full px-4 py-3 border rounded-xl text-center text-sm font-bold bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-900">
-            <div class="grid grid-cols-2 gap-2 pt-2">
-                <button id="promptBtnCancel" class="py-2.5 bg-gray-200 text-gray-700 rounded-xl text-xs font-bold hover:bg-gray-300 transition cursor-pointer">Cancel</button>
-                <button id="promptBtnOk" class="py-2.5 brand-bg text-white rounded-xl text-xs font-bold hover:bg-blue-950 transition cursor-pointer">Submit</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- LOGIN SCREEN -->
-    <div id="loginScreen" class="fixed inset-0 brand-bg flex flex-col justify-center items-center z-50 p-4">
-        <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm text-center border-t-4 border-gold">
-            <div class="logo-box w-20 h-20 mx-auto mb-3 rounded-full flex flex-col items-center justify-center text-center">
-                <span class="text-white font-black text-lg tracking-wider leading-none">AMC</span>
-                <span class="brand-gold text-[8px] font-bold tracking-widest mt-0.5">INT'L</span>
-            </div>
-            
-            <h1 class="text-xl font-extrabold text-blue-900 tracking-wide">AMC INTERNATIONAL</h1>
-            <p class="text-[11px] text-gray-500 mb-6 font-semibold">AA MASOYIN MASOYA COMM CENTER INT.</p>
-            
-            <div class="grid grid-cols-2 gap-1 border rounded-xl mb-6 overflow-hidden text-xs font-bold bg-gray-50 p-1 shadow-inner">
-                <button type="button" id="tabBtnAgent" onclick="switchLoginMode('agent')" class="py-2.5 rounded-lg brand-bg text-white transition cursor-pointer">AGENT LOGIN</button>
-                <button type="button" id="tabBtnAdmin" onclick="switchLoginMode('admin')" class="py-2.5 rounded-lg text-gray-700 transition cursor-pointer">ADMIN LOGIN</button>
-            </div>
-
-            <!-- AGENT LOGIN -->
-            <form id="agentLoginForm" onsubmit="handleAgentLogin(event)" class="space-y-4">
-                <div>
-                    <input type="text" id="loginAgentCode" placeholder="Agent Code (e.g. AG01)" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900 text-center uppercase font-bold text-sm bg-gray-50">
-                </div>
-                <div>
-                    <input type="password" id="loginAgentPassword" placeholder="Enter Password" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900 text-center text-sm bg-gray-50">
-                </div>
-                <button type="submit" class="w-full brand-bg text-white font-bold py-3 rounded-xl shadow-lg hover:bg-blue-950 transition duration-200 text-sm cursor-pointer">LOGIN AS AGENT</button>
-                <button type="button" onclick="loginWithBiometrics('agent')" class="w-full bg-emerald-700 text-white font-bold py-2.5 rounded-xl shadow hover:bg-emerald-800 transition text-xs flex items-center justify-center gap-2 cursor-pointer">
-                    <i class="fas fa-fingerprint text-base"></i> AGENT THUMBPRINT LOGIN
-                </button>
-            </form>
-
-            <!-- ADMIN LOGIN -->
-            <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="space-y-4 hidden">
-                <div>
-                    <input type="text" id="loginAdminCode" value="ADMIN" readonly class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-100 text-center uppercase font-bold text-sm text-blue-900">
-                </div>
-                <div>
-                    <input type="password" id="loginAdminPassword" placeholder="Enter Admin Password" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-900 text-center text-sm bg-gray-50">
-                </div>
-                <button type="submit" class="w-full bg-red-800 text-white font-bold py-3 rounded-xl shadow-lg hover:bg-red-900 transition duration-200 text-sm cursor-pointer">LOGIN AS ADMIN</button>
-                <button type="button" onclick="loginWithBiometrics('admin')" class="w-full bg-red-700 text-white font-bold py-2.5 rounded-xl shadow hover:bg-red-800 transition text-xs flex items-center justify-center gap-2 cursor-pointer">
-                    <i class="fas fa-fingerprint text-base"></i> ADMIN THUMBPRINT LOGIN
-                </button>
-            </form>
-
-            <p id="loginError" class="text-red-500 text-xs mt-3 hidden font-semibold">Invalid Code or Password!</p>
-        </div>
-    </div>
-
-    <!-- MAIN APP INTERFACE -->
-    <div id="appInterface" class="hidden">
-        <header class="brand-bg text-white p-4 shadow-xl sticky top-0 z-40 border-b-2 border-gold">
-            <div class="flex items-center justify-between max-w-2xl mx-auto">
-                <div class="flex items-center space-x-3">
-                    <div class="logo-box w-10 h-10 rounded-full flex flex-col items-center justify-center text-center shadow">
-                        <span class="text-white font-black text-[10px] leading-none">AMC</span>
-                        <span class="brand-gold text-[6px] font-bold">INT'L</span>
-                    </div>
-                    <div>
-                        <h1 class="text-base font-extrabold leading-tight brand-gold">AMC INTERNATIONAL</h1>
-                        <p class="text-[9px] text-gray-300 tracking-tight">AA MASOYIN MASOYA COMM CENTER INT.</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <span id="activeAgentBadge" class="bg-blue-900 text-xs text-gold px-2.5 py-1.5 rounded-lg border border-gold font-bold shadow-inner"></span>
-                    <button onclick="logout()" class="text-red-400 hover:text-red-200 text-sm p-2 rounded-lg bg-red-950/40 cursor-pointer" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
-                </div>
-            </div>
+    <div id="app" class="max-w-md mx-auto min-h-screen bg-white shadow-lg flex flex-col">
+        <!-- Header -->
+        <header class="bg-blue-600 text-white p-4 text-center font-bold text-lg shadow">
+            AMC International Dashboard
         </header>
 
-        <main class="max-w-2xl mx-auto p-4 space-y-4">
+        <!-- Main Content Container -->
+        <main class="p-4 flex-1 overflow-y-auto">
             
-            <!-- DASHBOARD METRICS -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-                <div class="bg-white p-3 rounded-2xl shadow-md border-l-4 border-blue-900">
-                    <p class="text-[10px] text-gray-500 font-semibold uppercase">Total Work</p>
-                    <p id="totalRevenue" class="text-xs font-black text-blue-950 mt-1">₦0</p>
-                </div>
-                <div class="bg-white p-3 rounded-2xl shadow-md border-l-4 border-green-600">
-                    <p class="text-[10px] text-gray-500 font-semibold uppercase">Collected</p>
-                    <p id="totalPaid" class="text-xs font-black text-green-700 mt-1">₦0</p>
-                </div>
-                <div class="bg-white p-3 rounded-2xl shadow-md border-l-4 border-amber-600">
-                    <p class="text-[10px] text-gray-500 font-semibold uppercase">Agent Comm.</p>
-                    <p id="totalCommissions" class="text-xs font-black text-amber-700 mt-1">₦0</p>
-                </div>
-                <div class="bg-white p-3 rounded-2xl shadow-md border-l-4 border-red-500">
-                    <p class="text-[10px] text-gray-500 font-semibold uppercase">Pending Debt</p>
-                    <p id="totalDebt" class="text-xs font-black text-red-600 mt-1">₦0</p>
-                </div>
-            </div>
-
-            <!-- TABS NAVIGATION -->
-            <div class="flex flex-wrap gap-1 bg-white p-1.5 rounded-2xl shadow-md text-xs font-bold">
-                <button onclick="switchTab('newJob')" id="tabNewJob" class="flex-1 py-2 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer">New Job</button>
-                <button onclick="switchTab('debtList')" id="tabDebtList" class="flex-1 py-2 px-2 rounded-xl text-gray-600 transition cursor-pointer">Debts</button>
-                <button onclick="switchTab('history')" id="tabHistory" class="flex-1 py-2 px-2 rounded-xl text-gray-600 transition cursor-pointer">History</button>
-                <button onclick="switchTab('agentReport')" id="tabAgentReport" class="flex-1 py-2 px-2 rounded-xl text-gray-600 transition cursor-pointer">Agent Report</button>
-                <button onclick="switchTab('admin')" id="tabAdmin" class="flex-1 py-2 px-2 rounded-xl text-gray-600 transition hidden cursor-pointer"><i class="fas fa-user-shield"></i> Admin</button>
-            </div>
-
-            <!-- TAB 1: NEW TRANSACTION -->
-            <section id="secNewJob" class="bg-white p-5 rounded-3xl shadow-md space-y-3 border border-gray-100">
-                <h2 class="font-bold text-blue-950 text-sm border-b pb-2 flex items-center gap-2"><i class="fas fa-file-invoice-dollar brand-gold"></i> Record Job / Sale</h2>
-                <form id="jobForm" onsubmit="saveTransaction(event)" class="space-y-3">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="text-xs text-gray-600 font-semibold">First Name</label>
-                            <input type="text" id="custFirstName" required class="w-full mt-1 px-3 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-blue-900 focus:outline-none uppercase bg-gray-50">
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-600 font-semibold">Surname</label>
-                            <input type="text" id="custSurname" required class="w-full mt-1 px-3 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-blue-900 focus:outline-none uppercase bg-gray-50">
-                        </div>
-                    </div>
+            <!-- Agent Input Form -->
+            <section id="agent-section" class="mb-6 bg-gray-50 p-4 rounded-lg border">
+                <h2 class="text-md font-semibold mb-3 text-blue-700">Shigar da Aikin Sabon Abokin Ciniki</h2>
+                <form id="job-form" class="space-y-3">
                     <div>
-                        <label class="text-xs text-gray-600 font-semibold">Middle Name (Optional)</label>
-                        <input type="text" id="custMiddleName" placeholder="Optional" class="w-full mt-1 px-3 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-blue-900 focus:outline-none uppercase bg-gray-50">
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-600 font-semibold">Phone Number (Optional)</label>
-                        <input type="tel" id="custPhone" placeholder="080..." class="w-full mt-1 px-3 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-blue-900 focus:outline-none bg-gray-50">
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-600 font-semibold">Job / Product Description</label>
-                        <textarea id="jobDesc" required rows="2" class="w-full mt-1 px-3 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-blue-900 focus:outline-none bg-gray-50"></textarea>
+                        <label class="block text-xs font-medium text-gray-700">Sunan Agent (Agent Name)</label>
+                        <input type="text" id="agent_name" required class="w-full mt-1 p-2 border rounded text-sm" placeholder="Saka sunanka">
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="text-xs text-gray-600 font-semibold">Total Amount (₦)</label>
-                            <input type="number" id="totalBill" required min="0" oninput="calcDebt()" class="w-full mt-1 px-3 py-2.5 border rounded-xl text-sm font-bold text-blue-900 focus:outline-none bg-gray-50">
+                            <label class="block text-xs font-medium text-gray-700">Sunan Farko</label>
+                            <input type="text" id="customer_first_name" class="w-full mt-1 p-2 border rounded text-sm" placeholder="Sunan Farko">
                         </div>
                         <div>
-                            <label class="text-xs text-gray-600 font-semibold">Amount Paid (₦)</label>
-                            <input type="number" id="amountPaid" required min="0" oninput="calcDebt()" class="w-full mt-1 px-3 py-2.5 border rounded-xl text-sm font-bold text-green-700 focus:outline-none bg-gray-50">
+                            <label class="block text-xs font-medium text-gray-700">Sunan Babba (Surname)</label>
+                            <input type="text" id="customer_surname" class="w-full mt-1 p-2 border rounded text-sm" placeholder="Surname">
                         </div>
                     </div>
                     <div>
-                        <label class="text-xs text-gray-600 font-semibold">Agent Commission (₦) - Optional</label>
-                        <input type="number" id="agentCommission" min="0" value="0" placeholder="0" class="w-full mt-1 px-3 py-2.5 border rounded-xl text-sm font-bold text-amber-700 focus:outline-none bg-gray-50">
+                        <label class="block text-xs font-medium text-gray-700">Lambar Waya</label>
+                        <input type="tel" id="phone" class="w-full mt-1 p-2 border rounded text-sm" placeholder="080XXXXXXXX">
                     </div>
-                    <div id="debtNotice" class="hidden p-2.5 bg-red-50 text-red-700 text-xs rounded-xl font-bold text-center border border-red-200 shadow-inner">
-                        Remaining Debt: ₦<span id="calculatedDebt">0</span>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700">Bayanin Aiki (Description)</label>
+                        <input type="text" id="description" class="w-full mt-1 p-2 border rounded text-sm" placeholder="Misali: Registration / Enrolment">
                     </div>
-                    <button type="submit" id="saveBtn" class="w-full brand-bg text-white font-bold py-3.5 rounded-xl text-sm shadow-lg hover:bg-blue-950 transition cursor-pointer">SAVE RECORD</button>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700">Jimlar Kuɗi</label>
+                            <input type="number" id="amount" value="0" class="w-full mt-1 p-2 border rounded text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700">An Biya</label>
+                            <input type="number" id="amount_paid" value="0" class="w-full mt-1 p-2 border rounded text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700">Bashi (Debt)</label>
+                            <input type="number" id="debt" value="0" readonly class="w-full mt-1 p-2 bg-gray-200 border rounded text-sm">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded text-sm font-semibold hover:bg-blue-700">
+                        Ajiye Aikin (Submit Job)
+                    </button>
                 </form>
             </section>
 
-            <!-- TAB 2: DEBT LIST -->
-            <section id="secDebtList" class="hidden space-y-3">
-                <div class="bg-white p-3 rounded-2xl shadow-md">
-                    <input type="text" id="searchDebt" onkeyup="renderDebts()" placeholder="Search debt by name, phone or date..." class="w-full px-3.5 py-2.5 border rounded-xl text-xs bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-900">
-                </div>
-                <div id="debtContainer" class="space-y-2"></div>
-            </section>
-
-            <!-- TAB 3: TRANSACTION HISTORY -->
-            <section id="secHistory" class="hidden space-y-3">
-                <div class="bg-white p-3 rounded-2xl shadow-md">
-                    <input type="text" id="searchHistory" onkeyup="renderHistory()" placeholder="Search by name, phone, description or date..." class="w-full px-3.5 py-2.5 border rounded-xl text-xs bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-900">
-                </div>
-                <div id="historyContainer" class="space-y-2"></div>
-            </section>
-
-            <!-- TAB 4: AGENT PERFORMANCE REPORT -->
-            <section id="secAgentReport" class="hidden space-y-4">
-                <div class="bg-white p-5 rounded-3xl shadow-md space-y-3 border border-gray-100">
-                    <h2 class="font-bold text-blue-950 text-sm border-b pb-2"><i class="fas fa-chart-line brand-gold"></i> Agent Performance Record</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <div>
-                            <label class="text-[11px] text-gray-600 font-semibold">Select Agent Code</label>
-                            <select id="reportAgentCode" class="w-full mt-1 px-3 py-2 border rounded-xl text-xs bg-gray-50 font-bold uppercase">
-                                <!-- Populated dynamically -->
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[11px] text-gray-600 font-semibold">From Date</label>
-                            <input type="date" id="reportStartDate" class="w-full mt-1 px-3 py-2 border rounded-xl text-xs bg-gray-50">
-                        </div>
-                        <div>
-                            <label class="text-[11px] text-gray-600 font-semibold">To Date</label>
-                            <input type="date" id="reportEndDate" class="w-full mt-1 px-3 py-2 border rounded-xl text-xs bg-gray-50">
-                        </div>
-                    </div>
-                    <div class="flex gap-2 pt-2">
-                        <button onclick="generateAgentReport()" class="flex-1 brand-bg text-white py-2.5 rounded-xl text-xs font-bold shadow hover:bg-blue-950 transition cursor-pointer">SEARCH REPORT</button>
-                        <button onclick="printAgentReport()" class="bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow hover:bg-emerald-800 transition cursor-pointer"><i class="fas fa-print"></i> Print</button>
-                    </div>
-                </div>
-
-                <div id="agentReportResults" class="space-y-3">
-                    <!-- Results will load here -->
+            <!-- Admin View / Jobs List -->
+            <section id="admin-section">
+                <h2 class="text-md font-semibold mb-3 text-gray-800">Jerin Ayyuka (Admin Live View)</h2>
+                <div id="jobs-list" class="space-y-2">
+                    <p class="text-xs text-gray-500">Ana ɗauko bayanai...</p>
                 </div>
             </section>
 
-            <!-- TAB 5: ADMIN PANEL -->
-            <section id="secAdmin" class="hidden space-y-4">
-                <div id="adminAuthLockBlock" class="bg-white p-6 rounded-3xl shadow-md text-center space-y-4 border border-gray-100">
-                    <i class="fas fa-lock text-4xl brand-gold"></i>
-                    <h2 class="font-bold text-gray-700 text-sm">Admin Verification Required</h2>
-                    <input type="password" id="tabAdminPassInput" placeholder="Enter Admin Password" class="w-full px-4 py-3 border rounded-xl text-sm text-center bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-900">
-                    <button onclick="verifyTabAdmin()" class="w-full brand-bg text-white py-3 rounded-xl text-xs font-bold shadow hover:bg-blue-950 transition cursor-pointer">VERIFY & OPEN ADMIN</button>
-                </div>
-
-                <div id="adminMainContentBlock" class="hidden space-y-4">
-                    <!-- ADMIN BIOMETRIC SETTINGS -->
-                    <div class="bg-white p-5 rounded-3xl shadow-md space-y-3 border-t-4 border-gold">
-                        <h2 class="font-bold text-blue-950 text-sm border-b pb-2"><i class="fas fa-fingerprint brand-gold"></i> Security Settings</h2>
-                        <div class="flex items-center justify-between py-2 text-xs">
-                            <span class="font-semibold text-gray-700">Enable Device Thumbprint Login</span>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="biometricToggle" onchange="toggleBiometricSetting(this)" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- CHANGE ADMIN PASSWORD -->
-                    <div class="bg-white p-5 rounded-3xl shadow-md space-y-3 border-t-4 border-gold">
-                        <h2 class="font-bold text-blue-950 text-sm border-b pb-2"><i class="fas fa-key brand-gold"></i> Change Admin Password</h2>
-                        <form onsubmit="changeAdminPassword(event)" class="space-y-2.5">
-                            <input type="password" id="oldAdminPass" placeholder="Current Admin Password" required class="w-full px-3.5 py-2.5 border rounded-xl text-xs bg-gray-50">
-                            <input type="password" id="newAdminPass" placeholder="New Admin Password" required class="w-full px-3.5 py-2.5 border rounded-xl text-xs bg-gray-50">
-                            <button type="submit" class="w-full brand-bg text-white py-2.5 rounded-xl text-xs font-bold shadow hover:bg-blue-950 transition cursor-pointer">UPDATE PASSWORD</button>
-                        </form>
-                    </div>
-
-                    <!-- AGENTS MANAGEMENT -->
-                    <div class="bg-white p-5 rounded-3xl shadow-md space-y-4">
-                        <h2 class="font-bold text-blue-950 text-sm border-b pb-2"><i class="fas fa-users brand-gold"></i> Agents Management</h2>
-                        
-                        <form onsubmit="addAgent(event)" class="space-y-2.5 border p-4 rounded-2xl bg-gray-50/70 shadow-inner">
-                            <p class="text-xs font-bold text-gray-700">Add New Agent</p>
-                            <input type="text" id="newAgentCode" placeholder="Code (e.g. AG04)" required class="w-full px-3 py-2 border rounded-xl text-xs uppercase font-bold bg-white">
-                            <input type="text" id="newAgentName" placeholder="Agent Name" required class="w-full px-3 py-2 border rounded-xl text-xs bg-white">
-                            <input type="password" id="newAgentPass" placeholder="Password (2580)" required class="w-full px-3 py-2 border rounded-xl text-xs bg-white">
-                            <button type="submit" class="w-full bg-green-700 text-white py-2.5 rounded-xl text-xs font-bold shadow hover:bg-green-800 transition cursor-pointer">+ ADD AGENT</button>
-                        </form>
-
-                        <div>
-                            <p class="text-xs font-bold text-gray-600 mb-2">Existing Agents:</p>
-                            <div id="agentListContainer" class="space-y-2"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </main>
     </div>
 
+    <!-- Script Logic with Supabase -->
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed:', err));
-            });
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://zaenyapuytutdrjjssul.supabase.co';
+        const SUPABASE_ANON_KEY = 'Sb_publishable_rZw7m05XbbkwRtPfavRqqQ_Ab_TYkgN';
+
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Auto calculate debt
+        const amountInput = document.getElementById('amount');
+        const amountPaidInput = document.getElementById('amount_paid');
+        const debtInput = document.getElementById('debt');
+
+        function calculateDebt() {
+            const amt = parseFloat(amountInput.value) || 0;
+            const paid = parseFloat(amountPaidInput.value) || 0;
+            debtInput.value = Math.max(0, amt - paid);
         }
 
-        let currentAgent = null;
+        amountInput.addEventListener('input', calculateDebt);
+        amountPaidInput.addEventListener('input', calculateDebt);
 
-        const defaultAgents = [
-            { code: 'AG01', name: 'AISHA SAIDU GUPA', pass: '2580' },
-            { code: 'AG02', name: 'AINAU MUHAMMAD', pass: '2580' },
-            { code: 'AG03', name: 'RAFIATU LAWALI', pass: '2580' }
-        ];
+        // Fetch and display jobs
+        async function fetchJobs() {
+            const { data, error } = await _supabase
+                .from('jobs')
+                .select('*')
+                .order('created_at', { ascending: false });
 
-        window.addEventListener('DOMContentLoaded', () => {
-            sessionStorage.removeItem('amci_active_session');
-            logout();
-            const bioSetting = localStorage.getItem('amci_bio_enabled') !== 'false';
-            const toggleEl = document.getElementById('biometricToggle');
-            if (toggleEl) toggleEl.checked = bioSetting;
-            populateAgentDropdowns();
-        });
-
-        // CUSTOM TOAST NOTIFICATION FUNCTION
-        function showToast(message, type = 'success') {
-            const toastBox = document.getElementById('toastBox');
-            const toastMsg = document.getElementById('toastMessage');
-            const toastIcon = document.getElementById('toastIcon');
-
-            toastMsg.innerText = message;
-            toastBox.className = "pointer-events-auto flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold max-w-sm w-full border";
-
-            if (type === 'success') {
-                toastBox.classList.add('bg-emerald-600', 'border-emerald-500');
-                toastIcon.className = "fas fa-check-circle text-base text-white";
-            } else if (type === 'error') {
-                toastBox.classList.add('bg-red-600', 'border-red-500');
-                toastIcon.className = "fas fa-exclamation-circle text-base text-white";
-            } else {
-                toastBox.classList.add('bg-blue-900', 'border-gold');
-                toastIcon.className = "fas fa-info-circle text-base text-gold";
-            }
-
-            toastBox.classList.remove('hidden');
-            setTimeout(() => { toastBox.classList.add('show'); }, 10);
-
-            setTimeout(() => {
-                toastBox.classList.remove('show');
-                setTimeout(() => { toastBox.classList.add('hidden'); }, 300);
-            }, 3000);
-        }
-
-        // CUSTOM CONFIRM DIALOG
-        function showCustomConfirm(title, text, onConfirm) {
-            const modal = document.getElementById('customConfirmModal');
-            document.getElementById('confirmTitle').innerText = title;
-            document.getElementById('confirmText').innerText = text;
-            modal.classList.remove('hidden');
-
-            const btnOk = document.getElementById('confirmBtnOk');
-            const btnCancel = document.getElementById('confirmBtnCancel');
-
-            const newBtnOk = btnOk.cloneNode(true);
-            const newBtnCancel = btnCancel.cloneNode(true);
-            btnOk.parentNode.replaceChild(newBtnOk, btnOk);
-            btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
-
-            newBtnOk.addEventListener('click', () => {
-                modal.classList.add('hidden');
-                onConfirm();
-            });
-            newBtnCancel.addEventListener('click', () => {
-                modal.classList.add('hidden');
-            });
-        }
-
-        // CUSTOM PROMPT DIALOG
-        function showCustomPrompt(title, defaultValue, onSubmit) {
-            const modal = document.getElementById('customPromptModal');
-            document.getElementById('promptTitle').innerText = title;
-            const input = document.getElementById('customPromptInput');
-            input.value = defaultValue || '';
-            modal.classList.remove('hidden');
-            setTimeout(() => input.focus(), 100);
-
-            const btnOk = document.getElementById('promptBtnOk');
-            const btnCancel = document.getElementById('promptBtnCancel');
-
-            const newBtnOk = btnOk.cloneNode(true);
-            const newBtnCancel = btnCancel.cloneNode(true);
-            btnOk.parentNode.replaceChild(newBtnOk, btnOk);
-            btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
-
-            newBtnOk.addEventListener('click', () => {
-                const val = input.value;
-                modal.classList.add('hidden');
-                onSubmit(val);
-            });
-            newBtnCancel.addEventListener('click', () => {
-                modal.classList.add('hidden');
-            });
-        }
-
-        function getAdminPassword() {
-            return localStorage.getItem('amci_admin_pass') || '4753';
-        }
-
-        function getAgents() {
-            let stored = localStorage.getItem('amci_agents');
-            if (!stored) {
-                localStorage.setItem('amci_agents', JSON.stringify(defaultAgents));
-                return defaultAgents;
-            }
-            try {
-                return JSON.parse(stored);
-            } catch (e) {
-                return defaultAgents;
-            }
-        }
-
-        function getRecords() {
-            let stored = localStorage.getItem('amci_records');
-            if (!stored) return [];
-            try {
-                return JSON.parse(stored);
-            } catch (e) {
-                return [];
-            }
-        }
-
-        function saveRecords(data) {
-            localStorage.setItem('amci_records', JSON.stringify(data));
-            updateDashboard();
-        }
-
-        function populateAgentDropdowns() {
-            const select = document.getElementById('reportAgentCode');
-            if(!select) return;
-            const agents = getAgents();
-            select.innerHTML = '<option value="">ALL AGENTS</option>';
-            agents.forEach(a => {
-                select.innerHTML += '<option value="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
-            });
-        }
-
-        function switchLoginMode(mode) {
-            const agentForm = document.getElementById('agentLoginForm');
-            const adminForm = document.getElementById('adminLoginForm');
-            const btnAgent = document.getElementById('tabBtnAgent');
-            const btnAdmin = document.getElementById('tabBtnAdmin');
-            const errorMsg = document.getElementById('loginError');
-
-            if(errorMsg) errorMsg.classList.add('hidden');
-
-            if (mode === 'agent') {
-                agentForm.classList.remove('hidden');
-                adminForm.classList.add('hidden');
-                btnAgent.className = 'py-2.5 rounded-lg brand-bg text-white transition cursor-pointer';
-                btnAdmin.className = 'py-2.5 rounded-lg text-gray-700 transition cursor-pointer';
-            } else {
-                agentForm.classList.add('hidden');
-                adminForm.classList.remove('hidden');
-                btnAgent.className = 'py-2.5 rounded-lg text-gray-700 transition cursor-pointer';
-                btnAdmin.className = 'py-2.5 rounded-lg bg-red-800 text-white transition cursor-pointer';
-            }
-        }
-
-        function handleAgentLogin(e) {
-            e.preventDefault();
-            const code = document.getElementById('loginAgentCode').value.trim().toUpperCase();
-            const pass = document.getElementById('loginAgentPassword').value.trim();
-            const agents = getAgents();
-
-            const found = agents.find(a => a.code === code && a.pass === pass);
-            if (found) {
-                currentAgent = { ...found, role: 'agent' };
-                sessionStorage.setItem('amci_active_session', JSON.stringify(currentAgent));
-                showToast('Welcome back, ' + found.name + '!', 'success');
-                launchApp();
-            } else {
-                document.getElementById('loginError').classList.remove('hidden');
-                showToast('Invalid Agent Code or Password!', 'error');
-            }
-        }
-
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            const pass = document.getElementById('loginAdminPassword').value.trim();
-            const adminPass = getAdminPassword();
-
-            if (pass === adminPass) {
-                currentAgent = { code: 'ADMIN', name: 'System Owner', role: 'admin' };
-                sessionStorage.setItem('amci_active_session', JSON.stringify(currentAgent));
-                showToast('Welcome Admin!', 'success');
-                launchApp();
-            } else {
-                document.getElementById('loginError').classList.add('hidden');
-                showToast('Invalid Admin Password!', 'error');
-            }
-        }
-
-        function toggleBiometricSetting(el) {
-            localStorage.setItem('amci_bio_enabled', el.checked);
-            showToast(el.checked ? 'Thumbprint login enabled.' : 'Thumbprint login disabled.', 'info');
-        }
-
-        async function loginWithBiometrics(type) {
-            const bioEnabled = localStorage.getItem('amci_bio_enabled') !== 'false';
-            if (!bioEnabled) {
-                showToast('Thumbprint login is currently disabled by Admin.', 'error');
+            const listContainer = document.getElementById('jobs-list');
+            if (error) {
+                listContainer.innerHTML = `<p class="text-xs text-red-500">Kuskure wajen ɗauko bayanai: ${error.message}</p>`;
                 return;
             }
 
-            try {
-                if (window.PublicKeyCredential && PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
-                    const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-                    if (available) {
-                        const challenge = new Uint8Array(32);
-                        window.crypto.getRandomValues(challenge);
-                        
-                        await navigator.credentials.get({
-                            publicKey: {
-                                challenge: challenge,
-                                timeout: 60000,
-                                userVerification: "required"
-                            }
-                        });
-
-                        if (type === 'admin') {
-                            currentAgent = { code: 'ADMIN', name: 'System Owner', role: 'admin' };
-                        } else {
-                            const codeInput = document.getElementById('loginAgentCode').value.trim().toUpperCase();
-                            const agents = getAgents();
-                            let found = agents.find(a => a.code === codeInput) || agents[0];
-                            currentAgent = { ...found, role: 'agent' };
-                        }
-                        sessionStorage.setItem('amci_active_session', JSON.stringify(currentAgent));
-                        showToast('Thumbprint verified successfully!', 'success');
-                        launchApp();
-                        return;
-                    }
-                }
-                
-                if (type === 'admin') {
-                    currentAgent = { code: 'ADMIN', name: 'System Owner', role: 'admin' };
-                } else {
-                    const codeInput = document.getElementById('loginAgentCode').value.trim().toUpperCase();
-                    const agents = getAgents();
-                    let found = agents.find(a => a.code === codeInput) || agents[0];
-                    currentAgent = { ...found, role: 'agent' };
-                }
-                sessionStorage.setItem('amci_active_session', JSON.stringify(currentAgent));
-                showToast('Thumbprint verified successfully!', 'success');
-                launchApp();
-
-            } catch (err) {
-                console.log('Biometric error or cancelled:', err);
-                showToast('Thumbprint verification cancelled or failed.', 'error');
-            }
-        }
-
-        function launchApp() {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('appInterface').classList.remove('hidden');
-            document.getElementById('activeAgentBadge').innerText = currentAgent.code + " (" + currentAgent.name + ")";
-            
-            const adminTabBtn = document.getElementById('tabAdmin');
-            if (currentAgent.role === 'admin') {
-                adminTabBtn.classList.remove('hidden');
-            } else {
-                adminTabBtn.classList.add('hidden');
+            if (!data || data.length === 0) {
+                listContainer.innerHTML = `<p class="text-xs text-gray-500">Babu wani aiki da aka shigar a yanzu.</p>`;
+                return;
             }
 
-            switchTab('newJob');
-            updateDashboard();
-            renderHistory();
-            renderDebts();
-            populateAgentDropdowns();
+            listContainer.innerHTML = data.map(job => `
+                <div class="p-3 bg-gray-50 border rounded text-xs space-y-1 shadow-sm">
+                    <div class="flex justify-between font-bold text-blue-800">
+                        <span>${job.customer_first_name || ''} ${job.customer_surname || ''}</span>
+                        <span>₦${job.amount || 0}</span>
+                    </div>
+                    <div class="text-gray-600">Wayar: ${job.phone || 'Babu'} | Bayani: ${job.description || 'Babu'}</div>
+                    <div class="flex justify-between text-gray-500 pt-1 border-t">
+                        <span>Agent: <strong>${job.agent_name}</strong></span>
+                        <span class="text-red-600 font-semibold">Bashi: ₦${job.debt || 0}</span>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function logout() {
-            currentAgent = null;
-            sessionStorage.removeItem('amci_active_session');
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('appInterface').classList.add('hidden');
-            document.getElementById('loginAgentPassword').value = '';
-            document.getElementById('loginAdminPassword').value = '';
-            document.getElementById('loginAgentCode').value = '';
-            document.getElementById('adminAuthLockBlock').classList.remove('hidden');
-            document.getElementById('adminMainContentBlock').classList.add('hidden');
-            showToast('Logged out successfully.', 'info');
-        }
-
-        function switchTab(tabName) {
-            ['secNewJob', 'secDebtList', 'secHistory', 'secAgentReport', 'secAdmin'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.classList.add('hidden');
-            });
-            ['tabNewJob', 'tabDebtList', 'tabHistory', 'tabAgentReport', 'tabAdmin'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) {
-                    el.classList.remove('brand-bg', 'text-white', 'shadow');
-                    el.classList.add('text-gray-600');
-                }
-            });
-
-            if(tabName === 'newJob') {
-                document.getElementById('secNewJob').classList.remove('hidden');
-                document.getElementById('tabNewJob').classList.add('brand-bg', 'text-white', 'shadow');
-            } else if(tabName === 'debtList') {
-                document.getElementById('secDebtList').classList.remove('hidden');
-                document.getElementById('tabDebtList').classList.add('brand-bg', 'text-white', 'shadow');
-                renderDebts();
-            } else if(tabName === 'history') {
-                document.getElementById('secHistory').classList.remove('hidden');
-                document.getElementById('tabHistory').classList.add('brand-bg', 'text-white', 'shadow');
-                renderHistory();
-            } else if(tabName === 'agentReport') {
-                document.getElementById('secAgentReport').classList.remove('hidden');
-                document.getElementById('tabAgentReport').classList.add('brand-bg', 'text-white', 'shadow');
-                generateAgentReport();
-            } else if(tabName === 'admin') {
-                document.getElementById('secAdmin').classList.remove('hidden');
-                document.getElementById('tabAdmin').classList.add('brand-bg', 'text-white', 'shadow');
-                if(currentAgent && currentAgent.role === 'admin') {
-                    document.getElementById('adminAuthLockBlock').classList.add('hidden');
-                    document.getElementById('adminMainContentBlock').classList.remove('hidden');
-                    renderAdminAgents();
-                } else {
-                    document.getElementById('adminAuthLockBlock').classList.remove('hidden');
-                    document.getElementById('adminMainContentBlock').classList.add('hidden');
-                }
-            }
-        }
-
-        function verifyTabAdmin() {
-            const pass = document.getElementById('tabAdminPassInput').value;
-            const adminPass = getAdminPassword();
-            if (pass === adminPass) {
-                document.getElementById('adminAuthLockBlock').classList.add('hidden');
-                document.getElementById('adminMainContentBlock').classList.remove('hidden');
-                renderAdminAgents();
-                showToast('Admin access granted.', 'success');
-            } else {
-                showToast('Invalid Admin Password!', 'error');
-            }
-        }
-
-        function calcDebt() {
-            const bill = parseFloat(document.getElementById('totalBill').value) || 0;
-            const paid = parseFloat(document.getElementById('amountPaid').value) || 0;
-            const diff = bill - paid;
-
-            const notice = document.getElementById('debtNotice');
-            if (diff > 0) {
-                notice.classList.remove('hidden');
-                document.getElementById('calculatedDebt').innerText = diff.toLocaleString();
-            } else {
-                notice.classList.add('hidden');
-            }
-        }
-
-        function saveTransaction(e) {
+        // Handle Form Submission
+        document.getElementById('job-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const firstName = document.getElementById('custFirstName').value.trim().toUpperCase();
-            const surname = document.getElementById('custSurname').value.trim().toUpperCase();
-            const middleName = document.getElementById('custMiddleName').value.trim().toUpperCase();
-            const phone = document.getElementById('custPhone').value.trim();
-            const desc = document.getElementById('jobDesc').value.trim();
-            const bill = parseFloat(document.getElementById('totalBill').value);
-            const paid = parseFloat(document.getElementById('amountPaid').value);
-            const commission = parseFloat(document.getElementById('agentCommission').value) || 0;
-            const debt = Math.max(0, bill - paid);
 
-            const saveBtn = document.getElementById('saveBtn');
-            saveBtn.disabled = true;
-            saveBtn.innerText = "SAVING...";
-
-            const formattedFullName = firstName + " " + surname + (middleName ? " " + middleName : "");
-            const now = new Date();
-
-            const record = {
-                id: now.getTime(),
-                dateStr: now.toLocaleDateString(),
-                rawDate: now.toISOString().split('T')[0],
-                agentCode: currentAgent.code,
-                agentName: currentAgent.name,
-                firstName: firstName,
-                surname: surname,
-                middleName: middleName || '',
-                fullName: formattedFullName,
-                phone: phone || 'N/A',
-                desc: desc,
-                totalBill: bill,
-                amountPaid: paid,
-                agentCommission: commission,
-                debtBalance: debt
+            const newJob = {
+                agent_id: 'agent-' + Math.random().toString(36).substring(2, 9),
+                agent_name: document.getElementById('agent_name').value,
+                customer_first_name: document.getElementById('customer_first_name').value,
+                customer_surname: document.getElementById('customer_surname').value,
+                phone: document.getElementById('phone').value,
+                description: document.getElementById('description').value,
+                amount: parseFloat(amountInput.value) || 0,
+                amount_paid: parseFloat(amountPaidInput.value) || 0,
+                debt: parseFloat(debtInput.value) || 0,
+                status: 'Completed'
             };
 
-            const records = getRecords();
-            records.unshift(record);
-            saveRecords(records);
+            const { error } = await _supabase.from('jobs').insert([newJob]);
 
-            showToast('Record saved successfully!', 'success');
-            document.getElementById('jobForm').reset();
-            document.getElementById('debtNotice').classList.add('hidden');
-            saveBtn.disabled = false;
-            saveBtn.innerText = "SAVE RECORD";
-        }
-
-        function updateDashboard() {
-            const records = getRecords();
-            let totalRev = 0, totalP = 0, totalCom = 0, totalD = 0;
-
-            records.forEach(r => {
-                totalRev += r.totalBill;
-                totalP += r.amountPaid;
-                totalCom += (r.agentCommission || 0);
-                totalD += r.debtBalance;
-            });
-
-            document.getElementById('totalRevenue').innerText = '₦' + totalRev.toLocaleString();
-            document.getElementById('totalPaid').innerText = '₦' + totalP.toLocaleString();
-            document.getElementById('totalCommissions').innerText = '₦' + totalCom.toLocaleString();
-            document.getElementById('totalDebt').innerText = '₦' + totalD.toLocaleString();
-        }
-
-        function renderDebts() {
-            const query = document.getElementById('searchDebt').value.toLowerCase();
-            const records = getRecords();
-            const container = document.getElementById('debtContainer');
-            container.innerHTML = '';
-
-            const debts = records.filter(r => r.debtBalance > 0 && (r.fullName.toLowerCase().includes(query) || r.phone.toLowerCase().includes(query) || r.dateStr.toLowerCase().includes(query)));
-
-            if(debts.length === 0) {
-                container.innerHTML = '<p class="text-center text-xs text-gray-400 py-6">No active debts found.</p>';
-                return;
-            }
-
-            debts.forEach(r => {
-                container.innerHTML += '<div class="bg-white p-4 rounded-2xl shadow-sm border border-red-100 flex justify-between items-center"><div><p class="font-bold text-xs text-gray-900">' + r.fullName + ' <span class="text-gray-500 font-normal">(' + r.phone + ')</span></p><p class="text-[10px] text-gray-500 mt-0.5">' + r.desc + ' • Agent: ' + r.agentCode + '</p><p class="text-[11px] font-black text-red-600 mt-1.5">Debt Balance: ₦' + r.debtBalance.toLocaleString() + '</p></div><button onclick="payDebtPrompt(' + r.id + ')" class="bg-green-600 text-white text-xs px-3.5 py-2 rounded-xl font-bold shadow hover:bg-green-700 transition cursor-pointer">Clear Debt</button></div>';
-            });
-        }
-
-        function payDebtPrompt(id) {
-            const records = getRecords();
-            const r = records.find(item => item.id === id);
-            if (!r) return;
-
-            showCustomPrompt('Enter amount paid by ' + r.fullName + ' (Current Debt: ₦' + r.debtBalance + '):', '', (amount) => {
-                const payVal = parseFloat(amount);
-                if (payVal && payVal > 0) {
-                    const actualPay = Math.min(payVal, r.debtBalance);
-                    r.debtBalance -= actualPay;
-                    r.amountPaid += actualPay;
-
-                    saveRecords(records);
-                    renderDebts();
-                    showToast('₦' + actualPay.toLocaleString() + ' paid successfully!', 'success');
-                }
-            });
-        }
-
-        function renderHistory() {
-            const query = document.getElementById('searchHistory').value.toLowerCase();
-            const records = getRecords();
-            const container = document.getElementById('historyContainer');
-            container.innerHTML = '';
-
-            const filtered = records.filter(r => 
-                r.fullName.toLowerCase().includes(query) || 
-                r.phone.toLowerCase().includes(query) || 
-                r.desc.toLowerCase().includes(query) || 
-                r.dateStr.toLowerCase().includes(query)
-            );
-
-            if (filtered.length === 0) {
-                container.innerHTML = '<p class="text-center text-xs text-gray-400 py-6">No transaction history found.</p>';
-                return;
-            }
-
-            filtered.forEach(r => {
-                let deleteButtonHTML = '';
-                if (currentAgent && currentAgent.role === 'admin') {
-                    deleteButtonHTML = '<button onclick="deleteRecord(' + r.id + ')" class="bg-red-700 text-white text-[10px] px-3 py-1.5 rounded-xl font-bold shadow hover:bg-red-800 transition cursor-pointer"><i class="fas fa-trash"></i> Delete Job</button>';
-                }
-
-                container.innerHTML += '<div class="bg-white p-4 rounded-2xl shadow-sm text-xs space-y-2.5 border border-gray-100"><div class="flex justify-between font-bold text-gray-900 border-b pb-1.5 text-sm"><span><i class="fas fa-user-circle text-blue-900 mr-1"></i> ' + r.fullName + ' <span class="text-gray-500 text-xs font-normal">(' + r.phone + ')</span></span><span class="text-blue-900 font-extrabold">₦' + r.totalBill.toLocaleString() + '</span></div><div class="text-gray-600 space-y-1 bg-gray-50 p-2.5 rounded-xl"><p><strong>Description:</strong> ' + r.desc + '</p><p><strong>Amount Paid:</strong> <span class="text-green-700 font-black">₦' + r.amountPaid.toLocaleString() + '</span></p><p><strong>Agent Commission:</strong> <span class="text-amber-700 font-black">₦' + (r.agentCommission || 0).toLocaleString() + '</span></p><p><strong>Debt Balance:</strong> <span class="text-red-600 font-black">₦' + r.debtBalance.toLocaleString() + '</span></p></div><div class="flex justify-between items-center text-[10px] text-gray-400 pt-1 border-t"><span>Date: ' + r.dateStr + ' | Agent: ' + r.agentCode + '</span><div class="flex gap-2"><button onclick=\'downloadPDF(' + JSON.stringify(r) + ')\' class="brand-bg text-gold px-3 py-1.5 rounded-xl font-bold shadow hover:bg-blue-950 transition flex items-center gap-1.5 cursor-pointer"><i class="fas fa-file-pdf"></i> Receipt</button>' + deleteButtonHTML + '</div></div></div>';
-            });
-        }
-
-        function deleteRecord(id) {
-            showCustomConfirm('Delete Job Record', 'Are you sure you want to delete this job record? It will be permanently removed from history and totals.', () => {
-                let records = getRecords();
-                records = records.filter(r => r.id !== id);
-                saveRecords(records);
-                renderHistory();
-                renderDebts();
-                showToast('Job record deleted successfully!', 'success');
-            });
-        }
-
-        function generateAgentReport() {
-            const code = document.getElementById('reportAgentCode').value;
-            const startDate = document.getElementById('reportStartDate').value;
-            const endDate = document.getElementById('reportEndDate').value;
-            const records = getRecords();
-            const container = document.getElementById('agentReportResults');
-            container.innerHTML = '';
-
-            const filtered = records.filter(r => {
-                const matchCode = !code || r.agentCode === code;
-                const matchStart = !startDate || r.rawDate >= startDate;
-                const matchEnd = !endDate || r.rawDate <= endDate;
-                return matchCode && matchStart && matchEnd;
-            });
-
-            if (filtered.length === 0) {
-                container.innerHTML = '<div class="bg-white p-6 rounded-3xl shadow-md text-center text-xs text-gray-400">No records found for the selected filter.</div>';
-                return;
-            }
-
-            let totalRev = 0, totalCom = 0, totalColl = 0, totalDebt = 0;
-            filtered.forEach(r => {
-                totalRev += r.totalBill;
-                totalColl += r.amountPaid;
-                totalCom += (r.agentCommission || 0);
-                totalDebt += r.debtBalance;
-            });
-
-            let listHTML = '<div class="bg-white p-5 rounded-3xl shadow-md space-y-3 border-t-4 border-gold"><div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center border-b pb-3"><div class="bg-blue-50 p-2.5 rounded-xl"><p class="text-[10px] text-gray-500 font-bold uppercase">Total Work</p><p class="text-xs font-black text-blue-950">₦' + totalRev.toLocaleString() + '</p></div><div class="bg-green-50 p-2.5 rounded-xl"><p class="text-[10px] text-gray-500 font-bold uppercase">Collected</p><p class="text-xs font-black text-green-700">₦' + totalColl.toLocaleString() + '</p></div><div class="bg-amber-50 p-2.5 rounded-xl"><p class="text-[10px] text-gray-500 font-bold uppercase">Commission</p><p class="text-xs font-black text-amber-700">₦' + totalCom.toLocaleString() + '</p></div><div class="bg-red-50 p-2.5 rounded-xl"><p class="text-[10px] text-gray-500 font-bold uppercase">Total Debt</p><p class="text-xs font-black text-red-600">₦' + totalDebt.toLocaleString() + '</p></div></div><div class="space-y-2">';
-
-            filtered.forEach(r => {
-                listHTML += '<div class="bg-gray-50 p-3 rounded-2xl border text-xs flex justify-between items-center"><div><p class="font-bold text-gray-900">' + r.fullName + ' <span class="text-[10px] text-blue-900 font-black">[' + r.agentCode + ']</span></p><p class="text-[10px] text-gray-500">' + r.desc + ' - Date: ' + r.dateStr + '</p></div><div class="text-right"><p class="font-black text-blue-950">₦' + r.totalBill.toLocaleString() + '</p><p class="text-[10px] text-amber-700 font-bold">Comm: ₦' + (r.agentCommission || 0).toLocaleString() + '</p></div></div>';
-            });
-
-            listHTML += '</div></div>';
-            container.innerHTML = listHTML;
-        }
-
-        function printAgentReport() {
-            const code = document.getElementById('reportAgentCode').value || 'ALL';
-            const startDate = document.getElementById('reportStartDate').value || 'Beginning';
-            const endDate = document.getElementById('reportEndDate').value || 'Today';
-            const resultsHTML = document.getElementById('agentReportResults').innerHTML;
-
-            const printWin = window.open('', '_blank');
-            printWin.document.write(`
-                <html>
-                <head>
-                    <title>Agent Report - ${code}</title>
-                    <style>
-                        body { 
-                            font-family: Arial, sans-serif; 
-                            padding: 25px; 
-                            color: #333; 
-                            max-width: 650px; 
-                            margin: auto; 
-                            border: 2px solid #0d2040; 
-                            border-radius: 12px; 
-                            background: #fff; 
-                            position: relative;
-                        }
-                        /* Watermark Logo Background Shadow */
-                        .watermark {
-                            position: absolute;
-                            top: 50%;
-                            left: 50%;
-                            transform: translate(-50%, -50%);
-                            opacity: 0.05;
-                            text-align: center;
-                            z-index: 0;
-                            pointer-events: none;
-                        }
-                        .watermark-logo {
-                            background: #0d2040;
-                            border: 8px solid #d4af37;
-                            width: 220px;
-                            height: 220px;
-                            border-radius: 50%;
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                            justify-content: center;
-                            margin: 0 auto;
-                            color: white;
-                            font-weight: 900;
-                            font-size: 48px;
-                        }
-                        .content-layer {
-                            position: relative;
-                            z-index: 1;
-                        }
-                        .header { 
-                            text-align: center; 
-                            border-bottom: 2px solid #d4af37; 
-                            padding-bottom: 12px; 
-                            margin-bottom: 15px; 
-                        }
-                        .logo-print { 
-                            background: #0d2040; 
-                            border: 2px solid #d4af37; 
-                            width: 50px; 
-                            height: 50px; 
-                            border-radius: 50%; 
-                            display: flex; 
-                            flex-direction: column; 
-                            align-items: center; 
-                            justify-content: center; 
-                            margin: 0 auto 6px auto; 
-                            color: white; 
-                            font-weight: bold; 
-                            font-size: 12px; 
-                            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-                        }
-                        h2 { color: #0d2040; margin: 4px 0 2px 0; font-size: 16px; } 
-                        p { font-size: 10px; color: #555; } 
-                        .bg-blue-50, .bg-green-50, .bg-amber-50, .bg-red-50 { border: 1px solid #ddd; padding: 8px; margin-bottom: 5px; border-radius: 6px; } 
-                        .bg-gray-50 { border: 1px solid #eee; padding: 8px; margin-bottom: 8px; border-radius: 6px; } 
-                        .grid { display: flex; gap: 10px; margin-bottom: 15px; } 
-                        .grid > div { flex: 1; text-align: center; } 
-                        strong { font-weight: bold; }
-                    </style>
-                </head>
-                <body>
-                    <!-- WATERMARK SHADOW LOGO ATSAKIYAR PAGE -->
-                    <div class="watermark">
-                        <div class="watermark-logo">
-                            <span>AMC</span>
-                            <span style="font-size: 16px; color: #d4af37;">INT'L</span>
-                        </div>
-                    </div>
-
-                    <div class="content-layer">
-                        <div class="header">
-                            <div class="logo-print">
-                                <span style="line-height: 1;">AMC</span>
-                                <span style="font-size: 7px; color: #d4af37;">INT'L</span>
-                            </div>
-                            <h2>AMC INTERNATIONAL - AGENT PERFORMANCE REPORT</h2>
-                            <p>Agent Code: <strong>${code}</strong> | Period: <strong>${startDate}</strong> to <strong>${endDate}</strong></p>
-                        </div>
-                        ${resultsHTML}
-                    </div>
-
-                    <script>
-                        window.onload = function() { window.print(); }
-                    <\/script>
-                </body>
-                </html>
-            `);
-            printWin.document.close();
-        }
-
-        function downloadPDF(r) {
-            const slipWindow = window.open('', '_blank');
-            slipWindow.document.write(`
-                <html>
-                <head>
-                    <title>Receipt - ${r.fullName}</title>
-                    <style>
-                        body { 
-                            font-family: Arial, sans-serif; 
-                            padding: 25px; 
-                            color: #333; 
-                            max-width: 420px; 
-                            margin: auto; 
-                            border: 2px solid #0d2040; 
-                            border-radius: 12px; 
-                            background: #fff; 
-                            position: relative;
-                        }
-                        /* Watermark Logo Background Shadow */
-                        .watermark {
-                            position: absolute;
-                            top: 50%;
-                            left: 50%;
-                            transform: translate(-50%, -50%);
-                            opacity: 0.06;
-                            text-align: center;
-                            z-index: 0;
-                            pointer-events: none;
-                        }
-                        .watermark-logo {
-                            background: #0d2040;
-                            border: 8px solid #d4af37;
-                            width: 180px;
-                            height: 180px;
-                            border-radius: 50%;
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                            justify-content: center;
-                            margin: 0 auto;
-                            color: white;
-                            font-weight: 900;
-                            font-size: 38px;
-                        }
-                        .content-layer {
-                            position: relative;
-                            z-index: 1;
-                        }
-                        .header { 
-                            text-align: center; 
-                            border-bottom: 2px solid #d4af37; 
-                            padding-bottom: 12px; 
-                            margin-bottom: 15px; 
-                        }
-                        .logo-print { 
-                            background: #0d2040; 
-                            border: 2px solid #d4af37; 
-                            width: 50px; 
-                            height: 50px; 
-                            border-radius: 50%; 
-                            display: flex; 
-                            flex-direction: column; 
-                            align-items: center; 
-                            justify-content: center; 
-                            margin: 0 auto 6px auto; 
-                            color: white; 
-                            font-weight: bold; 
-                            font-size: 12px; 
-                            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-                        }
-                        .details div { 
-                            display: flex; 
-                            justify-content: space-between; 
-                            margin-bottom: 10px; 
-                            border-bottom: 1px dotted #ccc; 
-                            padding-bottom: 6px; 
-                            font-size: 12px; 
-                        }
-                        .total { 
-                            font-size: 13px; 
-                            font-weight: bold; 
-                            background: #0d2040; 
-                            color: #d4af37; 
-                            padding: 10px; 
-                            text-align: center; 
-                            border-radius: 6px; 
-                            margin-top: 15px; 
-                        }
-                    </style>
-                </head>
-                <body>
-                    <!-- WATERMARK SHADOW LOGO ATSAKIYAR PAGE -->
-                    <div class="watermark">
-                        <div class="watermark-logo">
-                            <span>AMC</span>
-                            <span style="font-size: 14px; color: #d4af37;">INT'L</span>
-                        </div>
-                    </div>
-
-                    <div class="content-layer">
-                        <div class="header">
-                            <div class="logo-print">
-                                <span style="line-height: 1;">AMC</span>
-                                <span style="font-size: 7px; color: #d4af37;">INT'L</span>
-                            </div>
-                            <h2 style="margin: 4px 0 2px 0; color: #0d2040; font-size: 16px;">AMC INTERNATIONAL</h2>
-                            <p style="font-size: 8px; color: #666; margin: 0; font-weight: bold;">AA MASOYIN MASOYA COMM CENTER INT.</p>
-                        </div>
-                        <div class="details">
-                            <div><span>Date:</span> <span>${r.dateStr}</span></div>
-                            <div><span>Customer:</span> <span>${r.fullName}</span></div>
-                            <div><span>Phone:</span> <span>${r.phone}</span></div>
-                            <div><span>Description:</span> <span>${r.desc}</span></div>
-                            <div><span>Total Bill:</span> <span>₦${r.totalBill.toLocaleString()}</span></div>
-                            <div><span>Amount Paid:</span> <span style="color: green; font-weight: bold;">₦${r.amountPaid.toLocaleString()}</span></div>
-                            <div><span>Commission:</span> <span style="color: #b45309; font-weight: bold;">₦${(r.agentCommission || 0).toLocaleString()}</span></div>
-                            <div><span>Debt Balance:</span> <span style="color: red; font-weight: bold;">₦${r.debtBalance.toLocaleString()}</span></div>
-                            <div><span>Agent:</span> <span>${r.agentCode}</span></div>
-                        </div>
-                        <div class="total">STATUS: ${r.debtBalance === 0 ? 'PAID FULL' : 'HAS DEBT'}</div>
-                    </div>
-
-                    <script>
-                        window.onload = function() { window.print(); }
-                    <\/script>
-                </body>
-                </html>
-            `);
-            slipWindow.document.close();
-        }
-
-        function changeAdminPassword(e) {
-            e.preventDefault();
-            const oldPass = document.getElementById('oldAdminPass').value;
-            const newPass = document.getElementById('newAdminPass').value;
-            const currentPass = getAdminPassword();
-
-            if (oldPass === currentPass) {
-                localStorage.setItem('amci_admin_pass', newPass);
-                showToast('Admin Password updated successfully!', 'success');
-                e.target.reset();
+            if (error) {
+                alert('Kuskure wajen tura aikin: ' + error.message);
             } else {
-                showToast('Current Admin Password is incorrect!', 'error');
+                document.getElementById('job-form').reset();
+                debtInput.value = '0';
+                alert('An ajiye aikin cikin nasara!');
+                fetchJobs();
             }
-        }
+        });
 
-        function renderAdminAgents() {
-            const agents = getAgents();
-            const container = document.getElementById('agentListContainer');
-            if(!container) return;
-            container.innerHTML = '';
+        // Real-time Subscription (Live Update for Admin)
+        _supabase
+            .channel('public:jobs')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, payload => {
+                fetchJobs(); // Refresh list immediately on any change
+            })
+            .subscribe();
 
-            agents.forEach((a, index) => {
-                container.innerHTML += '<div class="flex justify-between items-center bg-gray-50 p-2.5 rounded-xl text-xs border border-gray-200"><div><span class="font-black text-blue-900">[' + a.code + ']</span> ' + a.name + '</div><button onclick="removeAgent(' + index + ')" class="text-red-600 text-xs font-bold px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 transition cursor-pointer">Remove</button></div>';
-            });
-        }
-
-        function addAgent(e) {
-            e.preventDefault();
-            const code = document.getElementById('newAgentCode').value.trim().toUpperCase();
-            const name = document.getElementById('newAgentName').value.trim().toUpperCase();
-            const pass = document.getElementById('newAgentPass').value.trim();
-
-            let agents = getAgents();
-            agents.push({ code, name, pass });
-            localStorage.setItem('amci_agents', JSON.stringify(agents));
-            renderAdminAgents();
-            populateAgentDropdowns();
-            showToast('New agent added successfully!', 'success');
-            e.target.reset();
-        }
-
-        function removeAgent(index) {
-            showCustomConfirm('Remove Agent', 'Are you sure you want to remove this agent?', () => {
-                let agents = getAgents();
-                agents.splice(index, 1);
-                localStorage.setItem('amci_agents', JSON.stringify(agents));
-                renderAdminAgents();
-                populateAgentDropdowns();
-                showToast('Agent removed successfully!', 'success');
-            });
-        }
-
-        if(!localStorage.getItem('amci_agents')) {
-            localStorage.setItem('amci_agents', JSON.stringify(defaultAgents));
-        }
+        // Initial load
+        fetchJobs();
     </script>
 </body>
 </html>
