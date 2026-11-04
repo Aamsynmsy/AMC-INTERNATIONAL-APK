@@ -270,6 +270,16 @@
                         </form>
                     </div>
 
+                    <!-- CHANGE AGENT PASSWORD FORM -->
+                    <div class="bg-white p-5 rounded-3xl shadow-md space-y-3 border-t-4 border-gold">
+                        <h2 class="font-bold text-blue-950 text-sm border-b pb-2">Change Agent Password</h2>
+                        <form onsubmit="adminChangeAgentPassword(event)" class="space-y-2.5">
+                            <input type="text" id="targetAgentCode" placeholder="Agent Code (e.g. AG01)" required class="w-full px-3.5 py-2.5 border rounded-xl text-xs uppercase font-bold bg-gray-50">
+                            <input type="password" id="newAgentPassInput" placeholder="New Password for Agent" required class="w-full px-3.5 py-2.5 border rounded-xl text-xs bg-gray-50">
+                            <button type="submit" class="w-full bg-blue-900 text-white py-2.5 rounded-xl text-xs font-bold cursor-pointer">UPDATE AGENT PASSWORD</button>
+                        </form>
+                    </div>
+
                     <div class="bg-white p-5 rounded-3xl shadow-md space-y-4">
                         <h2 class="font-bold text-blue-950 text-sm border-b pb-2">Agents Management</h2>
                         <form onsubmit="addAgent(event)" class="space-y-2.5 border p-4 rounded-2xl bg-gray-50">
@@ -310,6 +320,22 @@
                 logout();
             }
             populateAgentDropdowns();
+        });
+
+        // MULTI-TAB & DEVICE SYNCHRONIZATION VIA STORAGE EVENT
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'amci_records') {
+                updateDashboard();
+                renderHistory();
+                renderDebts();
+            } else if (event.key === 'amci_agents') {
+                populateAgentDropdowns();
+                if (currentAgent && currentAgent.role === 'admin') {
+                    renderAdminAgents();
+                }
+            } else if (event.key === 'amci_active_session' && !event.newValue) {
+                logout();
+            }
         });
 
         function showToast(message, type = 'success') {
@@ -695,6 +721,36 @@
                 populateAgentDropdowns();
                 showToast('Agent removed successfully!', 'success');
             });
+        }
+
+        function changeAdminPassword(e) {
+            e.preventDefault();
+            const oldP = document.getElementById('oldAdminPass').value.trim();
+            const newP = document.getElementById('newAdminPass').value.trim();
+            if (oldP === getAdminPassword()) {
+                localStorage.setItem('amci_admin_pass', newP);
+                showToast('Admin password updated successfully!', 'success');
+                e.target.reset();
+            } else {
+                showToast('Current Admin password is incorrect!', 'error');
+            }
+        }
+
+        function adminChangeAgentPassword(e) {
+            e.preventDefault();
+            const code = document.getElementById('targetAgentCode').value.trim().toUpperCase();
+            const newPass = document.getElementById('newAgentPassInput').value.trim();
+            let agents = getAgents();
+            const index = agents.findIndex(a => a.code === code);
+            if (index !== -1) {
+                agents[index].pass = newPass;
+                localStorage.setItem('amci_agents', JSON.stringify(agents));
+                renderAdminAgents();
+                showToast('Agent password updated successfully!', 'success');
+                e.target.reset();
+            } else {
+                showToast('Agent code not found!', 'error');
+            }
         }
     </script>
 </body>
