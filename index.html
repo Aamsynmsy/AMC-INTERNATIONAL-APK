@@ -328,11 +328,17 @@
             window.addEventListener('offline', updateOnlineStatus);
 
             await initSupabaseData();
+
+            // Safe session check to prevent unexpected redirects
             const savedSession = sessionStorage.getItem('amci_active_session');
             if (savedSession) {
                 try {
                     currentAgent = JSON.parse(savedSession);
-                    launchApp();
+                    if (currentAgent && currentAgent.code) {
+                        launchApp();
+                    } else {
+                        logout();
+                    }
                 } catch(e) {
                     logout();
                 }
@@ -358,7 +364,6 @@
 
         async function initSupabaseData() {
             if (!navigator.onLine) {
-                showToast('You are offline. Showing cached records.', 'error');
                 let cached = localStorage.getItem('amci_offline_records');
                 if (cached) globalRecords = JSON.parse(cached);
                 let cachedAg = localStorage.getItem('amci_offline_agents');
@@ -380,7 +385,6 @@
                 localStorage.setItem('amci_offline_agents', JSON.stringify(globalAgents));
                 await fetchRecordsFromCloud();
             } catch (err) {
-                console.error(err);
                 let cached = localStorage.getItem('amci_offline_records');
                 if (cached) globalRecords = JSON.parse(cached);
             }
@@ -453,7 +457,7 @@
 
         function getAdminPassword() { return localStorage.getItem('amci_admin_pass') || '4753'; }
         
-        function getAgents() { return globalAgents; }
+        function getAgents() { return globalAgents.length > 0 ? globalAgents : defaultAgents; }
         function getRecords() { return globalRecords; }
 
         async function saveRecordsToCloud(record) {
@@ -577,10 +581,21 @@
         }
 
         function launchApp() {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('appInterface').classList.remove('hidden');
-            document.getElementById('activeAgentBadge').innerText = currentAgent.code + " (" + currentAgent.name + ")";
-            document.getElementById('tabAdmin').classList.toggle('hidden', currentAgent.role !== 'admin');
+            const loginScreen = document.getElementById('loginScreen');
+            const appInterface = document.getElementById('appInterface');
+            if (loginScreen) loginScreen.classList.add('hidden');
+            if (appInterface) appInterface.classList.remove('hidden');
+            
+            const badge = document.getElementById('activeAgentBadge');
+            if (badge && currentAgent) {
+                badge.innerText = currentAgent.code + " (" + currentAgent.name + ")";
+            }
+            
+            const tabAdmin = document.getElementById('tabAdmin');
+            if (tabAdmin && currentAgent) {
+                tabAdmin.classList.toggle('hidden', currentAgent.role !== 'admin');
+            }
+            
             switchTab('newJob');
             updateDashboard();
             renderHistory();
@@ -591,55 +606,81 @@
         function logout() {
             currentAgent = null;
             sessionStorage.removeItem('amci_active_session');
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('appInterface').classList.add('hidden');
-            document.getElementById('loginAgentPassword').value = '';
-            document.getElementById('loginAdminPassword').value = '';
-            document.getElementById('loginAgentCode').value = '';
-            document.getElementById('adminAuthLockBlock').classList.remove('hidden');
-            document.getElementById('adminMainContentBlock').classList.add('hidden');
+            const loginScreen = document.getElementById('loginScreen');
+            const appInterface = document.getElementById('appInterface');
+            if (loginScreen) loginScreen.classList.remove('hidden');
+            if (appInterface) appInterface.classList.add('hidden');
+            
+            const agentPass = document.getElementById('loginAgentPassword');
+            const adminPass = document.getElementById('loginAdminPassword');
+            const agentCode = document.getElementById('loginAgentCode');
+            if (agentPass) agentPass.value = '';
+            if (adminPass) adminPass.value = '';
+            if (agentCode) agentCode.value = '';
+            
+            const lockBlock = document.getElementById('adminAuthLockBlock');
+            const mainBlock = document.getElementById('adminMainContentBlock');
+            if (lockBlock) lockBlock.classList.remove('hidden');
+            if (mainBlock) mainBlock.classList.add('hidden');
+            
             showToast('Logged out successfully.', 'info');
         }
 
         function switchTab(tabName) {
             ['secNewJob', 'secDebtList', 'secHistory', 'secAgentReport', 'secAdmin'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
             });
             ['tabNewJob', 'tabDebtList', 'tabHistory', 'tabAgentReport', 'tabAdmin'].forEach(id => {
                 const el = document.getElementById(id);
-                el.className = "flex-1 py-2.5 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer text-center font-bold";
+                if (el) el.className = "flex-1 py-2.5 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer text-center font-bold";
             });
 
             if(tabName === 'newJob') {
-                document.getElementById('secNewJob').classList.remove('hidden');
-                document.getElementById('tabNewJob').className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
+                const sec = document.getElementById('secNewJob');
+                const tab = document.getElementById('tabNewJob');
+                if (sec) sec.classList.remove('hidden');
+                if (tab) tab.className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
             } else if(tabName === 'debtList') {
-                document.getElementById('secDebtList').classList.remove('hidden');
-                document.getElementById('tabDebtList').className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
+                const sec = document.getElementById('secDebtList');
+                const tab = document.getElementById('tabDebtList');
+                if (sec) sec.classList.remove('hidden');
+                if (tab) tab.className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
                 renderDebts();
             } else if(tabName === 'history') {
-                document.getElementById('secHistory').classList.remove('hidden');
-                document.getElementById('tabHistory').className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
+                const sec = document.getElementById('secHistory');
+                const tab = document.getElementById('tabHistory');
+                if (sec) sec.classList.remove('hidden');
+                if (tab) tab.className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
                 renderHistory();
             } else if(tabName === 'agentReport') {
-                document.getElementById('secAgentReport').classList.remove('hidden');
-                document.getElementById('tabAgentReport').className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
+                const sec = document.getElementById('secAgentReport');
+                const tab = document.getElementById('tabAgentReport');
+                if (sec) sec.classList.remove('hidden');
+                if (tab) tab.className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
                 generateAgentReport();
             } else if(tabName === 'admin') {
-                document.getElementById('secAdmin').classList.remove('hidden');
-                document.getElementById('tabAdmin').className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
+                const sec = document.getElementById('secAdmin');
+                const tab = document.getElementById('tabAdmin');
+                if (sec) sec.classList.remove('hidden');
+                if (tab) tab.className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center font-extrabold";
                 if(currentAgent && currentAgent.role === 'admin') {
-                    document.getElementById('adminAuthLockBlock').classList.add('hidden');
-                    document.getElementById('adminMainContentBlock').classList.remove('hidden');
+                    const lockBlock = document.getElementById('adminAuthLockBlock');
+                    const mainBlock = document.getElementById('adminMainContentBlock');
+                    if (lockBlock) lockBlock.classList.add('hidden');
+                    if (mainBlock) mainBlock.classList.remove('hidden');
                     renderAdminAgents();
                 }
             }
         }
 
         function verifyTabAdmin() {
-            if (document.getElementById('tabAdminPassInput').value === getAdminPassword()) {
-                document.getElementById('adminAuthLockBlock').classList.add('hidden');
-                document.getElementById('adminMainContentBlock').classList.remove('hidden');
+            const passInput = document.getElementById('tabAdminPassInput');
+            if (passInput && passInput.value === getAdminPassword()) {
+                const lockBlock = document.getElementById('adminAuthLockBlock');
+                const mainBlock = document.getElementById('adminMainContentBlock');
+                if (lockBlock) lockBlock.classList.add('hidden');
+                if (mainBlock) mainBlock.classList.remove('hidden');
                 renderAdminAgents();
                 showToast('Admin access granted.', 'success');
             } else {
@@ -648,15 +689,18 @@
         }
 
         function calcDebt() {
-            const bill = parseFloat(document.getElementById('totalBill').value) || 0;
-            const paid = parseFloat(document.getElementById('amountPaid').value) || 0;
+            const billInput = document.getElementById('totalBill');
+            const paidInput = document.getElementById('amountPaid');
+            const bill = billInput ? parseFloat(billInput.value) || 0 : 0;
+            const paid = paidInput ? parseFloat(paidInput.value) || 0 : 0;
             const diff = bill - paid;
             const notice = document.getElementById('debtNotice');
+            const calcSpan = document.getElementById('calculatedDebt');
             if (diff > 0) {
-                notice.classList.remove('hidden');
-                document.getElementById('calculatedDebt').innerText = diff.toLocaleString();
+                if (notice) notice.classList.remove('hidden');
+                if (calcSpan) calcSpan.innerText = diff.toLocaleString();
             } else {
-                notice.classList.add('hidden');
+                if (notice) notice.classList.add('hidden');
             }
         }
 
@@ -675,296 +719,4 @@
             const now = new Date();
             const record = {
                 id: now.getTime(),
-                date_str: now.toLocaleDateString(),
-                raw_date: now.toISOString().split('T')[0],
-                agent_code: currentAgent.code,
-                agent_name: currentAgent.name,
-                full_name: firstName + " " + surname + (middleName ? " " + middleName : ""),
-                phone: phone || 'N/A',
-                description: desc,
-                total_bill: bill,
-                amount_paid: paid,
-                agent_commission: commission,
-                debt_balance: debt
-            };
-
-            let success = await saveRecordsToCloud(record);
-            if (success) {
-                showToast('Record saved successfully!', 'success');
-                document.getElementById('jobForm').reset();
-                document.getElementById('debtNotice').classList.add('hidden');
-            }
-        }
-
-        function updateDashboard() {
-            const records = getRecords();
-            let totalRev = 0, totalP = 0, totalCom = 0, totalD = 0;
-            records.forEach(r => {
-                totalRev += r.total_bill;
-                totalP += r.amount_paid;
-                totalCom += (r.agent_commission || 0);
-                totalD += r.debt_balance;
-            });
-            document.getElementById('totalRevenue').innerText = '₦' + totalRev.toLocaleString();
-            document.getElementById('totalPaid').innerText = '₦' + totalP.toLocaleString();
-            document.getElementById('totalCommissions').innerText = '₦' + totalCom.toLocaleString();
-            document.getElementById('totalDebt').innerText = '₦' + totalD.toLocaleString();
-        }
-
-        function renderDebts() {
-            const query = document.getElementById('searchDebt').value.toLowerCase();
-            const container = document.getElementById('debtContainer');
-            container.innerHTML = '';
-            const debts = getRecords().filter(r => r.debt_balance > 0 && (r.full_name.toLowerCase().includes(query) || r.phone.toLowerCase().includes(query)));
-
-            if(debts.length === 0) {
-                container.innerHTML = '<p class="text-center text-xs text-gray-500 py-6 bg-white rounded-2xl shadow-sm font-bold">No active debts found.</p>';
-                return;
-            }
-            debts.forEach(r => {
-                container.innerHTML += '<div class="bg-white p-4 rounded-2xl shadow-sm border border-red-100 flex justify-between items-center"><div><p class="font-extrabold text-xs text-gray-900">' + r.full_name + ' (' + r.phone + ')</p><p class="text-[10px] text-gray-600 font-semibold">' + r.description + ' • Agent: ' + r.agent_code + '</p><p class="text-[11px] font-black text-red-600 mt-1">Debt: ₦' + r.debt_balance.toLocaleString() + '</p></div><button onclick="payDebtPrompt(' + r.id + ')" class="bg-green-600 text-white text-xs px-3.5 py-2 rounded-xl font-extrabold cursor-pointer hover:bg-green-700 transition shadow">Clear</button></div>';
-            });
-        }
-
-        function payDebtPrompt(id) {
-            const records = getRecords();
-            const r = records.find(item => item.id === id);
-            if (!r) return;
-            showCustomPrompt('Enter amount paid by ' + r.full_name + ' (Current Debt: ₦' + r.debt_balance + '):', '', async (amount) => {
-                const payVal = parseFloat(amount);
-                if (payVal && payVal > 0) {
-                    const actualPay = Math.min(payVal, r.debt_balance);
-                    r.debt_balance -= actualPay;
-                    r.amount_paid += actualPay;
-                    await updateRecordInCloud(r);
-                    renderDebts();
-                    showToast('₦' + actualPay.toLocaleString() + ' paid successfully!', 'success');
-                }
-            });
-        }
-
-        function renderHistory() {
-            const query = document.getElementById('searchHistory').value.toLowerCase();
-            const container = document.getElementById('historyContainer');
-            container.innerHTML = '';
-            const filtered = getRecords().filter(r => r.full_name.toLowerCase().includes(query) || r.phone.toLowerCase().includes(query) || r.description.toLowerCase().includes(query));
-
-            if (filtered.length === 0) {
-                container.innerHTML = '<p class="text-center text-xs text-gray-500 py-6 bg-white rounded-2xl shadow-sm font-bold">No transaction history found.</p>';
-                return;
-            }
-            filtered.forEach(r => {
-                let delBtn = currentAgent && currentAgent.role === 'admin' ? '<button onclick="deleteRecord(' + r.id + ')" class="bg-red-700 text-white text-[10px] px-3.5 py-1.5 rounded-xl font-extrabold cursor-pointer hover:bg-red-800 transition shadow"><i class="fas fa-trash"></i> Delete</button>' : '';
-                container.innerHTML += '<div class="bg-white p-4.5 rounded-2xl shadow-sm text-xs space-y-2.5 border border-gray-100"><div class="flex justify-between font-extrabold text-gray-900 border-b pb-1.5 text-sm"><span>' + r.full_name + ' (' + r.phone + ')</span><span class="text-blue-900 font-black">₦' + r.total_bill.toLocaleString() + '</span></div><div class="text-gray-700 space-y-1 bg-gray-50 p-3 rounded-xl border border-gray-100 font-semibold"><p><strong>Desc:</strong> ' + r.description + '</p><p><strong>Paid:</strong> <span class="text-green-700 font-black">₦' + r.amount_paid.toLocaleString() + '</span></p><p><strong>Debt:</strong> <span class="text-red-600 font-black">₦' + r.debt_balance.toLocaleString() + '</span></p></div><div class="flex justify-between items-center text-[10px] text-gray-500 font-bold pt-1 border-t"><span>Date: ' + r.date_str + ' | Agent: ' + r.agent_code + '</span><div class="flex gap-2"><button onclick=\'downloadPDF(' + JSON.stringify(r) + ')\' class="brand-bg text-gold px-3.5 py-1.5 rounded-xl font-bold cursor-pointer shadow hover:opacity-95 transition"><i class="fas fa-file-invoice"></i> Receipt</button>' + delBtn + '</div></div></div>';
-            });
-        }
-
-        function deleteRecord(id) {
-            showCustomConfirm('Delete Job Record', 'Are you sure you want to delete this job record?', async () => {
-                await deleteRecordFromCloud(id);
-                renderHistory();
-                renderDebts();
-                showToast('Job record deleted successfully!', 'success');
-            });
-        }
-
-        function generateAgentReport() {
-            const code = document.getElementById('reportAgentCode').value;
-            const startDate = document.getElementById('reportStartDate').value;
-            const endDate = document.getElementById('reportEndDate').value;
-            const container = document.getElementById('agentReportResults');
-            container.innerHTML = '';
-
-            const filtered = getRecords().filter(r => (!code || r.agent_code === code) && (!startDate || r.raw_date >= startDate) && (!endDate || r.raw_date <= endDate));
-            if (filtered.length === 0) {
-                container.innerHTML = '<div class="bg-white p-6 rounded-3xl shadow-md text-center text-xs text-gray-500 font-bold">No records found for this criteria.</div>';
-                return;
-            }
-
-            let totalRev = 0, totalCom = 0, totalColl = 0, totalDebt = 0;
-            filtered.forEach(r => { totalRev += r.total_bill; totalColl += r.amount_paid; totalCom += (r.agent_commission || 0); totalDebt += r.debt_balance; });
-
-            let listHTML = '<div id="printableReportContent" class="bg-white p-6 rounded-3xl shadow-md space-y-3.5 border-t-4 border-gold"><div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center border-b pb-3.5"><div class="bg-blue-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Total Work</p><p class="text-xs font-black text-blue-950 mt-0.5">₦' + totalRev.toLocaleString() + '</p></div><div class="bg-green-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Collected</p><p class="text-xs font-black text-green-700 mt-0.5">₦' + totalColl.toLocaleString() + '</p></div><div class="bg-amber-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Commission</p><p class="text-xs font-black text-amber-700 mt-0.5">₦' + totalCom.toLocaleString() + '</p></div><div class="bg-red-50 p-2.5 rounded-xl"><p class="text-[9px] text-gray-600 font-bold uppercase">Total Debt</p><p class="text-xs font-black text-red-600 mt-0.5">₦' + totalDebt.toLocaleString() + '</p></div></div><div class="space-y-2">';
-            filtered.forEach(r => { listHTML += '<div class="bg-gray-50 p-3.5 rounded-xl border text-xs flex justify-between items-center font-semibold"><div><p class="font-extrabold text-gray-900">' + r.full_name + ' <span class="text-blue-900">[' + r.agent_code + ']</span></p><p class="text-[10px] text-gray-600">' + r.description + '</p></div><div class="text-right"><p class="font-black text-blue-950">₦' + r.total_bill.toLocaleString() + '</p></div></div>'; });
-            container.innerHTML = listHTML + '</div></div>';
-        }
-
-        function printAgentReport() {
-            const reportEl = document.getElementById('printableReportContent');
-            if (!reportEl) {
-                showToast('Please search and generate a report first!', 'error');
-                return;
-            }
-            const printWin = window.open('', '_blank');
-            printWin.document.write(`
-                <html>
-                <head>
-                    <title>Agent Performance Report - AMC International</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 30px; color: #0d2040; max-width: 650px; margin: auto; background: #fff; }
-                        .report-header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #d4af37; padding-bottom: 15px; }
-                        .logo { width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, #0d2040, #1e3a8a); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 10px; border: 2px solid #d4af37; box-shadow: 0 4px 10px rgba(212,175,55,0.3); }
-                        h2 { margin: 5px 0 0; color: #0d2040; font-size: 18px; font-weight: 900; }
-                        p.sub { font-size: 9px; color: #555; margin-top: 3px; font-weight: bold; letter-spacing: 1px; }
-                        .summary-grid { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 20px; }
-                        .summary-box { flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px; text-align: center; border-radius: 8px; }
-                        .summary-box p { margin: 0; font-size: 8px; font-weight: bold; color: #475569; text-transform: uppercase; }
-                        .summary-box span { font-size: 11px; font-weight: 900; color: #0d2040; }
-                        .item-row { display: flex; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid #e2e8f0; font-size: 11px; font-weight: 600; }
-                        .footer { margin-top: 25px; text-align: center; font-size: 9px; color: #9ca3af; border-top: 1px dashed #cbd5e1; padding-top: 10px; font-weight: bold; }
-                    </style>
-                </head>
-                <body>
-                    <div class="report-header">
-                        <div class="logo">
-                            <span style="font-weight:900; font-size:15px; line-height:1;">AMC</span>
-                            <span style="color:#d4af37; font-size:7px; margin-top:2px; font-weight:bold;">INT'L</span>
-                        </div>
-                        <h2>AMC INTERNATIONAL</h2>
-                        <p class="sub">AA MASOYIN MASOYA COMM CENTER INT. - OFFICIAL REPORT</p>
-                    </div>
-                    <div>
-                        ${reportEl.innerHTML}
-                    </div>
-                    <div class="footer">
-                        <p>Generated on: ${new Date().toLocaleString()} | AMC International Management System</p>
-                    </div>
-                    <script>window.onload = function() { window.print(); window.close(); }</script>
-                </body>
-                </html>
-            `);
-            printWin.document.close();
-        }
-
-        function downloadPDF(r) {
-            const w = window.open('', '_blank');
-            w.document.write(`
-                <html>
-                <head>
-                    <title>Official Receipt - AMC International</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 25px; max-width: 400px; margin: auto; border: 2px solid #0d2040; border-radius: 20px; text-align: center; background: #fff; color: #0d2040; }
-                        .logo { width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, #0d2040, #1e3a8a); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 10px; border: 2px solid #d4af37; box-shadow: 0 4px 10px rgba(212,175,55,0.3); }
-                        h2 { margin: 5px 0 0; color: #0d2040; font-size: 18px; font-weight: 900; }
-                        p.sub { font-size: 9px; color: #555; margin-bottom: 15px; font-weight: 700; letter-spacing: 0.8px; }
-                        .details { text-align: left; margin-top: 10px; font-size: 11px; border-top: 2px dashed #0d2040; padding-top: 12px; line-height: 1.7; }
-                        .details p { display: flex; justify-content: space-between; margin: 6px 0; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; }
-                        .details strong { color: #1e293b; width: 110px; display: inline-block; font-weight: 800; }
-                        .footer { font-size: 9px; color: #64748b; margin-top: 20px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 10px; font-weight: bold; }
-                    </style>
-                </head>
-                <body>
-                    <div class="logo">
-                        <span style="font-weight:900; font-size:15px; line-height:1;">AMC</span>
-                        <span style="color:#d4af37; font-size:7px; margin-top:2px; font-weight:bold;">INT'L</span>
-                    </div>
-                    <h2>AMC INTERNATIONAL</h2>
-                    <p class="sub">AA MASOYIN MASOYA COMM CENTER INT.</p>
-                    <div class="details">
-                        <p><strong>Customer Name:</strong> <span>${r.full_name}</span></p>
-                        <p><strong>Phone Number:</strong> <span>${r.phone}</span></p>
-                        <p><strong>Description:</strong> <span>${r.description}</span></p>
-                        <p><strong>Total Bill:</strong> <span style="font-weight:900;color:#1e3a8a;">₦${r.total_bill.toLocaleString()}</span></p>
-                        <p><strong>Amount Paid:</strong> <span style="font-weight:900;color:#15803d;">₦${r.amount_paid.toLocaleString()}</span></p>
-                        <p><strong>Debt Balance:</strong> <span style="font-weight:900;color:#dc2626;">₦${r.debt_balance.toLocaleString()}</span></p>
-                    </div>
-                    <div class="footer">
-                        <span>Date: ${r.date_str} | Agent Code: ${r.agent_code}</span>
-                        <p style="margin-top: 4px; color: #0d2040; font-size: 9px;">Thank you for your patronage!</p>
-                    </div>
-                    <script>window.onload = function() { window.print(); window.close(); }</script>
-                </body>
-                </html>
-            `);
-            w.document.close();
-        }
-
-        function renderAdminAgents() {
-            const container = document.getElementById('agentListContainer');
-            if(!container) return;
-            container.innerHTML = '';
-            getAgents().forEach((a, index) => {
-                container.innerHTML += '<div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl text-xs border font-semibold"><div><span class="font-black text-blue-950">[' + a.code + ']</span> ' + a.name + '</div><button onclick="removeAgent(\'' + a.code + '\')" class="text-red-600 font-extrabold text-xs px-2.5 py-1.5 bg-red-50 rounded-lg cursor-pointer hover:bg-red-100 transition shadow-xs">Remove</button></div>';
-            });
-        }
-
-        async function addAgent(e) {
-            e.preventDefault();
-            const code = document.getElementById('newAgentCode').value.trim().toUpperCase();
-            const name = document.getElementById('newAgentName').value.trim().toUpperCase();
-            const pass = document.getElementById('newAgentPass').value.trim();
-            
-            if (!navigator.onLine) {
-                showToast('No internet! Cannot add agent right now.', 'error');
-                return;
-            }
-
-            const { error } = await supabaseClient.from('agents').insert([{ code, name, pass }]);
-            if (error) {
-                showToast('Error adding agent (Code might exist)!', 'error');
-            } else {
-                let { data } = await supabaseClient.from('agents').select('*');
-                globalAgents = data;
-                renderAdminAgents();
-                populateAgentDropdowns();
-                showToast('Agent added successfully!', 'success');
-                e.target.reset();
-            }
-        }
-
-        function removeAgent(code) {
-            showCustomConfirm('Remove Agent', 'Are you sure?', async () => {
-                if (!navigator.onLine) {
-                    showToast('No internet connection!', 'error');
-                    return;
-                }
-                const { error } = await supabaseClient.from('agents').delete().eq('code', code);
-                if (error) {
-                    showToast('Error removing agent!', 'error');
-                } else {
-                    let { data } = await supabaseClient.from('agents').select('*');
-                    globalAgents = data;
-                    renderAdminAgents();
-                    populateAgentDropdowns();
-                    showToast('Agent removed successfully!', 'success');
-                }
-            });
-        }
-
-        function changeAdminPassword(e) {
-            e.preventDefault();
-            const oldP = document.getElementById('oldAdminPass').value.trim();
-            const newP = document.getElementById('newAdminPass').value.trim();
-            if (oldP === getAdminPassword()) {
-                localStorage.setItem('amci_admin_pass', newP);
-                showToast('Admin password updated successfully!', 'success');
-                e.target.reset();
-            } else {
-                showToast('Current Admin password is incorrect!', 'error');
-            }
-        }
-
-        async function adminChangeAgentPassword(e) {
-            e.preventDefault();
-            const code = document.getElementById('targetAgentCode').value.trim().toUpperCase();
-            const newPass = document.getElementById('newAgentPassInput').value.trim();
-            
-            if (!navigator.onLine) {
-                showToast('No internet connection!', 'error');
-                return;
-            }
-
-            const { error } = await supabaseClient.from('agents').update({ pass: newPass }).eq('code', code);
-            if (error) {
-                showToast('Agent code not found or error updating!', 'error');
-            } else {
-                let { data } = await supabaseClient.from('agents').select('*');
-                globalAgents = data;
-                renderAdminAgents();
-                showToast('Agent password updated successfully!', 'success');
-                e.target.reset();
-            }
-        }
-    </script>
-</body>
-</html>
+                date_str: now
