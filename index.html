@@ -30,6 +30,26 @@
             transform: translateY(0);
             opacity: 1;
         }
+        
+        /* PRINT STYLING FIX */
+        @media print {
+            body * {
+                visibility: hidden !important;
+            }
+            #printableReportContent, #printableReportContent *, 
+            .print-receipt-container, .print-receipt-container * {
+                visibility: visible !important;
+            }
+            #printableReportContent, .print-receipt-container {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                background: white !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-100 via-blue-50 to-slate-200 font-sans text-gray-900 pb-12 select-none min-h-screen">
@@ -328,8 +348,6 @@
             window.addEventListener('offline', updateOnlineStatus);
 
             await initSupabaseData();
-
-            // Clear session by default on initial load to ensure user sees login screen properly
             sessionStorage.removeItem('amci_active_session');
             logout();
             populateAgentDropdowns();
@@ -840,45 +858,7 @@
                 showToast('Please search and generate a report first!', 'error');
                 return;
             }
-            const printWin = window.open('', '_blank');
-            printWin.document.write(`
-                <html>
-                <head>
-                    <title>Agent Performance Report - AMC International</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 30px; color: #0d2040; max-width: 650px; margin: auto; background: #fff; }
-                        .report-header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #d4af37; padding-bottom: 15px; }
-                        .logo { width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, #0d2040, #1e3a8a); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 10px; border: 2px solid #d4af37; box-shadow: 0 4px 10px rgba(212,175,55,0.3); }
-                        h2 { margin: 5px 0 0; color: #0d2040; font-size: 18px; font-weight: 900; }
-                        p.sub { font-size: 9px; color: #555; margin-top: 3px; font-weight: bold; letter-spacing: 1px; }
-                        .summary-grid { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 20px; }
-                        .summary-box { flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px; text-align: center; border-radius: 8px; }
-                        .summary-box p { margin: 0; font-size: 8px; font-weight: bold; color: #475569; text-transform: uppercase; }
-                        .summary-box span { font-size: 11px; font-weight: 900; color: #0d2040; }
-                        .item-row { display: flex; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid #e2e8f0; font-size: 11px; font-weight: 600; }
-                        .footer { margin-top: 25px; text-align: center; font-size: 9px; color: #9ca3af; border-top: 1px dashed #cbd5e1; padding-top: 10px; font-weight: bold; }
-                    </style>
-                </head>
-                <body>
-                    <div class="report-header">
-                        <div class="logo">
-                            <span style="font-weight:900; font-size:15px; line-height:1;">AMC</span>
-                            <span style="color:#d4af37; font-size:7px; margin-top:2px; font-weight:bold;">INT'L</span>
-                        </div>
-                        <h2>AMC INTERNATIONAL</h2>
-                        <p class="sub">AA MASOYIN MASOYA COMM CENTER INT. - OFFICIAL REPORT</p>
-                    </div>
-                    <div>
-                        ${reportEl.innerHTML}
-                    </div>
-                    <div class="footer">
-                        <p>Generated on: ${new Date().toLocaleString()} | AMC International Management System</p>
-                    </div>
-                    <script>window.onload = function() { window.print(); window.close(); }</script>
-                </body>
-                </html>
-            `);
-            printWin.document.close();
+            window.print();
         }
 
         function downloadPDF(r) {
@@ -979,7 +959,7 @@
             });
         }
 
-        function changeAdminPassword(e) {
+        changeAdminPassword = function(e) {
             e.preventDefault();
             const oldEl = document.getElementById('oldAdminPass');
             const newEl = document.getElementById('newAdminPass');
