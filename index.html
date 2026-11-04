@@ -270,7 +270,6 @@
                         </form>
                     </div>
 
-                    <!-- CHANGE AGENT PASSWORD FORM -->
                     <div class="bg-white p-5 rounded-3xl shadow-md space-y-3 border-t-4 border-gold">
                         <h2 class="font-bold text-blue-950 text-sm border-b pb-2">Change Agent Password</h2>
                         <form onsubmit="adminChangeAgentPassword(event)" class="space-y-2.5">
@@ -322,7 +321,6 @@
             populateAgentDropdowns();
         });
 
-        // MULTI-TAB & DEVICE SYNCHRONIZATION VIA STORAGE EVENT
         window.addEventListener('storage', (event) => {
             if (event.key === 'amci_records') {
                 updateDashboard();
@@ -679,13 +677,13 @@
 
         function printAgentReport() {
             const printWin = window.open('', '_blank');
-            printWin.document.write('<html><head><title>Report</title><style>body{font-family:Arial;padding:20px;}</style></head><body>' + document.getElementById('agentReportResults').innerHTML + '<script>window.onload=function(){window.print();}<\/script></body></html>');
+            printWin.document.write('<html><head><title>Report</title><style>body{font-family:Arial;padding:20px;text-align:center;} .logo{width:50px;height:50px;border-radius:50%;background:#0d2040;color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;border:2px solid #d4af37;font-weight:bold;font-size:14px;}</style></head><body><div class="logo">AMC</div><h2 style="margin:0;color:#0d2040;">AMC INTERNATIONAL</h2><p style="font-size:10px;color:#666;margin-bottom:20px;">AA MASOYIN MASOYA COMM CENTER INT.</p>' + document.getElementById('agentReportResults').innerHTML + '<script>window.onload=function(){window.print();}<\/script></body></html>');
             printWin.document.close();
         }
 
         function downloadPDF(r) {
             const w = window.open('', '_blank');
-            w.document.write('<html><head><title>Receipt</title><style>body{font-family:Arial;padding:20px;max-width:400px;margin:auto;border:1px solid #ccc;}</style></head><body><h2>AMC INTERNATIONAL</h2><p>Customer: ' + r.fullName + '</p><p>Phone: ' + r.phone + '</p><p>Desc: ' + r.desc + '</p><p>Total: ₦' + r.totalBill.toLocaleString() + '</p><p>Paid: ₦' + r.amountPaid.toLocaleString() + '</p><p>Debt: ₦' + r.debtBalance.toLocaleString() + '</p><script>window.onload=function(){window.print();}<\/script></body></html>');
+            w.document.write('<html><head><title>Receipt</title><style>body{font-family:Arial;padding:20px;max-width:400px;margin:auto;border:1px solid #ccc;text-align:center;} .logo{width:60px;height:60px;border-radius:50%;background:#0d2040;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 10px;border:2px solid #d4af37;} .logo span{line-height:1;} .details{text-align:left;margin-top:20px;font-size:13px;border-top:1px solid #ddd;padding-top:15px;}</style></head><body><div class="logo"><span style="font-weight:black;font-size:14px;">AMC</span><span style="color:#d4af37;font-size:7px;margin-top:2px;">INT\'L</span></div><h2 style="margin:0;color:#0d2040;font-size:16px;">AMC INTERNATIONAL</h2><p style="font-size:9px;color:#666;margin-bottom:15px;">AA MASOYIN MASOYA COMM CENTER INT.</p><div class="details"><p><strong>Customer:</strong> ' + r.fullName + '</p><p><strong>Phone:</strong> ' + r.phone + '</p><p><strong>Desc:</strong> ' + r.desc + '</p><p><strong>Total:</strong> ₦' + r.totalBill.toLocaleString() + '</p><p><strong>Paid:</strong> <span style="color:green;">₦' + r.amountPaid.toLocaleString() + '</span></p><p><strong>Debt:</strong> <span style="color:red;">₦' + r.debtBalance.toLocaleString() + '</span></p><p style="font-size:11px;color:#888;margin-top:15px;text-align:center;">Date: ' + r.dateStr + ' | Agent: ' + r.agentCode + '</p></div><script>window.onload=function(){window.print();}<\/script></body></html>');
             w.document.close();
         }
 
@@ -741,7 +739,7 @@
             const code = document.getElementById('targetAgentCode').value.trim().toUpperCase();
             const newPass = document.getElementById('newAgentPassInput').value.trim();
             let agents = getAgents();
-            const index = agents.findIndex(a => a.code === code);
+            const index = agents.findIndex(a =>.code === code);
             if (index !== -1) {
                 agents[index].pass = newPass;
                 localStorage.setItem('amci_agents', JSON.stringify(agents));
