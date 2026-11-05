@@ -1,35 +1,25 @@
 {
-  "id": "/",
-  "name": "AMC International - Store & Debt Management",
+  "id": "com.amc.international.app",
+  "name": "AMC International - Store &amp; Debt Management",
   "short_name": "AMC",
   "description": "A reliable store and debt management system designed for tracking sales, managing customer debts, and generating receipts.",
-  "start_url": "index.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0d2040",
   "theme_color": "#0d2040",
-  "categories": ["business", "finance", "productivity"],
+  "categories": [
+    "business",
+    "finance",
+    "productivity"
+  ],
   "icons": [
     {
       "src": "icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "form_factor": "wide"
-    },
-    {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "form_factor": "narrow"
     }
   ]
 }
