@@ -248,7 +248,6 @@
                         debt: Number(t.debt)
                     }));
                 } else {
-                    // Fallback to local storage
                     transactions = JSON.parse(localStorage.getItem('amc_transactions') || '[]');
                 }
             } else {
