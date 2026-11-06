@@ -37,46 +37,11 @@
 </head>
 <body class="bg-gradient-to-br from-slate-100 via-blue-50 to-slate-200 font-sans text-gray-900 pb-12 select-none min-h-screen">
 
-    <!-- NETWORK STATUS BANNER -->
-    <div id="networkBanner" class="hidden fixed top-0 left-0 right-0 z-50 text-center py-1.5 text-xs font-black shadow-md transition-all">
-        <span id="networkText"></span>
-    </div>
-
     <!-- TOAST NOTIFICATION -->
     <div id="toastContainer" class="fixed top-12 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
         <div id="toastBox" class="pointer-events-auto flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold max-w-sm w-full hidden border">
             <i id="toastIcon" class="text-base"></i>
             <span id="toastMessage" class="flex-1"></span>
-        </div>
-    </div>
-
-    <!-- CONFIRM MODAL -->
-    <div id="customConfirmModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl border-t-4 border-gold">
-            <div class="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center mx-auto text-amber-600 text-xl shadow-inner">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <h3 id="confirmTitle" class="font-extrabold text-blue-950 text-sm">Are you sure?</h3>
-            <p id="confirmText" class="text-xs text-gray-600 font-medium"></p>
-            <div class="grid grid-cols-2 gap-2 pt-2">
-                <button id="confirmBtnCancel" class="py-2.5 bg-gray-200 text-gray-700 rounded-xl text-xs font-bold hover:bg-gray-300 transition cursor-pointer">Cancel</button>
-                <button id="confirmBtnOk" class="py-2.5 bg-red-700 text-white rounded-xl text-xs font-bold hover:bg-red-800 transition shadow-md cursor-pointer">Confirm</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- PROMPT MODAL -->
-    <div id="customPromptModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl border-t-4 border-gold">
-            <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto text-blue-900 text-xl shadow-inner">
-                <i class="fas fa-coins"></i>
-            </div>
-            <h3 id="promptTitle" class="font-extrabold text-blue-950 text-sm">Enter Amount</h3>
-            <input type="number" id="customPromptInput" class="w-full px-4 py-3 border rounded-xl text-center text-sm font-bold bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-900">
-            <div class="grid grid-cols-2 gap-2 pt-2">
-                <button id="promptBtnCancel" class="py-2.5 bg-gray-200 text-gray-700 rounded-xl text-xs font-bold hover:bg-gray-300 transition cursor-pointer">Cancel</button>
-                <button id="promptBtnOk" class="py-2.5 brand-bg text-white rounded-xl text-xs font-bold hover:bg-blue-950 transition shadow-md cursor-pointer">Submit</button>
-            </div>
         </div>
     </div>
 
@@ -115,34 +80,12 @@
                 </div>
                 <button type="submit" class="w-full bg-red-800 text-white font-extrabold py-3 rounded-xl shadow-lg hover:bg-red-900 transition duration-200 text-sm cursor-pointer">LOGIN AS ADMIN</button>
             </form>
-
-            <p id="loginError" class="text-red-600 text-xs mt-3 hidden font-bold bg-red-50 p-2.5 rounded-lg border border-red-200"></p>
-        </div>
-    </div>
-
-    <!-- FIRST TIME PASSWORD SETUP MODAL -->
-    <div id="setupPasswordModal" class="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl border-t-4 border-gold text-center">
-            <div class="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center mx-auto text-amber-600 text-xl shadow-inner">
-                <i class="fas fa-key"></i>
-            </div>
-            <h3 id="setupPassTitle" class="font-extrabold text-blue-950 text-sm">Set Up New Password</h3>
-            <p class="text-[11px] text-gray-600 font-medium">For security, please configure your new password before proceeding.</p>
-            <form onsubmit="saveNewPassword(event)" class="space-y-3 pt-2">
-                <div>
-                    <input type="password" id="newPasswordInput" placeholder="Enter New Password" required class="w-full px-4 py-3 border rounded-xl text-center text-sm font-bold bg-gray-50 focus:ring-2 focus:ring-blue-900">
-                </div>
-                <div>
-                    <input type="password" id="confirmPasswordInput" placeholder="Confirm Password" required class="w-full px-4 py-3 border rounded-xl text-center text-sm font-bold bg-gray-50 focus:ring-2 focus:ring-blue-900">
-                </div>
-                <button type="submit" class="w-full brand-bg text-white py-3 rounded-xl text-xs font-extrabold hover:bg-blue-950 transition cursor-pointer shadow">SAVE & CONTINUE</button>
-            </form>
         </div>
     </div>
 
     <!-- MAIN APP INTERFACE -->
     <div id="appInterface" class="hidden">
-        <header class="brand-bg text-white p-4 shadow-xl sticky top-0 z-40 border-b-2 border-gold backdrop-blur-md bg-opacity-95 mt-6">
+        <header class="brand-bg text-white p-4 shadow-xl sticky top-0 z-40 border-b-2 border-gold backdrop-blur-md bg-opacity-95">
             <div class="flex items-center justify-between max-w-2xl mx-auto">
                 <div class="flex items-center space-x-3">
                     <div class="logo-box w-10 h-10 rounded-full flex flex-col items-center justify-center text-center shadow">
@@ -164,19 +107,19 @@
         <main class="max-w-2xl mx-auto p-4 space-y-4">
             
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-                <div class="bg-white p-3.5 rounded-2xl shadow-md border-l-4 border-blue-900 hover:shadow-lg transition">
+                <div class="bg-white p-3.5 rounded-2xl shadow-md border-l-4 border-blue-900">
                     <p class="text-[10px] text-gray-600 font-bold uppercase">Total Work</p>
                     <p id="totalRevenue" class="text-xs font-black text-blue-950 mt-1">₦0</p>
                 </div>
-                <div class="bg-white p-3.5 rounded-2xl shadow-md border-l-4 border-green-600 hover:shadow-lg transition">
+                <div class="bg-white p-3.5 rounded-2xl shadow-md border-l-4 border-green-600">
                     <p class="text-[10px] text-gray-600 font-bold uppercase">Collected</p>
                     <p id="totalPaid" class="text-xs font-black text-green-700 mt-1">₦0</p>
                 </div>
-                <div class="bg-white p-3.5 rounded-2xl shadow-md border-l-4 border-amber-600 hover:shadow-lg transition">
+                <div class="bg-white p-3.5 rounded-2xl shadow-md border-l-4 border-amber-600">
                     <p class="text-[10px] text-gray-600 font-bold uppercase">Agent Comm.</p>
                     <p id="totalCommissions" class="text-xs font-black text-amber-700 mt-1">₦0</p>
                 </div>
-                <div class="bg-white p-3.5 rounded-2xl shadow-md border-l-4 border-red-500 hover:shadow-lg transition">
+                <div class="bg-white p-3.5 rounded-2xl shadow-md border-l-4 border-red-500">
                     <p class="text-[10px] text-gray-600 font-bold uppercase">Pending Debt</p>
                     <p id="totalDebt" class="text-xs font-black text-red-600 mt-1">₦0</p>
                 </div>
@@ -184,7 +127,10 @@
 
             <!-- TABS -->
             <div id="navTabsContainer" class="flex flex-wrap gap-1 bg-white p-1.5 rounded-2xl shadow-md text-xs font-extrabold border border-gray-100">
-                <!-- Will be dynamically populated via JavaScript -->
+                <button onclick="switchTab('newJob')" id="tabNewJob" class="flex-1 py-2.5 rounded-xl brand-bg text-white transition cursor-pointer">New Job</button>
+                <button onclick="switchTab('debts')" id="tabDebts" class="flex-1 py-2.5 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer">Debts</button>
+                <button onclick="switchTab('history')" id="tabHistory" class="flex-1 py-2.5 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer">History</button>
+                <button onclick="switchTab('report')" id="tabReport" class="flex-1 py-2.5 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer">Report</button>
             </div>
 
             <!-- TAB 1: NEW JOB -->
@@ -200,10 +146,6 @@
                             <label class="text-xs text-gray-700 font-bold">Surname</label>
                             <input type="text" id="custSurname" required class="w-full mt-1 px-3.5 py-3 border rounded-xl text-sm font-bold uppercase bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-900 transition">
                         </div>
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-700 font-bold">Middle Name (Optional)</label>
-                        <input type="text" id="custMiddleName" placeholder="Optional" class="w-full mt-1 px-3.5 py-3 border rounded-xl text-sm font-bold uppercase bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-900 transition">
                     </div>
                     <div>
                         <label class="text-xs text-gray-700 font-bold">Phone Number</label>
@@ -222,15 +164,6 @@
                             <label class="text-xs text-gray-700 font-bold">Amount Paid (₦)</label>
                             <input type="number" id="amountPaid" required min="0" oninput="calcDebt()" class="w-full mt-1 px-3.5 py-3 border rounded-xl text-sm font-black text-green-700 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-900 transition">
                         </div>
-                    </div>
-                    <!-- Quick Amount Buttons -->
-                    <div class="flex gap-1.5 flex-wrap">
-                        <span class="text-[10px] text-gray-500 font-bold w-full">Quick add amount:</span>
-                        <button type="button" onclick="addAmount(500)" class="bg-gray-100 hover:bg-gray-200 text-blue-950 px-3 py-1.5 rounded-lg text-xs font-bold border cursor-pointer shadow-xs">+₦500</button>
-                        <button type="button" onclick="addAmount(1000)" class="bg-gray-100 hover:bg-gray-200 text-blue-950 px-3 py-1.5 rounded-lg text-xs font-bold border cursor-pointer shadow-xs">+₦1,000</button>
-                        <button type="button" onclick="addAmount(1500)" class="bg-gray-100 hover:bg-gray-200 text-blue-950 px-3 py-1.5 rounded-lg text-xs font-bold border cursor-pointer shadow-xs">+₦1,500</button>
-                        <button type="button" onclick="addAmount(2000)" class="bg-gray-100 hover:bg-gray-200 text-blue-950 px-3 py-1.5 rounded-lg text-xs font-bold border cursor-pointer shadow-xs">+₦2,000</button>
-                        <button type="button" onclick="addAmount(3000)" class="bg-gray-100 hover:bg-gray-200 text-blue-950 px-3 py-1.5 rounded-lg text-xs font-bold border cursor-pointer shadow-xs">+₦3,000</button>
                     </div>
                     <div>
                         <label class="text-xs text-gray-700 font-bold">Agent Commission (₦)</label>
@@ -264,479 +197,158 @@
             <!-- TAB 4: AGENT REPORT -->
             <section id="secAgentReport" class="hidden space-y-4">
                 <div class="bg-white p-6 rounded-3xl shadow-md space-y-3.5 border border-gray-100">
-                    <h2 class="font-extrabold text-blue-950 text-sm border-b pb-2">Agent Performance Report</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                        <div id="reportAgentFilterBox">
-                            <label class="text-xs text-gray-700 font-bold">Agent</label>
-                            <select id="reportAgentCode" class="w-full mt-1 px-3.5 py-3 border rounded-xl text-xs bg-gray-50 font-bold uppercase"></select>
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-700 font-bold">From Date</label>
-                            <input type="date" id="reportStartDate" class="w-full mt-1 px-3.5 py-3 border rounded-xl text-xs bg-gray-50 font-bold">
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-700 font-bold">To Date</label>
-                            <input type="date" id="reportEndDate" class="w-full mt-1 px-3.5 py-3 border rounded-xl text-xs bg-gray-50 font-bold">
-                        </div>
-                    </div>
-                    <div class="flex flex-wrap gap-2 pt-2">
-                        <button onclick="generateAgentReport()" class="flex-1 brand-bg text-white py-3 rounded-xl text-xs font-extrabold hover:bg-blue-950 transition cursor-pointer shadow">SEARCH REPORT</button>
-                        <button onclick="exportReportExcel()" class="bg-green-700 text-white px-4 py-3 rounded-xl text-xs font-extrabold hover:bg-green-800 transition cursor-pointer shadow"><i class="fas fa-file-excel"></i> Excel</button>
-                        <button onclick="printAgentReport()" class="bg-emerald-700 text-white px-4 py-3 rounded-xl text-xs font-extrabold hover:bg-emerald-800 transition cursor-pointer shadow"><i class="fas fa-print"></i> Print</button>
-                    </div>
-                </div>
-                <div id="agentReportResults" class="space-y-3"></div>
-            </section>
-
-            <!-- TAB 5: ADMIN -->
-            <section id="secAdmin" class="hidden space-y-4">
-                <div id="adminAuthLockBlock" class="bg-white p-6 rounded-3xl shadow-md text-center space-y-4 border border-gray-100">
-                    <i class="fas fa-lock text-4xl brand-gold"></i>
-                    <h2 class="font-extrabold text-gray-800 text-sm">Admin Verification Required</h2>
-                    <input type="password" id="tabAdminPassInput" placeholder="Enter Admin Password" class="w-full px-4 py-3 border rounded-xl text-center text-sm font-bold bg-gray-50 max-w-xs mx-auto">
-                    <p id="adminPassError" class="text-red-600 text-xs font-bold hidden bg-red-50 p-2 rounded-lg">Incorrect Admin Password! Please verify and try again.</p>
-                    <div class="flex justify-center gap-2">
-                        <button onclick="verifyTabAdmin()" class="bg-red-800 text-white px-6 py-3 rounded-xl text-xs font-extrabold hover:bg-red-900 transition shadow cursor-pointer">UNLOCK</button>
-                        <button onclick="openChangePasswordModal('ADMIN')" class="bg-blue-900 text-white px-4 py-3 rounded-xl text-xs font-extrabold hover:bg-blue-950 transition shadow cursor-pointer"><i class="fas fa-key"></i> Change Password</button>
-                    </div>
-                </div>
-
-                <div id="adminPanelContent" class="space-y-4 hidden">
-                    <!-- AGENT MANAGEMENT -->
-                    <div class="bg-white p-6 rounded-3xl shadow-md space-y-4 border border-gray-100">
-                        <div class="flex justify-between items-center border-b pb-2">
-                            <h2 class="font-extrabold text-blue-950 text-sm">Manage Agents</h2>
-                            <button onclick="openAgentModal()" class="bg-blue-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-blue-950 transition cursor-pointer"><i class="fas fa-user-plus"></i> Add Agent</button>
-                        </div>
-                        <div id="adminAgentList" class="space-y-2"></div>
-                    </div>
-
-                    <!-- DATA BACKUP / RESTORE & SYNC -->
-                    <div class="bg-white p-6 rounded-3xl shadow-md space-y-4 border border-gray-100">
-                        <h2 class="font-extrabold text-blue-950 text-sm border-b pb-2">System Data & Sync Controls</h2>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button onclick="forceCloudSync()" class="brand-bg text-white py-3 rounded-xl text-xs font-extrabold hover:bg-blue-950 transition cursor-pointer shadow"><i class="fas fa-sync"></i> Sync Now</button>
-                            <button onclick="exportDataBackup()" class="bg-emerald-700 text-white py-3 rounded-xl text-xs font-extrabold hover:bg-emerald-800 transition cursor-pointer shadow"><i class="fas fa-download"></i> Backup JSON</button>
-                        </div>
-                    </div>
+                    <h2 class="font-extrabold text-blue-950 text-sm border-b pb-2 flex items-center justify-between">
+                        <span>Agent Performance & Excel Export</span>
+                        <button onclick="exportToExcel()" class="bg-green-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-green-800 transition cursor-pointer shadow"><i class="fas fa-file-excel mr-1"></i> Export Excel</button>
+                    </h2>
+                    <div id="reportContainer" class="space-y-2 text-xs"></div>
                 </div>
             </section>
-
         </main>
     </div>
 
-    <!-- AGENT ADD/EDIT MODAL -->
-    <div id="agentModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl border-t-4 border-gold">
-            <h3 id="agentModalTitle" class="font-extrabold text-blue-950 text-sm text-center">Add New Agent</h3>
-            <form id="agentForm" onsubmit="saveAgent(event)" class="space-y-3">
-                <input type="hidden" id="agentEditOriginalCode">
-                <div>
-                    <label class="text-xs text-gray-700 font-bold">Agent Code (e.g. AG02)</label>
-                    <input type="text" id="modalAgentCode" required class="w-full mt-1 px-3 py-2.5 border rounded-xl text-xs font-black uppercase bg-gray-50">
-                </div>
-                <div>
-                    <label class="text-xs text-gray-700 font-bold">Agent Full Name</label>
-                    <input type="text" id="modalAgentName" required class="w-full mt-1 px-3 py-2.5 border rounded-xl text-xs font-bold bg-gray-50">
-                </div>
-                <div>
-                    <label class="text-xs text-gray-700 font-bold">Initial Password</label>
-                    <input type="text" id="modalAgentPassword" required class="w-full mt-1 px-3 py-2.5 border rounded-xl text-xs font-bold bg-gray-50">
-                </div>
-                <div class="grid grid-cols-2 gap-2 pt-2">
-                    <button type="button" onclick="closeAgentModal()" class="py-2.5 bg-gray-200 text-gray-700 rounded-xl text-xs font-bold hover:bg-gray-300 transition cursor-pointer">Cancel</button>
-                    <button type="submit" class="py-2.5 brand-bg text-white rounded-xl text-xs font-bold hover:bg-blue-950 transition cursor-pointer shadow">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- CHANGE PASSWORD MODAL -->
-    <div id="changePasswordModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl border-t-4 border-gold">
-            <h3 class="font-extrabold text-blue-950 text-sm text-center">Change Password</h3>
-            <form onsubmit="submitNewPassword(event)" class="space-y-3">
-                <input type="hidden" id="passChangeUserCode">
-                <div>
-                    <label class="text-xs text-gray-700 font-bold">New Password</label>
-                    <input type="password" id="modalNewPass" required class="w-full mt-1 px-3 py-2.5 border rounded-xl text-xs font-bold bg-gray-50">
-                </div>
-                <div>
-                    <label class="text-xs text-gray-700 font-bold">Confirm New Password</label>
-                    <input type="password" id="modalConfirmPass" required class="w-full mt-1 px-3 py-2.5 border rounded-xl text-xs font-bold bg-gray-50">
-                </div>
-                <div class="grid grid-cols-2 gap-2 pt-2">
-                    <button type="button" onclick="closeChangePasswordModal()" class="py-2.5 bg-gray-200 text-gray-700 rounded-xl text-xs font-bold hover:bg-gray-300 transition cursor-pointer">Cancel</button>
-                    <button type="submit" class="py-2.5 brand-bg text-white rounded-xl text-xs font-bold hover:bg-blue-950 transition cursor-pointer shadow">Update</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- RECEIPT MODAL -->
-    <div id="receiptModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div id="receiptPrintArea" class="space-y-3 text-xs text-gray-800 font-medium">
-                <div class="text-center space-y-1 border-b pb-3">
-                    <div class="logo-box w-12 h-12 mx-auto rounded-full flex flex-col items-center justify-center text-center">
-                        <span class="text-white font-black text-xs leading-none">AMC</span>
-                        <span class="brand-gold text-[5px] font-bold">INT'L</span>
-                    </div>
-                    <h2 class="font-extrabold text-blue-950 text-sm">AMC INTERNATIONAL</h2>
-                    <p class="text-[9px] text-gray-500 font-bold">AA MASOYIN MASOYA COMM CENTER INT.</p>
-                    <p id="receiptDate" class="text-[10px] text-gray-400 font-semibold"></p>
-                </div>
-                <div class="space-y-1 border-b pb-3">
-                    <p><strong>Receipt No:</strong> <span id="recNo"></span></p>
-                    <p><strong>Customer:</strong> <span id="recCustName"></span></p>
-                    <p><strong>Phone:</strong> <span id="recPhone"></span></p>
-                    <p><strong>Agent Code:</strong> <span id="recAgent"></span></p>
-                </div>
-                <div>
-                    <p class="font-bold text-gray-600 mb-1">Description:</p>
-                    <p id="recDesc" class="bg-gray-50 p-2.5 rounded-xl border text-xs font-medium"></p>
-                </div>
-                <div class="space-y-1.5 border-t border-b py-3 font-bold">
-                    <div class="flex justify-between"><span>Total Bill:</span> <span id="recTotal">₦0</span></div>
-                    <div class="flex justify-between text-green-700"><span>Amount Paid:</span> <span id="recPaid">₦0</span></div>
-                    <div class="flex justify-between text-red-600"><span>Balance Debt:</span> <span id="recDebt">₦0</span></div>
-                </div>
-                <div class="text-center text-[10px] text-gray-500 pt-1">
-                    <p class="font-bold">Thank you for your patronage!</p>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-2 pt-2">
-                <button onclick="closeReceiptModal()" class="py-2.5 bg-gray-200 text-gray-700 rounded-xl text-xs font-bold hover:bg-gray-300 transition cursor-pointer">Close</button>
-                <button onclick="window.print()" class="py-2.5 brand-bg text-white rounded-xl text-xs font-bold hover:bg-blue-950 transition shadow cursor-pointer"><i class="fas fa-print"></i> Print</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MAIN SCRIPT -->
     <script>
+        // SUPABASE CONFIGURATION
         const SUPABASE_URL = 'https://zaenyapuytutdrjjssul.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_rZw7m05XbbkwRtPfavRqqQ_Ab_TYkgN';
+        const SUPABASE_KEY = 'sb_publishable_rZw7m05XbbkwRtPfavRqqQ_Ab_TYkgN';
         let supabaseClient = null;
 
         try {
-            if (window.supabase && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            }
-        } catch (e) {
-            console.warn("Supabase init failed. Running in Local Storage offline mode.", e);
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } catch(e) { 
+            console.error('Supabase connection error:', e); 
         }
 
-        let currentUser = null; 
-        let transactions = JSON.parse(localStorage.getItem('amc_transactions') || '[]');
-        let agents = JSON.parse(localStorage.getItem('amc_agents') || '[{"code":"AG01","name":"Default Agent","password":"password123","mustChangePassword":true}]');
-        let adminPassword = localStorage.getItem('amc_admin_password') || 'Aa4753@.';
+        let currentUser = null;
+        let transactions = [];
 
-        window.addEventListener('DOMContentLoaded', async () => {
+        async function initApp() {
+            await fetchTransactions();
+        }
+
+        async function fetchTransactions() {
             if (supabaseClient) {
-                await fetchCloudData();
-            }
-            checkAuthSession();
-            setupNetworkListeners();
-            setDefaultDates();
-        });
-
-        function setDefaultDates() {
-            const today = new Date().toISOString().split('T')[0];
-            const startInput = document.getElementById('reportStartDate');
-            const endInput = document.getElementById('reportEndDate');
-            if (startInput && !startInput.value) startInput.value = today;
-            if (endInput && !endInput.value) endInput.value = today;
-        }
-
-        async function fetchCloudData() {
-            if (!supabaseClient) return;
-            try {
-                const { data: cloudAgents, error: agentErr } = await supabaseClient.from('agents').select('*');
-                if (!agentErr && cloudAgents && cloudAgents.length > 0) {
-                    agents = cloudAgents;
-                    localStorage.setItem('amc_agents', JSON.stringify(agents));
-                }
-
-                const { data: cloudTx, error: txErr } = await supabaseClient.from('transactions').select('*');
-                if (!txErr && cloudTx) {
-                    transactions = cloudTx.map(t => ({
-                        ...t,
-                        totalBill: t.total_bill,
-                        amountPaid: t.amount_paid,
-                        agentCode: t.agent_code,
-                        customerName: t.customer_name,
-                        history: typeof t.history === 'string' ? JSON.parse(t.history) : t.history
+                const { data, error } = await supabaseClient
+                    .from('transactions')
+                    .select('*')
+                    .order('date', { ascending: false });
+                
+                if (!error && data) {
+                    transactions = data.map(t => ({
+                        id: t.id,
+                        date: t.date,
+                        agent: t.agent,
+                        firstName: t.first_name,
+                        surname: t.surname,
+                        phone: t.phone,
+                        description: t.description,
+                        totalBill: Number(t.total_bill),
+                        amountPaid: Number(t.amount_paid),
+                        commission: Number(t.commission),
+                        debt: Number(t.debt)
                     }));
-                    localStorage.setItem('amc_transactions', JSON.stringify(transactions));
+                } else {
+                    // Fallback to local storage
+                    transactions = JSON.parse(localStorage.getItem('amc_transactions') || '[]');
                 }
-
-                const { data: configData } = await supabaseClient.from('agents').select('*').eq('code', 'ADMIN_CONFIG').single();
-                if (configData && configData.password) {
-                    adminPassword = configData.password;
-                    localStorage.setItem('amc_admin_password', adminPassword);
-                }
-            } catch (err) {
-                console.warn("Could not load from cloud, using local cache:", err);
+            } else {
+                transactions = JSON.parse(localStorage.getItem('amc_transactions') || '[]');
             }
+            updateDashboard();
         }
 
-        function checkAuthSession() {
-            const savedUser = localStorage.getItem('amc_current_user');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                showAppInterface();
-            } else {
-                showLoginScreen();
-            }
+        function showToast(message, type = 'success') {
+            const box = document.getElementById('toastBox');
+            const msg = document.getElementById('toastMessage');
+            const icon = document.getElementById('toastIcon');
+            msg.textContent = message;
+            box.className = `pointer-events-auto flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold max-w-sm w-full show ${type === 'success' ? 'bg-green-700 border-green-500' : 'bg-red-700 border-red-500'}`;
+            icon.className = type === 'success' ? 'fas fa-check-circle text-base' : 'fas fa-exclamation-circle text-base';
+            setTimeout(() => box.classList.remove('show'), 3000);
         }
 
         function switchLoginMode(mode) {
-            const agentBtn = document.getElementById('tabBtnAgent');
-            const adminBtn = document.getElementById('tabBtnAdmin');
-            const agentForm = document.getElementById('agentLoginForm');
-            const adminForm = document.getElementById('adminLoginForm');
-
-            if (mode === 'agent') {
-                agentBtn.className = "py-2.5 rounded-lg brand-bg text-white transition cursor-pointer shadow-sm";
-                adminBtn.className = "py-2.5 rounded-lg text-gray-700 transition cursor-pointer";
-                agentForm.classList.remove('hidden');
-                adminForm.classList.add('hidden');
+            if(mode === 'agent') {
+                document.getElementById('agentLoginForm').classList.remove('hidden');
+                document.getElementById('adminLoginForm').classList.add('hidden');
+                document.getElementById('tabBtnAgent').className = 'py-2.5 rounded-lg brand-bg text-white transition cursor-pointer shadow-sm';
+                document.getElementById('tabBtnAdmin').className = 'py-2.5 rounded-lg text-gray-700 transition cursor-pointer';
             } else {
-                adminBtn.className = "py-2.5 rounded-lg bg-red-800 text-white transition cursor-pointer shadow-sm";
-                agentBtn.className = "py-2.5 rounded-lg text-gray-700 transition cursor-pointer";
-                adminForm.classList.remove('hidden');
-                agentForm.classList.add('hidden');
+                document.getElementById('agentLoginForm').classList.add('hidden');
+                document.getElementById('adminLoginForm').classList.remove('hidden');
+                document.getElementById('tabBtnAdmin').className = 'py-2.5 rounded-lg bg-red-800 text-white transition cursor-pointer shadow-sm';
+                document.getElementById('tabBtnAgent').className = 'py-2.5 rounded-lg text-gray-700 transition cursor-pointer';
             }
-            hideError();
         }
 
         function handleAgentLogin(e) {
             e.preventDefault();
-            const code = document.getElementById('loginAgentCode').value.trim().toUpperCase();
-            const pass = document.getElementById('loginAgentPassword').value;
-
-            const foundAgent = agents.find(a => a.code === code && a.password === pass);
-            if (foundAgent) {
-                currentUser = { code: foundAgent.code, name: foundAgent.name, role: 'agent' };
-                localStorage.setItem('amc_current_user', JSON.stringify(currentUser));
-                
-                if (foundAgent.mustChangePassword) {
-                    openFirstTimePasswordSetup(foundAgent.code);
-                } else {
-                    showAppInterface();
-                    showToast("Logged in as " + foundAgent.name, "success");
-                }
-            } else {
-                showLoginError("Invalid Agent Code or Password!");
-            }
+            const code = document.getElementById('loginAgentCode').value.toUpperCase();
+            currentUser = { code: code, role: 'agent' };
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('appInterface').classList.remove('hidden');
+            document.getElementById('activeAgentBadge').textContent = 'Agent: ' + code;
+            initApp();
+            showToast('Welcome Agent ' + code);
         }
 
         function handleAdminLogin(e) {
             e.preventDefault();
             const pass = document.getElementById('loginAdminPassword').value;
-            if (pass === adminPassword) {
-                currentUser = { code: 'ADMIN', name: 'Administrator', role: 'admin' };
-                localStorage.setItem('amc_current_user', JSON.stringify(currentUser));
-                showAppInterface();
-                showToast("Logged in as Administrator", "success");
+            if(pass === 'admin123' || pass === 'ADMIN') {
+                currentUser = { code: 'ADMIN', role: 'admin' };
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('appInterface').classList.remove('hidden');
+                document.getElementById('activeAgentBadge').textContent = 'Administrator';
+                initApp();
+                showToast('Welcome Admin');
             } else {
-                showLoginError("Invalid Admin Password!");
+                showToast('Invalid Admin Password', 'error');
             }
-        }
-
-        function openFirstTimePasswordSetup(userCode) {
-            document.getElementById('passChangeUserCode').value = userCode;
-            document.getElementById('setupPassTitle').textContent = userCode === 'ADMIN' ? 'Set Admin Password' : 'Set Agent Password';
-            document.getElementById('setupPasswordModal').classList.remove('hidden');
-        }
-
-        async function saveNewPassword(e) {
-            e.preventDefault();
-            const userCode = document.getElementById('passChangeUserCode').value;
-            const newPass = document.getElementById('newPasswordInput').value;
-            const confirmPass = document.getElementById('confirmPasswordInput').value;
-
-            if (newPass !== confirmPass) {
-                showToast("Passwords do not match!", "error");
-                return;
-            }
-            if (newPass.length < 4) {
-                showToast("Password must be at least 4 characters long", "error");
-                return;
-            }
-
-            if (userCode === 'ADMIN') {
-                adminPassword = newPass;
-                localStorage.setItem('amc_admin_password', adminPassword);
-                if (supabaseClient) {
-                    await supabaseClient.from('agents').upsert({ code: 'ADMIN_CONFIG', name: 'Admin Config', password: adminPassword });
-                }
-            } else {
-                const agent = agents.find(a => a.code === userCode);
-                if (agent) {
-                    agent.password = newPass;
-                    agent.mustChangePassword = false;
-                    localStorage.setItem('amc_agents', JSON.stringify(agents));
-                    if (supabaseClient) {
-                        await supabaseClient.from('agents').upsert({ code: agent.code, name: agent.name, password: agent.password, must_change_password: false });
-                    }
-                }
-            }
-
-            document.getElementById('setupPasswordModal').classList.add('hidden');
-            showToast("Password updated successfully across devices!", "success");
-            showAppInterface();
-        }
-
-        function openChangePasswordModal(userCode) {
-            document.getElementById('passChangeUserCode').value = userCode;
-            document.getElementById('modalNewPass').value = '';
-            document.getElementById('modalConfirmPass').value = '';
-            document.getElementById('changePasswordModal').classList.remove('hidden');
-        }
-
-        function closeChangePasswordModal() {
-            document.getElementById('changePasswordModal').classList.add('hidden');
-        }
-
-        async function submitNewPassword(e) {
-            e.preventDefault();
-            const userCode = document.getElementById('passChangeUserCode').value;
-            const newPass = document.getElementById('modalNewPass').value;
-            const confirmPass = document.getElementById('modalConfirmPass').value;
-
-            if (newPass !== confirmPass) {
-                showToast("Passwords do not match!", "error");
-                return;
-            }
-
-            if (userCode === 'ADMIN') {
-                adminPassword = newPass;
-                localStorage.setItem('amc_admin_password', adminPassword);
-                if (supabaseClient) {
-                    await supabaseClient.from('agents').upsert({ code: 'ADMIN_CONFIG', name: 'Admin Config', password: adminPassword });
-                }
-            } else {
-                const agent = agents.find(a => a.code === userCode);
-                if (agent) {
-                    agent.password = newPass;
-                    localStorage.setItem('amc_agents', JSON.stringify(agents));
-                    if (supabaseClient) {
-                        await supabaseClient.from('agents').upsert({ code: agent.code, name: agent.name, password: agent.password, must_change_password: false });
-                    }
-                }
-            }
-
-            closeChangePasswordModal();
-            showToast("Password changed and synced successfully!", "success");
-        }
-
-        function showLoginError(msg) {
-            const err = document.getElementById('loginError');
-            err.textContent = msg;
-            err.classList.remove('hidden');
-        }
-
-        function hideError() {
-            document.getElementById('loginError').classList.add('hidden');
         }
 
         function logout() {
-            customConfirm("Logout", "Are you sure you want to log out?", () => {
-                localStorage.removeItem('amc_current_user');
-                currentUser = null;
-                showLoginScreen();
-                showToast("Logged out successfully", "info");
-            });
-        }
-
-        function showLoginScreen() {
-            document.getElementById('loginScreen').classList.remove('hidden');
+            currentUser = null;
             document.getElementById('appInterface').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
         }
 
-        function showAppInterface() {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('appInterface').classList.remove('hidden');
+        function switchTab(tab) {
+            document.getElementById('secNewJob').classList.add('hidden');
+            document.getElementById('secDebtList').classList.add('hidden');
+            document.getElementById('secHistory').classList.add('hidden');
+            document.getElementById('secAgentReport').classList.add('hidden');
             
-            const displayName = currentUser.role === 'admin' 
-                ? 'ADMIN (Admin)' 
-                : `${currentUser.code} - ${currentUser.name}`;
-            document.getElementById('activeAgentBadge').textContent = displayName;
-            
-            const reportAgentFilterBox = document.getElementById('reportAgentFilterBox');
-            const navContainer = document.getElementById('navTabsContainer');
-
-            if (currentUser.role === 'admin') {
-                navContainer.innerHTML = `
-                    <button onclick="switchTab('debtList')" id="tabDebtList" class="flex-1 py-2.5 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer text-center">Debts</button>
-                    <button onclick="switchTab('history')" id="tabHistory" class="flex-1 py-2.5 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer text-center">History</button>
-                    <button onclick="switchTab('agentReport')" id="tabAgentReport" class="flex-1 py-2.5 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer text-center">Report</button>
-                    <button onclick="switchTab('admin')" id="tabAdmin" class="flex-1 py-2.5 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer text-center"><i class="fas fa-user-shield"></i> Admin</button>
-                `;
-                if (reportAgentFilterBox) reportAgentFilterBox.classList.remove('hidden');
-                switchTab('debtList');
-            } else {
-                navContainer.innerHTML = `
-                    <button onclick="switchTab('newJob')" id="tabNewJob" class="flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center">New Job</button>
-                    <button onclick="switchTab('debtList')" id="tabDebtList" class="flex-1 py-2.5 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer text-center">Debts</button>
-                    <button onclick="switchTab('history')" id="tabHistory" class="flex-1 py-2.5 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer text-center">History</button>
-                    <button onclick="switchTab('agentReport')" id="tabAgentReport" class="flex-1 py-2.5 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer text-center">Report</button>
-                `;
-                if (reportAgentFilterBox) reportAgentFilterBox.classList.add('hidden');
-                switchTab('newJob');
-            }
-
-            updateDashboardMetrics();
-            populateAgentDropdowns();
-        }
-
-        function switchTab(tabId) {
-            if (currentUser.role === 'admin' && tabId === 'newJob') {
-                switchTab('debtList');
-                return;
-            }
-
-            const tabs = ['newJob', 'debtList', 'history', 'agentReport', 'admin'];
-            tabs.forEach(t => {
-                const sec = document.getElementById('sec' + capitalize(t));
-                const btn = document.getElementById('tab' + capitalize(t));
-                if (sec) sec.classList.add('hidden');
-                if (btn) btn.className = "flex-1 py-2.5 px-2 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer text-center";
+            ['tabNewJob', 'tabDebts', 'tabHistory', 'tabReport'].forEach(t => {
+                document.getElementById(t).className = 'flex-1 py-2.5 rounded-xl text-gray-700 hover:bg-gray-100 transition cursor-pointer';
             });
 
-            const activeSec = document.getElementById('sec' + capitalize(tabId));
-            const activeBtn = document.getElementById('tab' + capitalize(tabId));
-            if (activeSec) activeSec.classList.remove('hidden');
-            if (activeBtn) activeBtn.className = "flex-1 py-2.5 px-2 rounded-xl brand-bg text-white transition shadow cursor-pointer text-center";
-
-            if (tabId === 'debtList') renderDebts();
-            if (tabId === 'history') renderHistory();
-            if (tabId === 'agentReport') generateAgentReport();
-            if (tabId === 'admin') renderAdminAgents();
-        }
-
-        function capitalize(s) {
-            return s.charAt(0).toUpperCase() + s.slice(1);
-        }
-
-        function addAmount(val) {
-            const paidInput = document.getElementById('amountPaid');
-            const current = parseFloat(paidInput.value) || 0;
-            paidInput.value = current + val;
-            calcDebt();
+            if(tab === 'newJob') {
+                document.getElementById('secNewJob').classList.remove('hidden');
+                document.getElementById('tabNewJob').className = 'flex-1 py-2.5 rounded-xl brand-bg text-white transition cursor-pointer';
+            } else if(tab === 'debts') {
+                document.getElementById('secDebtList').classList.remove('hidden');
+                document.getElementById('tabDebts').className = 'flex-1 py-2.5 rounded-xl brand-bg text-white transition cursor-pointer';
+                renderDebts();
+            } else if(tab === 'history') {
+                document.getElementById('secHistory').classList.remove('hidden');
+                document.getElementById('tabHistory').className = 'flex-1 py-2.5 rounded-xl brand-bg text-white transition cursor-pointer';
+                renderHistory();
+            } else if(tab === 'report') {
+                document.getElementById('secAgentReport').classList.remove('hidden');
+                document.getElementById('tabReport').className = 'flex-1 py-2.5 rounded-xl brand-bg text-white transition cursor-pointer';
+                renderReport();
+            }
         }
 
         function calcDebt() {
-            const total = parseFloat(document.getElementById('totalBill').value) || 0;
+            const bill = parseFloat(document.getElementById('totalBill').value) || 0;
             const paid = parseFloat(document.getElementById('amountPaid').value) || 0;
-            const debt = total - paid;
+            const debt = bill - paid;
             const notice = document.getElementById('debtNotice');
-            const span = document.getElementById('calculatedDebt');
-
-            span.textContent = debt.toLocaleString();
-            if (debt > 0) {
+            if(debt > 0) {
                 notice.classList.remove('hidden');
+                document.getElementById('calculatedDebt').textContent = debt.toLocaleString();
             } else {
                 notice.classList.add('hidden');
             }
@@ -744,547 +356,175 @@
 
         async function saveTransaction(e) {
             e.preventDefault();
-            if (currentUser.role === 'admin') return;
-
-            const fName = document.getElementById('custFirstName').value.trim().toUpperCase();
-            const surname = document.getElementById('custSurname').value.trim().toUpperCase();
-            const mName = document.getElementById('custMiddleName').value.trim().toUpperCase();
-            const phone = document.getElementById('custPhone').value.trim();
-            const desc = document.getElementById('jobDesc').value.trim();
-            const total = parseFloat(document.getElementById('totalBill').value) || 0;
-            const paid = parseFloat(document.getElementById('amountPaid').value) || 0;
-            const comm = parseFloat(document.getElementById('agentCommission').value) || 0;
-            const debt = total - paid;
-
-            const newTx = {
-                id: 'AMC-' + Date.now(),
-                date: new Date().toISOString(),
-                agentCode: currentUser.code,
-                customerName: `${fName} ${surname} ${mName}`.trim(),
-                phone: phone,
-                description: desc,
-                totalBill: total,
-                amountPaid: paid,
-                commission: comm,
-                debt: debt,
-                status: debt <= 0 ? 'PAID' : 'DEBT',
-                history: [{ date: new Date().toISOString(), paid: paid, note: 'Initial payment' }]
+            const totalBill = parseFloat(document.getElementById('totalBill').value) || 0;
+            const amountPaid = parseFloat(document.getElementById('amountPaid').value) || 0;
+            
+            const txData = {
+                id: 'TX-' + Date.now(),
+                agent: currentUser ? currentUser.code : 'UNKNOWN',
+                first_name: document.getElementById('custFirstName').value.toUpperCase(),
+                surname: document.getElementById('custSurname').value.toUpperCase(),
+                phone: document.getElementById('custPhone').value,
+                description: document.getElementById('jobDesc').value,
+                total_bill: totalBill,
+                amount_paid: amountPaid,
+                commission: parseFloat(document.getElementById('agentCommission').value) || 0,
+                debt: totalBill - amountPaid
             };
 
-            transactions.unshift(newTx);
-            persistTransactions();
-            updateDashboardMetrics();
+            if (supabaseClient) {
+                const { error } = await supabaseClient.from('transactions').insert([txData]);
+                if (error) {
+                    showToast('Error saving to cloud database!', 'error');
+                    console.error(error);
+                    return;
+                }
+            }
+
             document.getElementById('jobForm').reset();
             document.getElementById('debtNotice').classList.add('hidden');
-            
-            showToast("Record saved & synced!", "success");
-            openReceipt(newTx);
+            await fetchTransactions();
+            showToast('Transaction saved successfully!');
         }
 
-        async function persistTransactions() {
-            localStorage.setItem('amc_transactions', JSON.stringify(transactions));
-            if (!supabaseClient) return;
-            try {
-                const latest = transactions[0];
-                await supabaseClient.from('transactions').upsert({
-                    id: latest.id,
-                    date: latest.date,
-                    agent_code: latest.agentCode,
-                    customer_name: latest.customerName,
-                    phone: latest.phone,
-                    description: latest.description,
-                    total_bill: latest.totalBill,
-                    amount_paid: latest.amountPaid,
-                    commission: latest.commission,
-                    debt: latest.debt,
-                    status: latest.status,
-                    history: JSON.stringify(latest.history)
-                });
-            } catch (err) {
-                console.warn("Cloud sync error on transaction:", err);
-            }
-        }
-
-        function updateDashboardMetrics() {
-            let totalRev = 0;
-            let totalPaidAmt = 0;
-            let totalComm = 0;
-            let totalDebtAmt = 0;
-
-            const targetTx = currentUser.role === 'admin' 
-                ? transactions 
-                : transactions.filter(t => t.agentCode === currentUser.code);
-
-            targetTx.forEach(tx => {
-                totalRev += tx.totalBill;
-                totalPaidAmt += tx.amountPaid;
-                totalComm += tx.commission;
-                totalDebtAmt += tx.debt;
+        function updateDashboard() {
+            let rev = 0, paid = 0, comm = 0, debt = 0;
+            transactions.forEach(t => {
+                rev += t.totalBill;
+                paid += t.amountPaid;
+                comm += t.commission;
+                debt += Math.max(0, t.debt);
             });
-
-            document.getElementById('totalRevenue').textContent = '₦' + totalRev.toLocaleString();
-            document.getElementById('totalPaid').textContent = '₦' + totalPaidAmt.toLocaleString();
-            document.getElementById('totalCommissions').textContent = '₦' + totalComm.toLocaleString();
-            document.getElementById('totalDebt').textContent = '₦' + totalDebtAmt.toLocaleString();
+            document.getElementById('totalRevenue').textContent = '₦' + rev.toLocaleString();
+            document.getElementById('totalPaid').textContent = '₦' + paid.toLocaleString();
+            document.getElementById('totalCommissions').textContent = '₦' + comm.toLocaleString();
+            document.getElementById('totalDebt').textContent = '₦' + debt.toLocaleString();
         }
 
         function renderDebts() {
-            const container = document.getElementById('debtContainer');
             const query = (document.getElementById('searchDebt').value || '').toLowerCase();
+            const container = document.getElementById('debtContainer');
+            container.innerHTML = '';
             
-            let list = currentUser.role === 'admin' 
-                ? transactions 
-                : transactions.filter(t => t.agentCode === currentUser.code);
-
-            const debts = list.filter(tx => tx.debt > 0 && (tx.customerName.toLowerCase().includes(query) || tx.phone.includes(query)));
-
-            if (debts.length === 0) {
-                container.innerHTML = `<div class="bg-white p-6 rounded-2xl text-center text-xs text-gray-500 font-bold shadow-sm">No pending debts found.</div>`;
+            const list = transactions.filter(t => t.debt > 0 && (t.firstName.toLowerCase().includes(query) || t.surname.toLowerCase().includes(query) || t.phone.includes(query)));
+            if(list.length === 0) {
+                container.innerHTML = '<p class="text-center text-xs text-gray-500 py-4 font-bold">No pending debts found.</p>';
                 return;
             }
 
-            container.innerHTML = debts.map(tx => `
-                <div class="bg-white p-4 rounded-2xl shadow-md border-l-4 border-red-500 space-y-2.5">
+            list.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-4 rounded-2xl shadow-md border-l-4 border-red-500 space-y-2';
+                card.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div>
-                            <h3 class="font-extrabold text-blue-950 text-xs">${tx.customerName}</h3>
-                            <p class="text-[10px] text-gray-500 font-bold">${tx.phone || 'No phone'} | Ref: ${tx.id} | Agent: ${tx.agentCode}</p>
+                            <h4 class="font-extrabold text-blue-950 text-xs">${t.firstName} ${t.surname}</h4>
+                            <p class="text-[10px] text-gray-500 font-bold"><i class="fas fa-phone mr-1"></i>${t.phone || 'N/A'}</p>
                         </div>
-                        <span class="bg-red-100 text-red-700 px-2.5 py-1 rounded-lg text-[10px] font-black">₦${tx.debt.toLocaleString()} Debt</span>
+                        <span class="text-xs font-black text-red-600 bg-red-50 px-2.5 py-1 rounded-xl border border-red-200">Debt: ₦${t.debt.toLocaleString()}</span>
                     </div>
-                    <p class="text-xs text-gray-700 bg-gray-50 p-2 rounded-xl font-medium">${tx.description}</p>
-                    <div class="flex justify-between items-center pt-1">
-                        <span class="text-[10px] text-gray-400 font-semibold">${new Date(tx.date).toLocaleDateString()}</span>
-                        <div class="flex gap-2">
-                            <button onclick="openPayDebtModal('${tx.id}')" class="bg-green-700 text-white px-3 py-1.5 rounded-xl text-[10px] font-extrabold hover:bg-green-800 transition cursor-pointer shadow"><i class="fas fa-plus-circle"></i> Clear / Pay</button>
-                            <button onclick="openReceipt('${tx.id}')" class="brand-bg text-white px-3 py-1.5 rounded-xl text-[10px] font-extrabold transition cursor-pointer shadow"><i class="fas fa-receipt"></i> Receipt</button>
-                        </div>
+                    <p class="text-xs text-gray-700 font-medium">${t.description}</p>
+                    <div class="flex justify-between items-center pt-2 border-t text-[10px] font-bold text-gray-500">
+                        <span>Agent: ${t.agent}</span>
+                        <button onclick="clearDebt('${t.id}')" class="bg-green-700 text-white px-3 py-1.5 rounded-xl hover:bg-green-800 transition cursor-pointer">Mark Paid</button>
                     </div>
-                </div>
-            `).join('');
+                `;
+                container.appendChild(card);
+            });
         }
 
-        function openPayDebtModal(txId) {
-            const tx = transactions.find(t => t.id === txId);
-            if (!tx) return;
-
-            customPrompt(`Pay Debt for ${tx.customerName}`, `Current Debt: ₦${tx.debt.toLocaleString()}. Enter amount being paid:`, async (amount) => {
-                const payAmt = parseFloat(amount);
-                if (isNaN(payAmt) || payAmt <= 0) {
-                    showToast("Please enter a valid amount", "error");
-                    return;
-                }
-                if (payAmt > tx.debt) {
-                    showToast("Amount cannot exceed current debt!", "error");
-                    return;
-                }
-
-                tx.amountPaid += payAmt;
-                tx.debt -= payAmt;
-                if (tx.debt <= 0) tx.status = 'PAID';
-                tx.history.push({ date: new Date().toISOString(), paid: payAmt, note: 'Debt clearance' });
-
-                localStorage.setItem('amc_transactions', JSON.stringify(transactions));
+        async function clearDebt(id) {
+            const tx = transactions.find(t => t.id === id);
+            if(tx) {
+                const newPaid = tx.amountPaid + tx.debt;
                 if (supabaseClient) {
-                    await supabaseClient.from('transactions').upsert({
-                        id: tx.id,
-                        date: tx.date,
-                        agent_code: tx.agentCode,
-                        customer_name: tx.customerName,
-                        phone: tx.phone,
-                        description: tx.description,
-                        total_bill: tx.totalBill,
-                        amount_paid: tx.amountPaid,
-                        commission: tx.commission,
-                        debt: tx.debt,
-                        status: tx.status,
-                        history: JSON.stringify(tx.history)
-                    });
+                    const { error } = await supabaseClient
+                        .from('transactions')
+                        .update({ amount_paid: newPaid, debt: 0 })
+                        .eq('id', id);
+                    
+                    if (error) {
+                        showToast('Error updating debt status', 'error');
+                        return;
+                    }
                 }
-
-                updateDashboardMetrics();
+                await fetchTransactions();
                 renderDebts();
-                showToast("Payment recorded & synced!", "success");
-            });
+                showToast('Debt marked as fully paid!');
+            }
         }
 
         function renderHistory() {
-            const container = document.getElementById('historyContainer');
             const query = (document.getElementById('searchHistory').value || '').toLowerCase();
-            
-            let list = currentUser.role === 'admin' 
-                ? transactions 
-                : transactions.filter(t => t.agentCode === currentUser.code);
+            const container = document.getElementById('historyContainer');
+            container.innerHTML = '';
 
-            const filtered = list.filter(tx => 
-                tx.customerName.toLowerCase().includes(query) || 
-                tx.phone.includes(query) || 
-                tx.description.toLowerCase().includes(query) ||
-                tx.id.toLowerCase().includes(query)
-            );
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<div class="bg-white p-6 rounded-2xl text-center text-xs text-gray-500 font-bold shadow-sm">No transaction records found.</div>`;
+            const list = transactions.filter(t => t.firstName.toLowerCase().includes(query) || t.surname.toLowerCase().includes(query) || t.phone.includes(query) || t.description.toLowerCase().includes(query));
+            if(list.length === 0) {
+                container.innerHTML = '<p class="text-center text-xs text-gray-500 py-4 font-bold">No history records found.</p>';
                 return;
             }
 
-            container.innerHTML = filtered.map(tx => `
-                <div class="bg-white p-4 rounded-2xl shadow-md border-l-4 ${tx.debt > 0 ? 'border-red-500' : 'border-green-600'} space-y-2">
+            list.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-4 rounded-2xl shadow-md border border-gray-100 space-y-2';
+                card.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div>
-                            <h3 class="font-extrabold text-blue-950 text-xs">${tx.customerName}</h3>
-                            <p class="text-[10px] text-gray-500 font-bold">${tx.phone || 'No phone'} | Agent: ${tx.agentCode}</p>
+                            <h4 class="font-extrabold text-blue-950 text-xs">${t.firstName} ${t.surname}</h4>
+                            <p class="text-[10px] text-gray-500 font-bold">${new Date(t.date).toLocaleDateString()} | Agent: ${t.agent}</p>
                         </div>
-                        <span class="${tx.debt > 0 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'} px-2.5 py-1 rounded-lg text-[10px] font-black">${tx.status}</span>
+                        <span class="text-xs font-black text-blue-900">₦${t.totalBill.toLocaleString()}</span>
                     </div>
-                    <p class="text-xs text-gray-700 bg-gray-50 p-2 rounded-xl font-medium">${tx.description}</p>
-                    <div class="grid grid-cols-3 gap-2 text-[10px] font-bold bg-gray-50 p-2 rounded-xl text-center">
-                        <div>Total: ₦${tx.totalBill.toLocaleString()}</div>
-                        <div class="text-green-700">Paid: ₦${tx.amountPaid.toLocaleString()}</div>
-                        <div class="text-red-600">Debt: ₦${tx.debt.toLocaleString()}</div>
+                    <p class="text-xs text-gray-700 font-medium">${t.description}</p>
+                    <div class="flex justify-between text-[10px] font-bold text-gray-500 pt-1 border-t">
+                        <span class="text-green-700">Paid: ₦${t.amountPaid.toLocaleString()}</span>
+                        <span class="${t.debt > 0 ? 'text-red-600' : 'text-gray-400'}">Debt: ₦${t.debt.toLocaleString()}</span>
                     </div>
-                    <div class="flex justify-between items-center pt-1">
-                        <span class="text-[10px] text-gray-400 font-semibold">${new Date(tx.date).toLocaleString()}</span>
-                        <button onclick="openReceipt('${tx.id}')" class="brand-bg text-white px-3 py-1.5 rounded-xl text-[10px] font-extrabold transition cursor-pointer shadow"><i class="fas fa-receipt"></i> Receipt</button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+                container.appendChild(card);
+            });
         }
 
-        function populateAgentDropdowns() {
-            const select = document.getElementById('reportAgentCode');
-            if (!select) return;
-            let html = `<option value="ALL">All Agents</option>`;
-            agents.forEach(a => {
-                html += `<option value="${a.code}">${a.code} - ${a.name}</option>`;
-            });
-            select.innerHTML = html;
-        }
-
-        function generateAgentReport() {
-            const agentCodeSelect = document.getElementById('reportAgentCode');
-            const agentCode = (currentUser.role === 'admin' && agentCodeSelect) ? agentCodeSelect.value : currentUser.code;
-            const startDate = document.getElementById('reportStartDate').value;
-            const endDate = document.getElementById('reportEndDate').value;
-            const container = document.getElementById('agentReportResults');
-
-            let filtered = transactions.filter(tx => {
-                const txDate = tx.date.split('T')[0];
-                const matchesAgent = (currentUser.role === 'agent' || agentCode === 'ALL' || tx.agentCode === agentCode);
-                const matchesStart = (!startDate || txDate >= startDate);
-                const matchesEnd = (!endDate || txDate <= endDate);
-                return matchesAgent && matchesStart && matchesEnd;
-            });
-
-            let totalWork = 0;
-            let totalPaid = 0;
-            let totalComm = 0;
-            let totalDebt = 0;
-
-            filtered.forEach(tx => {
-                totalWork += tx.totalBill;
-                totalPaid += tx.amountPaid;
-                totalComm += tx.commission;
-                totalDebt += tx.debt;
-            });
+        function renderReport() {
+            const container = document.getElementById('reportContainer');
+            let totalJobs = transactions.length;
+            let totalRev = transactions.reduce((sum, t) => sum + t.totalBill, 0);
+            let totalColl = transactions.reduce((sum, t) => sum + t.amountPaid, 0);
+            let totalDebts = transactions.reduce((sum, t) => sum + t.debt, 0);
 
             container.innerHTML = `
-                <div class="bg-white p-6 rounded-3xl shadow-md space-y-4 border border-gray-100">
-                    <div class="flex justify-between items-center border-b pb-2">
-                        <h3 class="font-extrabold text-blue-950 text-xs">Report Summary (${filtered.length} Jobs)</h3>
-                        <span class="text-[10px] text-gray-500 font-bold">${startDate || 'Start'} to ${endDate || 'Today'}</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3 text-center">
-                        <div class="bg-blue-50 p-3 rounded-2xl">
-                            <p class="text-[10px] text-blue-900 font-bold uppercase">Total Work Value</p>
-                            <p class="text-sm font-black text-blue-950 mt-1">₦${totalWork.toLocaleString()}</p>
-                        </div>
-                        <div class="bg-green-50 p-3 rounded-2xl">
-                            <p class="text-[10px] text-green-900 font-bold uppercase">Total Collected</p>
-                            <p class="text-sm font-black text-green-700 mt-1">₦${totalPaid.toLocaleString()}</p>
-                        </div>
-                        <div class="bg-amber-50 p-3 rounded-2xl">
-                            <p class="text-[10px] text-amber-900 font-bold uppercase">Total Commission</p>
-                            <p class="text-sm font-black text-amber-700 mt-1">₦${totalComm.toLocaleString()}</p>
-                        </div>
-                        <div class="bg-red-50 p-3 rounded-2xl">
-                            <p class="text-[10px] text-red-900 font-bold uppercase">Total Outstanding Debt</p>
-                            <p class="text-sm font-black text-red-600 mt-1">₦${totalDebt.toLocaleString()}</p>
-                        </div>
-                    </div>
-                </div>
+                <div class="p-3 bg-gray-50 rounded-xl flex justify-between font-bold"><span>Total Jobs Recorded:</span> <span class="text-blue-950">${totalJobs}</span></div>
+                <div class="p-3 bg-gray-50 rounded-xl flex justify-between font-bold"><span>Total Work Value:</span> <span class="text-blue-950">₦${totalRev.toLocaleString()}</span></div>
+                <div class="p-3 bg-gray-50 rounded-xl flex justify-between font-bold"><span>Total Cash Collected:</span> <span class="text-green-700">₦${totalColl.toLocaleString()}</span></div>
+                <div class="p-3 bg-gray-50 rounded-xl flex justify-between font-bold"><span>Total Outstanding Debts:</span> <span class="text-red-600">₦${totalDebts.toLocaleString()}</span></div>
             `;
         }
 
-        function exportReportExcel() {
-            const agentCodeSelect = document.getElementById('reportAgentCode');
-            const agentCode = (currentUser.role === 'admin' && agentCodeSelect) ? agentCodeSelect.value : currentUser.code;
-            const startDate = document.getElementById('reportStartDate').value;
-            const endDate = document.getElementById('reportEndDate').value;
-
-            let filtered = transactions.filter(tx => {
-                const txDate = tx.date.split('T')[0];
-                const matchesAgent = (currentUser.role === 'agent' || agentCode === 'ALL' || tx.agentCode === agentCode);
-                const matchesStart = (!startDate || txDate >= startDate);
-                const matchesEnd = (!endDate || txDate <= endDate);
-                return matchesAgent && matchesStart && matchesEnd;
-            });
-
-            if (filtered.length === 0) {
-                showToast("No data to export to Excel", "error");
+        function exportToExcel() {
+            if(transactions.length === 0) {
+                showToast('No records to export!', 'error');
                 return;
             }
-
-            const dataToExport = filtered.map(tx => ({
-                "Ref ID": tx.id,
-                "Date": new Date(tx.date).toLocaleDateString(),
-                "Agent": tx.agentCode,
-                "Customer Name": tx.customerName,
-                "Phone": tx.phone,
-                "Description": tx.description,
-                "Total Bill": tx.totalBill,
-                "Amount Paid": tx.amountPaid,
-                "Debt": tx.debt,
-                "Status": tx.status
+            const data = transactions.map(t => ({
+                "ID": t.id,
+                "Date": new Date(t.date).toLocaleString(),
+                "Agent": t.agent,
+                "First Name": t.firstName,
+                "Surname": t.surname,
+                "Phone": t.phone,
+                "Description": t.description,
+                "Total Bill (₦)": t.totalBill,
+                "Amount Paid (₦)": t.amountPaid,
+                "Debt (₦)": t.debt,
+                "Commission (₦)": t.commission
             }));
-
-            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "AMC Report");
-            XLSX.writeFile(workbook, `AMC_Report_${new Date().toISOString().split('T')[0]}.xlsx`);
-            showToast("Report exported to Excel successfully", "success");
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "AMC_Transactions");
+            XLSX.writeFile(wb, "AMC_International_Report.xlsx");
+            showToast('Excel report downloaded successfully!');
         }
-
-        function printAgentReport() {
-            window.print();
-        }
-
-        function verifyTabAdmin() {
-            const pass = document.getElementById('tabAdminPassInput').value;
-            const errorBox = document.getElementById('adminPassError');
-
-            if (pass === adminPassword) {
-                errorBox.classList.add('hidden');
-                document.getElementById('adminAuthLockBlock').classList.add('hidden');
-                document.getElementById('adminPanelContent').classList.remove('hidden');
-                renderAdminAgents();
-                showToast("Admin panel unlocked", "success");
-            } else {
-                errorBox.classList.remove('hidden');
-                showToast("Incorrect Admin Password", "error");
-            }
-        }
-
-        function renderAdminAgents() {
-            const list = document.getElementById('adminAgentList');
-            if (!list) return;
-
-            list.innerHTML = agents.map(a => `
-                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-2xl border">
-                    <div>
-                        <p class="font-extrabold text-blue-950 text-xs">${a.code} - ${a.name}</p>
-                        <p class="text-[10px] text-gray-500 font-bold">Password: ${a.password}</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="openAgentModal('${a.code}')" class="bg-blue-900 text-white px-3 py-1.5 rounded-xl text-[10px] font-bold hover:bg-blue-950 transition cursor-pointer"><i class="fas fa-edit"></i></button>
-                        <button onclick="openChangePasswordModal('${a.code}')" class="bg-amber-700 text-white px-3 py-1.5 rounded-xl text-[10px] font-bold hover:bg-amber-800 transition cursor-pointer"><i class="fas fa-key"></i></button>
-                        <button onclick="deleteAgent('${a.code}')" class="bg-red-700 text-white px-3 py-1.5 rounded-xl text-[10px] font-bold hover:bg-red-800 transition cursor-pointer"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function openAgentModal(editCode = null) {
-            const modal = document.getElementById('agentModal');
-            const title = document.getElementById('agentModalTitle');
-            const codeInput = document.getElementById('modalAgentCode');
-            const nameInput = document.getElementById('modalAgentName');
-            const passInput = document.getElementById('modalAgentPassword');
-            const origInput = document.getElementById('agentEditOriginalCode');
-
-            if (editCode) {
-                const agent = agents.find(a => a.code === editCode);
-                if (!agent) return;
-                title.textContent = "Edit Agent";
-                codeInput.value = agent.code;
-                origInput.value = agent.code;
-                nameInput.value = agent.name;
-                passInput.value = agent.password;
-            } else {
-                title.textContent = "Add New Agent";
-                codeInput.value = "";
-                origInput.value = "";
-                nameInput.value = "";
-                passInput.value = "password123";
-            }
-            modal.classList.remove('hidden');
-        }
-
-        function closeAgentModal() {
-            document.getElementById('agentModal').classList.add('hidden');
-        }
-
-        async function saveAgent(e) {
-            e.preventDefault();
-            const code = document.getElementById('modalAgentCode').value.trim().toUpperCase();
-            const orig = document.getElementById('agentEditOriginalCode').value;
-            const name = document.getElementById('modalAgentName').value.trim();
-            const pass = document.getElementById('modalAgentPassword').value;
-
-            if (orig) {
-                const idx = agents.findIndex(a => a.code === orig);
-                if (idx !== -1) {
-                    agents[idx].code = code;
-                    agents[idx].name = name;
-                    agents[idx].password = pass;
-                }
-            } else {
-                if (agents.some(a => a.code === code)) {
-                    showToast("Agent code already exists!", "error");
-                    return;
-                }
-                agents.push({ code, name, password: pass, mustChangePassword: true });
-            }
-
-            localStorage.setItem('amc_agents', JSON.stringify(agents));
-            if (supabaseClient) {
-                const target = agents.find(a => a.code === code);
-                await supabaseClient.from('agents').upsert({ code: target.code, name: target.name, password: target.password, must_change_password: true });
-            }
-
-            closeAgentModal();
-            renderAdminAgents();
-            populateAgentDropdowns();
-            showToast("Agent saved & synced successfully!", "success");
-        }
-
-        async function deleteAgent(code) {
-            customConfirm("Delete Agent", `Are you sure you want to delete agent ${code}?`, async () => {
-                agents = agents.filter(a => a.code !== code);
-                localStorage.setItem('amc_agents', JSON.stringify(agents));
-                if (supabaseClient) {
-                    await supabaseClient.from('agents').delete().eq('code', code);
-                }
-                renderAdminAgents();
-                populateAgentDropdowns();
-                showToast("Agent deleted", "info");
-            });
-        }
-
-        function openReceipt(txOrId) {
-            const tx = typeof txOrId === 'string' ? transactions.find(t => t.id === txOrId) : txOrId;
-            if (!tx) return;
-
-            document.getElementById('receiptDate').textContent = new Date(tx.date).toLocaleString();
-            document.getElementById('recNo').textContent = tx.id;
-            document.getElementById('recCustName').textContent = tx.customerName;
-            document.getElementById('recPhone').textContent = tx.phone || 'N/A';
-            document.getElementById('recAgent').textContent = tx.agentCode;
-            document.getElementById('recDesc').textContent = tx.description;
-            document.getElementById('recTotal').textContent = '₦' + tx.totalBill.toLocaleString();
-            document.getElementById('recPaid').textContent = '₦' + tx.amountPaid.toLocaleString();
-            document.getElementById('recDebt').textContent = '₦' + tx.debt.toLocaleString();
-
-            document.getElementById('receiptModal').classList.remove('hidden');
-        }
-
-        function closeReceiptModal() {
-            document.getElementById('receiptModal').classList.add('hidden');
-        }
-
-        function forceCloudSync() {
-            fetchCloudData().then(() => {
-                updateDashboardMetrics();
-                showToast("System synchronized with cloud successfully", "success");
-            });
-        }
-
-        function exportDataBackup() {
-            const data = { transactions, agents, exportedAt: new Date().toISOString() };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `amc_backup_${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-            showToast("Backup exported successfully", "success");
-        }
-
-        function setupNetworkListeners() {
-            const banner = document.getElementById('networkBanner');
-            const text = document.getElementById('networkText');
-
-            function updateStatus() {
-                if (navigator.onLine) {
-                    banner.className = "fixed top-0 left-0 right-0 z-50 text-center py-1.5 text-xs font-black shadow-md bg-emerald-600 text-white";
-                    text.textContent = "Online - Synced";
-                    setTimeout(() => banner.classList.add('hidden'), 3000);
-                } else {
-                    banner.classList.remove('hidden');
-                    banner.className = "fixed top-0 left-0 right-0 z-50 text-center py-1.5 text-xs font-black shadow-md bg-amber-600 text-white";
-                    text.textContent = "Offline Mode - Data saved locally";
-                }
-            }
-
-            window.addEventListener('online', updateStatus);
-            window.addEventListener('offline', updateStatus);
-            if (!navigator.onLine) updateStatus();
-        }
-
-        function showToast(msg, type = 'success') {
-            const box = document.getElementById('toastBox');
-            const icon = document.getElementById('toastIcon');
-            const message = document.getElementById('toastMessage');
-
-            message.textContent = msg;
-            box.className = `pointer-events-auto flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold max-w-sm w-full border show ${
-                type === 'success' ? 'bg-emerald-700 border-emerald-600' :
-                type === 'error' ? 'bg-red-700 border-red-600' : 'bg-blue-950 border-blue-900'
-            }`;
-            icon.className = `fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} text-base`;
-
-            setTimeout(() => {
-                box.classList.remove('show');
-            }, 3000);
-        }
-
-        let confirmCallback = null;
-        function customConfirm(title, text, onOk) {
-            document.getElementById('confirmTitle').textContent = title;
-            document.getElementById('confirmText').textContent = text;
-            document.getElementById('customConfirmModal').classList.remove('hidden');
-            confirmCallback = onOk;
-        }
-
-        document.getElementById('confirmBtnCancel').onclick = () => {
-            document.getElementById('customConfirmModal').classList.add('hidden');
-            confirmCallback = null;
-        };
-        document.getElementById('confirmBtnOk').onclick = () => {
-            document.getElementById('customConfirmModal').classList.add('hidden');
-            if (confirmCallback) confirmCallback();
-            confirmCallback = null;
-        };
-
-        let promptCallback = null;
-        function customPrompt(title, labelText, onOk) {
-            document.getElementById('promptTitle').textContent = title;
-            document.getElementById('customPromptInput').value = '';
-            document.getElementById('customPromptModal').classList.remove('hidden');
-            document.getElementById('customPromptInput').focus();
-            promptCallback = onOk;
-        }
-
-        document.getElementById('promptBtnCancel').onclick = () => {
-            document.getElementById('customPromptModal').classList.add('hidden');
-            promptCallback = null;
-        };
-        document.getElementById('promptBtnOk').onclick = () => {
-            const val = document.getElementById('customPromptInput').value;
-            document.getElementById('customPromptModal').classList.add('hidden');
-            if (promptCallback) promptCallback(val);
-            promptCallback = null;
-        };
     </script>
 </body>
 </html>
