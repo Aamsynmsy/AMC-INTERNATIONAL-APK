@@ -441,7 +441,6 @@
             setupNetworkListeners();
             setDefaultDates();
 
-            // Auto-refresh data from cloud every 30 seconds automatically
             setInterval(async () => {
                 if (navigator.onLine && supabaseClient && currentUser) {
                     await fetchCloudData(false);
@@ -473,19 +472,16 @@
             if (!supabaseClient) return;
             if (showSpinner) showLoader("Loading cloud data...");
             try {
-                // 1. Fetch Agents from Supabase
                 const { data: cloudAgents, error: agentErr } = await supabaseClient.from('agents').select('*');
                 if (!agentErr && cloudAgents) {
                     agents = cloudAgents;
                 }
 
-                // 2. Fetch Admin Password Config from Supabase
                 const adminConf = agents.find(a => a.code === 'ADMIN_CONFIG');
                 if (adminConf && adminConf.password) {
                     adminPassword = adminConf.password;
                 }
 
-                // 3. Fetch Transactions from Supabase
                 const { data: cloudTx, error: txErr } = await supabaseClient.from('transactions').select('*').order('date', { ascending: false });
                 if (!txErr && cloudTx) {
                     transactions = cloudTx.map(t => ({
@@ -586,10 +582,10 @@
             hideLoader();
 
             if (pass === adminPassword) {
-                currentUser = { code: 'ADMIN', name: 'Administrator', role: 'admin' };
+                currentUser = { code: 'ADMIN', name: 'SUPERVISOR', role: 'admin' };
                 localStorage.setItem('amc_current_user', JSON.stringify(currentUser));
                 showAppInterface();
-                showToast("Logged in as Administrator", "success");
+                showToast("Logged in as SUPERVISOR", "success");
             } else {
                 showLoginError("Invalid Admin Password!");
             }
@@ -624,7 +620,7 @@
             showLoader("Saving new password...");
             if (userCode === 'ADMIN') {
                 adminPassword = newPass;
-                await supabaseClient.from('agents').upsert({ code: 'ADMIN_CONFIG', name: 'Admin Config', password: adminPassword });
+                await supabaseClient.from('agents').upsert({ code: 'ADMIN_CONFIG', name: 'SUPERVISOR', password: adminPassword });
             } else {
                 const agent = agents.find(a => a.code === userCode);
                 if (agent) {
@@ -675,7 +671,7 @@
             showLoader("Updating password...");
             if (userCode === 'ADMIN') {
                 adminPassword = newPass;
-                await supabaseClient.from('agents').upsert({ code: 'ADMIN_CONFIG', name: 'Admin Config', password: adminPassword });
+                await supabaseClient.from('agents').upsert({ code: 'ADMIN_CONFIG', name: 'SUPERVISOR', password: adminPassword });
             } else {
                 const agent = agents.find(a => a.code === userCode);
                 if (agent) {
@@ -725,7 +721,7 @@
             document.getElementById('appInterface').classList.remove('hidden');
             
             const displayName = currentUser.role === 'admin' 
-                ? 'ADMIN (Admin)' 
+                ? 'ADMIN (SUPERVISOR)' 
                 : `${currentUser.code} - ${currentUser.name}`;
             document.getElementById('activeAgentBadge').textContent = displayName;
             
