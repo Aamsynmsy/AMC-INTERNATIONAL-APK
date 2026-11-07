@@ -1,35 +1,24 @@
 {
-  "id": "/",
-  "name": "AMC International - Store & Debt Management",
-  "short_name": "AMC",
-  "description": "A reliable store and debt management system designed for tracking sales, managing customer debts, and generating receipts.",
-  "start_url": "index.html",
-  "scope": "./",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#0d2040",
-  "theme_color": "#0d2040",
-  "categories": ["business", "finance", "productivity"],
+  "short_name": "AMC INT'L",
+  "name": "AMC INTERNATIONAL - Store & Debt Management System",
+  "description": "Store and Debt Management System for AMC International",
   "icons": [
     {
-      "src": "icon.png",
-      "sizes": "512x512",
+      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
       "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+      "type": "image/png",
+      "sizes": "512x512",
       "purpose": "any maskable"
     }
   ],
-  "screenshots": [
-    {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "form_factor": "wide"
-    },
-    {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "form_factor": "narrow"
-    }
-  ]
+  "start_url": "./index.html",
+  "background_color": "#0d2040",
+  "theme_color": "#0d2040",
+  "display": "standalone",
+  "orientation": "portrait"
 }
