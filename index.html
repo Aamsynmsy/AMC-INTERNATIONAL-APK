@@ -1175,7 +1175,7 @@
         function openEditAgentModal(code, name, password) {
             document.getElementById('agentModalTitle').textContent = `Edit Agent: ${code}`;
             document.getElementById('modalAgentCode').value = code;
-            document.getElementById('modalAgentCode').disabled = true; // Code cannot be changed once created
+            document.getElementById('modalAgentCode').disabled = true;
             document.getElementById('modalAgentName').value = name;
             document.getElementById('modalAgentPassword').value = password;
             document.getElementById('agentModal').classList.remove('hidden');
